@@ -83,13 +83,6 @@
   <script src="../controls/slick.columnpicker.js"></script>
 
   <script>
-    function isIEPreVer9() {
-      var v = navigator.appVersion.match(/MSIE ([\d.]+)/i);
-      return (v ? v[1] < 9 : false);
-    }
-
-    let articulos = [];
-
     var dataView;
     var grid;
     var data = [];
@@ -206,14 +199,11 @@
       //   forceFitTitle: "Force fit columns",
       //   syncResizeTitle: "Synchronous resize",
       // },
-      // editable: false,
-      // enableAddRow: false,
       enableCellNavigation: true,
-      // asyncEditorLoading: true,
-      // forceFitColumns: false,
       showHeaderRow: true,
       headerRowHeight: 30,
-      // topPanelHeight: 25,
+      multiSelect: false,
+      topPanelHeight: 25,
       explicitInitialization: true
     };
 
