@@ -244,6 +244,81 @@
     // TIPO DE MOVIMIENTO DOBLE CLICKEADO
 
 
+    dataView = new Slick.Data.DataView();
+    grid = new Slick.Grid("#myGrid", dataView, columns, options);
+    grid.setSelectionModel(new Slick.RowSelectionModel());
+
+    var pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
+    var columnpicker = new Slick.Controls.ColumnPicker(columns, grid, options);
+
+    grid.onHeaderRowCellRendered.subscribe(function (e, args) {
+      $(args.node).empty();
+      if (args.column.id === 'PROMO_BOOL') {
+        $("<input type='checkbox'>") //add checkbox for promo_bool
+          .data("columnId", args.column.id)
+          .val(columnFilters[args.column.id])
+          .appendTo(args.node);
+      } else {
+        $("<input type='text'>") //for others, add text field
+          .data("columnId", args.column.id)
+          .val(columnFilters[args.column.id])
+          .appendTo(args.node);
+      }
+    });
+
+    grid.onDblClick.subscribe(function (e) {
+      var cell = grid.getCellFromEvent(e);
+      var columnId = columns[cell.cell].id
+      if (columnId === 'MARCA' | columnId === 'RUBRO') {
+        // get div containing selected cell, to obtain value from DOM
+        // can't get it from data array, because we don't have the index
+        // we only have te index of the selected row in the current view
+        let dataValue = grid.getActiveCellNode().textContent;
+        columnFilters[columnId] = dataValue;
+
+        // get div containt input element child, then get child and assign the value
+        grid.getHeaderRowColumn(columnId).firstChild.value = dataValue;
+        dataView.refresh();
+      }
+    });
+
+    grid.onSort.subscribe(function (e, args) {
+      sortdir = args.sortAsc ? 1 : -1;
+      sortcol = args.sortCol.field;
+
+      dataView.sort(comparer, args.sortAsc);
+    });
+
+    // wire up model events to drive the grid
+    // !! both dataView.onRowCountChanged and dataView.onRowsChanged MUST be wired to correctly update the grid
+    // see Issue#91
+    dataView.onRowCountChanged.subscribe(function (e, args) {
+      grid.updateRowCount();
+      grid.render();
+    });
+
+    dataView.onRowsChanged.subscribe(function (e, args) {
+      grid.invalidateRows(args.rows);
+      grid.render();
+    });
+
+    dataView.onPagingInfoChanged.subscribe(function (e, pagingInfo) {
+      grid.updatePagingStatusFromView(pagingInfo);
+    });
+
+    $(grid.getHeaderRow()).on("change keyup", ":input", function (e) {
+      var columnId = $(this).data("columnId");
+      if (columnId != null) {
+        if (columnId === 'PROMO_BOOL') {
+          columnFilters[columnId] = this.checked ? this.checked : '';
+        } else {
+          columnFilters[columnId] = $.trim($(this).val());
+        }
+        dataView.refresh();
+      }
+    });
+
+    var h_runfilters = null;
 
 
     getArticulos();
@@ -258,81 +333,6 @@
       data[12].PROMO_BOOL = true;
       data[234].PROMO_BOOL = true;
 
-      dataView = new Slick.Data.DataView();
-      grid = new Slick.Grid("#myGrid", dataView, columns, options);
-      grid.setSelectionModel(new Slick.RowSelectionModel());
-
-      var pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
-      var columnpicker = new Slick.Controls.ColumnPicker(columns, grid, options);
-
-      grid.onHeaderRowCellRendered.subscribe(function (e, args) {
-        $(args.node).empty();
-        if (args.column.id === 'PROMO_BOOL') {
-          $("<input type='checkbox'>") //add checkbox for promo_bool
-            .data("columnId", args.column.id)
-            .val(columnFilters[args.column.id])
-            .appendTo(args.node);
-        } else {
-          $("<input type='text'>") //for others, add text field
-            .data("columnId", args.column.id)
-            .val(columnFilters[args.column.id])
-            .appendTo(args.node);
-        }
-      });
-
-      grid.onDblClick.subscribe(function (e) {
-        var cell = grid.getCellFromEvent(e);
-        var columnId = columns[cell.cell].id
-        if (columnId === 'MARCA' | columnId === 'RUBRO') {
-          // get div containing selected cell, to obtain value from DOM
-          // can't get it from data array, because we don't have the index
-          // we only have te index of the selected row in the current view
-          let dataValue = grid.getActiveCellNode().textContent;
-          columnFilters[columnId] = dataValue;
-
-          // get div containt input element child, then get child and assign the value
-          grid.getHeaderRowColumn(columnId).firstChild.value = dataValue;
-          dataView.refresh();
-        }
-      });
-
-      grid.onSort.subscribe(function (e, args) {
-        sortdir = args.sortAsc ? 1 : -1;
-        sortcol = args.sortCol.field;
-
-        dataView.sort(comparer, args.sortAsc);
-      });
-
-      // wire up model events to drive the grid
-      // !! both dataView.onRowCountChanged and dataView.onRowsChanged MUST be wired to correctly update the grid
-      // see Issue#91
-      dataView.onRowCountChanged.subscribe(function (e, args) {
-        grid.updateRowCount();
-        grid.render();
-      });
-
-      dataView.onRowsChanged.subscribe(function (e, args) {
-        grid.invalidateRows(args.rows);
-        grid.render();
-      });
-
-      dataView.onPagingInfoChanged.subscribe(function (e, pagingInfo) {
-        grid.updatePagingStatusFromView(pagingInfo);
-      });
-
-      $(grid.getHeaderRow()).on("change keyup", ":input", function (e) {
-        var columnId = $(this).data("columnId");
-        if (columnId != null) {
-          if (columnId === 'PROMO_BOOL') {
-            columnFilters[columnId] = this.checked ? this.checked : '';
-          } else {
-            columnFilters[columnId] = $.trim($(this).val());
-          }
-          dataView.refresh();
-        }
-      });
-
-      var h_runfilters = null;
 
       grid.init();
       // initialize the model after all the events have been hooked up
