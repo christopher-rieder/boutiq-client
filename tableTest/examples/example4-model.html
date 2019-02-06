@@ -292,15 +292,15 @@
         var cell = grid.getCellFromEvent(e);
         var columnId = columns[cell.cell].id
         if (columnId === 'MARCA' | columnId === 'RUBRO') {
-          console.log(cell);
-          columnFilters[columnId] = data[cell.row][columnId];
-          // FIXME there is an error, not picking the correct row when double click both marca and rubro
-          // ok, el error es porque estoy agarrando el indice de celda, y luego buscado los datos usando ese indice
-          // pero el indice 7 de un listado filtrado no es el mismo que el indice 7 de los datos completos
+          // get div containing selected cell, to obtain value from DOM
+          // can't get it from data array, because we don't have the index
+          // we only have te index of the selected row in the current view
+          let dataValue = grid.getActiveCellNode().textContent;
+          columnFilters[columnId] = dataValue;
+
           // get div containt input element child, then get child and assign the value
-          grid.getHeaderRowColumn(columnId).firstChild.value = data[cell.row][columnId];
+          grid.getHeaderRowColumn(columnId).firstChild.value = dataValue;
           dataView.refresh();
-          console.log(data[cell.row][columnId])
         }
       });
 
