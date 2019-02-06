@@ -267,10 +267,17 @@
 
       grid.onHeaderRowCellRendered.subscribe(function (e, args) {
         $(args.node).empty();
-        $("<input type='text'>") //add checkbox for promo_bool
-          .data("columnId", args.column.id)
-          .val(columnFilters[args.column.id])
-          .appendTo(args.node);
+        if (args.column.id === 'PROMO_BOOL') {
+          $("<input type='checkbox'>") //add checkbox for promo_bool
+            .data("columnId", args.column.id)
+            .val(columnFilters[args.column.id])
+            .appendTo(args.node);
+        } else {
+          $("<input type='text'>") //for others, add text field
+            .data("columnId", args.column.id)
+            .val(columnFilters[args.column.id])
+            .appendTo(args.node);
+        }
       });
 
       grid.onDblClick.subscribe(function (e) {
