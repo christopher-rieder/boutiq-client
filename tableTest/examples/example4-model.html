@@ -323,7 +323,11 @@
       $(grid.getHeaderRow()).on("change keyup", ":input", function (e) {
         var columnId = $(this).data("columnId");
         if (columnId != null) {
-          columnFilters[columnId] = $.trim($(this).val());
+          if (columnId === 'PROMO_BOOL') {
+            columnFilters[columnId] = this.checked ? this.checked : '';
+          } else {
+            columnFilters[columnId] = $.trim($(this).val());
+          }
           dataView.refresh();
         }
       });
