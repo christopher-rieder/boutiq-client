@@ -273,21 +273,6 @@
           .appendTo(args.node);
       });
 
-      grid.onKeyDown.subscribe(function (e) {
-        // select all rows on ctrl-a
-        if (e.which != 65 || !e.ctrlKey) {
-          return false;
-        }
-
-        var rows = [];
-        for (var i = 0; i < dataView.getLength(); i++) {
-          rows.push(i);
-        }
-
-        grid.setSelectedRows(rows);
-        e.preventDefault();
-      });
-
       grid.onDblClick.subscribe(function (e) {
         var cell = grid.getCellFromEvent(e);
         var columnId = columns[cell.cell].id
@@ -336,23 +321,7 @@
         }
       });
 
-
-
       var h_runfilters = null;
-
-      $("#btnSelectRows").click(function () {
-        if (!Slick.GlobalEditorLock.commitCurrentEdit()) {
-          return;
-        }
-
-        var rows = [];
-        for (var i = 0; i < 10 && i < dataView.getLength(); i++) {
-          rows.push(i);
-        }
-
-        grid.setSelectedRows(rows);
-      });
-
 
       grid.init();
       // initialize the model after all the events have been hooked up
@@ -360,10 +329,6 @@
       dataView.setItems(data);
       dataView.setFilter(filter);
       dataView.endUpdate();
-
-      // if you don't want the items that are not visible (due to being filtered out
-      // or being on a different page) to stay selected, pass 'false' to the second arg
-      dataView.syncGridSelection(grid, false);
 
       $("#gridContainer").resizable();
     }
