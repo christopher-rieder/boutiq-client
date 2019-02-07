@@ -134,23 +134,19 @@ function comparer (a, b) {
   return (x === y ? 0 : (x > y ? 1 : -1));
 }
 
-// TODO: FILTERS
-// DESCRIPCION/RUBRO/MARCA: regexp de la palabra
-// CODIGO DE BARRA: regexp anclado al principio de la linea
-// DOBLE CLICK EN RUBRO MARCA PARA REGEX COMPLETO ^MARCA$
-// +300 300+ -300 300- para numeros enteros
-// 300-400 para numeros rango
-// PROMO: NOT EMPTY, TRY TO MAKE A CHECKBOX
-// RANGO DE FECHAS
-// HOY
-// DIA DOBLE CLICKEADO
-// TIPO DE MOVIMIENTO DOBLE CLICKEADO
-
 // these are the filters that are defined by the client in runtime with input elements
 // they don't need to be defined here
 let columnFilters = {};
 
-let columnFiltersFunctions = {};
+// TODO: implement functions
+// this filter function will be called according to each column definition
+let columnFiltersFunctions = {
+  textFiltering: function () {}, // new RegExp(columnFilters[columnId], 'i');
+  anchoredTextFiltering: function () {}, // new RegExp('^'+columnFilters[columnId]+'$', ''); // args to put start and/or end anchors
+  numberRangeFiltering: function () {}, // +300, -300, 300+, 300-, 300-400, 300 400
+  booleanFiltering: function () {}, // true or false
+  dateRangeFiltering: function () {} // use a library or package. moment.js?
+};
 
 // NOTE: Idea for optimization, if necesary.
 //       Add a filtered propertie to each data row if is filtered.
