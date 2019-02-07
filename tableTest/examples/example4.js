@@ -20,7 +20,6 @@ let options = {
 };
 
 // TODO: read column preferences from a configuration file, persist this preferences
-
 // COLUMNS DEFINITIONS
 let columns = [{
   id: 'CODIGO',
@@ -140,12 +139,48 @@ let columnFilters = {};
 
 // TODO: implement functions
 // this filter function will be called according to each column definition
-let columnFiltersFunctions = {
-  textFiltering: function () {}, // new RegExp(columnFilters[columnId], 'i');
-  anchoredTextFiltering: function () {}, // new RegExp('^'+columnFilters[columnId]+'$', ''); // args to put start and/or end anchors
+let filterFunctions = {
+
+  anchoredTextFiltering: function (boolBeggining, boolEnd) {
+    const anchorBeggining = boolBeggining ? '^' : '';
+    const anchorEnd = boolEnd ? '$' : '';
+
+    return function (text, filter) {
+      let regex = new RegExp(anchorBeggining + filter + anchorEnd, 'i');
+      return regex.test(text);
+    };
+  },
+
+  wordFiltering: function (boolSplit) {
+    // check split boolean for spliting words or not.
+    return function (text, filter) {
+      if (boolSplit) {
+        return filter.split(' ')
+          .map(word => new RegExp(word, 'i'))
+          .every(regex => regex.test(text));
+      } else {
+        let regex = new RegExp(filter, 'i');
+        return regex.test(text);
+      }
+    };
+  },
+
   numberRangeFiltering: function () {}, // +300, -300, 300+, 300-, 300-400, 300 400
   booleanFiltering: function () {}, // true or false
   dateRangeFiltering: function () {} // use a library or package. moment.js?
+};
+
+let columnFilterFunctions = {
+  CODIGO: filterFunctions.anchoredTextFiltering(true, false),
+  DESCRIPCION: filterFunctions.wordFiltering(true),
+  MARCA: filterFunctions.anchoredTextFiltering(true, true),
+  RUBRO: filterFunctions.anchoredTextFiltering(true, true),
+  PRECIO_LISTA: filterFunctions.numberRangeFiltering(),
+  PRECIO_CONTADO: filterFunctions.numberRangeFiltering(),
+  PRECIO_COSTO: filterFunctions.numberRangeFiltering(),
+  PRECIO_PROMO: filterFunctions.numberRangeFiltering(),
+  STOCK: filterFunctions.numberRangeFiltering(),
+  PROMO_BOOL: filterFunctions.booleanFiltering()
 };
 
 // NOTE: Idea for optimization, if necesary.
@@ -158,11 +193,7 @@ let columnFiltersFunctions = {
 function filter (item) {
   for (let columnId in columnFilters) {
     if (columnId) {
-      const columnName = grid.getColumns()[grid.getColumnIndex(columnId)].id;
-      let regex = new RegExp(columnFilters[columnId], 'i');
-
-      // return true only if the element passes ALL the filters
-      if (!regex.test(item[columnName])) {
+      if (!columnFilterFunctions[columnId](item[columnId], columnFilters[columnId])) {
         return false;
       }
     }
