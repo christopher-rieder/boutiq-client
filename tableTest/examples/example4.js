@@ -138,7 +138,9 @@ function comparer (a, b) {
 let columnFilters = {};
 
 // TODO: implement functions
-// this filter function will be called according to each column definition
+// these filter functions will be called according to each column definition
+// some functions just return a function without doing anything else
+// all these function are high order functions for consistency, even when it's not necessary
 let filterFunctions = {
 
   anchoredTextFiltering: function (boolBeggining, boolEnd) {
@@ -157,7 +159,7 @@ let filterFunctions = {
       if (boolSplit) {
         return filter.split(' ')
           .map(word => new RegExp(word, 'i'))
-          .every(regex => regex.test(text));
+          .every(regex => regex.test(text)); // 'be je' will match 'bean jelly', but not 'bean salad'
       } else {
         let regex = new RegExp(filter, 'i');
         return regex.test(text);
@@ -165,9 +167,24 @@ let filterFunctions = {
     };
   },
 
-  numberRangeFiltering: function () {}, // +300, -300, 300+, 300-, 300-400, 300 400
-  booleanFiltering: function () {}, // true or false
-  dateRangeFiltering: function () {} // use a library or package. moment.js?
+  numberRangeFiltering: function () {
+    return function () {
+      return true;
+    };
+  }, // +300, -300, 300+, 300-, 300-400, 300 400
+
+  booleanFiltering: function () {
+    return function (boolValue, filter) {
+      boolValue = boolValue !== 0; // TODO: sqlite3 doesn't have booleans, think where take care of that. maybe in the rest api?
+      return boolValue === filter;
+    };
+  }, // true or false
+
+  dateRangeFiltering: function () {
+    return function () {
+      return true;
+    };
+  } // use a library or package. moment.js?
 };
 
 let columnFilterFunctions = {
@@ -241,7 +258,7 @@ $(grid.getHeaderRow()).on('change keyup', ':input', function (e) {
   let columnId = $(this).data('columnId');
   if (columnId != null) {
     if (columnId === 'PROMO_BOOL') {
-      columnFilters[columnId] = this.checked ? this.checked : '';
+      columnFilters[columnId] = this.checked;
     } else {
       columnFilters[columnId] = $.trim($(this).val());
     }
