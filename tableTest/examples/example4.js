@@ -250,10 +250,9 @@ getArticulos();
 // TODO: separate fetching data from intializing the grid
 async function getArticulos () {
   const res = await axios(`http://192.168.0.2:3000/api/rawTables/full_articulos`);
+  // the data elements need an 'id' property for the slickgrid library
+  // this can come directly from the table or view in the database
   data = res.data;
-  data.forEach(e => {
-    e.id = e.ARTICULO_ID;
-  });
   data[422].PROMO_BOOL = true;
   data[12].PROMO_BOOL = true;
   data[234].PROMO_BOOL = true;
