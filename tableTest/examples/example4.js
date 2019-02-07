@@ -83,6 +83,7 @@ let columns = [{
   width: 120,
   minWidth: 120,
   cssClass: 'cell-title',
+  doubleClickFilter: true,
   sortable: true
 },
 {
@@ -92,6 +93,7 @@ let columns = [{
   width: 120,
   minWidth: 120,
   cssClass: 'cell-title',
+  doubleClickFilter: true,
   sortable: true
 },
 {
@@ -191,18 +193,19 @@ grid.onHeaderRowCellRendered.subscribe(function (e, args) {
 
 // for certain columns (like rubro and marca) i allow filtering with a double click
 // we need to update the columnFilter object, and reflect that filter in the view, in the input element
+// get div containing selected cell, to obtain value from DOM
+// can't get it from data array, because we don't have the index in the dataset
+// we only have te index of the selected row in the current view, wich is probably different
 grid.onDblClick.subscribe(function (e) {
   let cell = grid.getCellFromEvent(e); // row and column number of the active cell
-  let columnId = columns[cell.cell].id;
-  if (columnId === 'MARCA' | columnId === 'RUBRO') { // TODO: add properties in columns instead of making this check
-    // get div containing selected cell, to obtain value from DOM
-    // can't get it from data array, because we don't have the index in the dataset
-    // we only have te index of the selected row in the current view, wich is probably different
-    let dataValue = grid.getActiveCellNode().textContent;
-    columnFilters[columnId] = dataValue;
+  let {id, doubleClickFilter} = columns[cell.cell];
+  if (doubleClickFilter) {
+    let dataValue = grid.getActiveCellNode().textContent; // Reading from the DOM
+    columnFilters[id] = dataValue;
 
     // get div containt input element child, then get child and assign the value
-    grid.getHeaderRowColumn(columnId).firstChild.value = dataValue;
+    // to reflect the new state of the view.
+    grid.getHeaderRowColumn(id).firstChild.value = dataValue;
     dataView.refresh();
   }
 });
