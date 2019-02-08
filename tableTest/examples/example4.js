@@ -167,9 +167,18 @@ let filterFunctions = {
     };
   },
 
-  numberRangeFiltering: function () {
-    return function () {
-      return true;
+  numberRangeFiltering: function (boolRange) {
+    return function (numberStr, filter) {
+      let escapedFilter = filter.toString().match(/\d*/g).join('');
+      debugger;
+      if (boolRange) {
+        // TODO: REPLACE AND MAKE RELEVANT FILTERS
+        let regex = new RegExp('^'+escapedFilter+'$', 'i');
+        return regex.test(numberStr);
+      } else {
+        let regex = new RegExp('^'+escapedFilter+'$', 'i');
+        return regex.test(numberStr);
+      }
     };
   }, // +300, -300, 300+, 300-, 300-400, 300 400
 
@@ -190,13 +199,13 @@ let filterFunctions = {
 let columnFilterFunctions = {
   CODIGO: filterFunctions.anchoredTextFiltering(true, false),
   DESCRIPCION: filterFunctions.wordFiltering(true),
-  MARCA: filterFunctions.anchoredTextFiltering(true, true),
-  RUBRO: filterFunctions.anchoredTextFiltering(true, true),
-  PRECIO_LISTA: filterFunctions.numberRangeFiltering(),
-  PRECIO_CONTADO: filterFunctions.numberRangeFiltering(),
-  PRECIO_COSTO: filterFunctions.numberRangeFiltering(),
-  PRECIO_PROMO: filterFunctions.numberRangeFiltering(),
-  STOCK: filterFunctions.numberRangeFiltering(),
+  MARCA: filterFunctions.anchoredTextFiltering(true, false),
+  RUBRO: filterFunctions.anchoredTextFiltering(true, false),
+  PRECIO_LISTA: filterFunctions.numberRangeFiltering(true),
+  PRECIO_CONTADO: filterFunctions.numberRangeFiltering(true),
+  PRECIO_COSTO: filterFunctions.numberRangeFiltering(true),
+  PRECIO_PROMO: filterFunctions.numberRangeFiltering(true),
+  STOCK: filterFunctions.numberRangeFiltering(true),
   PROMO_BOOL: filterFunctions.booleanFiltering()
 };
 
@@ -209,7 +218,8 @@ let columnFilterFunctions = {
 //       Basically, when the new filter doesn't contain the previous filter inside
 function filter (item) {
   for (let columnId in columnFilters) {
-    if (columnId) {
+    debugger;
+    if (columnFilters[columnId]) {
       if (!columnFilterFunctions[columnId](item[columnId], columnFilters[columnId])) {
         return false;
       }
