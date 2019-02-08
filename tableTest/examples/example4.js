@@ -155,21 +155,23 @@ let filterFunctions = {
 
   wordFiltering: function (boolSplit) {
     // check split boolean for spliting words or not.
-    return function (text, filter) {
-      if (boolSplit) {
+    if (boolSplit) {
+      return function (text, filter) {
         return filter.split(' ')
           .map(word => new RegExp(word, 'i'))
           .every(regex => regex.test(text)); // 'be je' will match 'bean jelly', but not 'bean salad'
-      } else {
+      };
+    } else {
+      return function (text, filter) {
         let regex = new RegExp(filter, 'i');
         return regex.test(text);
-      }
-    };
+      };
+    }
   },
 
   numberRangeFiltering: function (boolRange) {
-    return function (numberStr, filter) {
-      if (boolRange) {
+    if (boolRange) {
+      return function (numberStr, filter) {
         let escapedFilter = filter.toString().match(/[\d\-+\s]*/g).join('');
         let filterNumber = escapedFilter.toString().match(/\d*/g).join('');
 
@@ -187,12 +189,14 @@ let filterFunctions = {
           let filterMax = Math.max(...escapedFilter.match(regex));
           return numberStr <= filterMax && numberStr >= filterMin;
         }
-      } else {
+      };
+    } else {
+      return function (numberStr, filter) {
         let escapedFilter = filter.toString().match(/\d*/g).join('');
         let regex = new RegExp('^' + escapedFilter + '$', 'i');
         return regex.test(numberStr);
-      }
-    };
+      };
+    }
   }, // +300, -300, 300+, 300-, 300-400, 300 400
 
   booleanFiltering: function () {
