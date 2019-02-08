@@ -169,14 +169,27 @@ let filterFunctions = {
 
   numberRangeFiltering: function (boolRange) {
     return function (numberStr, filter) {
-      let escapedFilter = filter.toString().match(/\d*/g).join('');
-      debugger;
       if (boolRange) {
-        // TODO: REPLACE AND MAKE RELEVANT FILTERS
-        let regex = new RegExp('^'+escapedFilter+'$', 'i');
-        return regex.test(numberStr);
+        let escapedFilter = filter.toString().match(/[\d\-+\s]*/g).join('');
+        let filterNumber = escapedFilter.toString().match(/\d*/g).join('');
+
+        if (/^\+/.test(escapedFilter) || /\+$/.test(escapedFilter)) {
+          return numberStr >= filterNumber;
+        }
+
+        if (/^-/.test(escapedFilter) || /-$/.test(escapedFilter)) {
+          return numberStr <= filterNumber;
+        }
+
+        if (/^\d+[\s-]\d+$/.test(escapedFilter)) {
+          let regex = /\d+/g;
+          let filterMin = Math.min(...escapedFilter.match(regex));
+          let filterMax = Math.max(...escapedFilter.match(regex));
+          return numberStr <= filterMax && numberStr >= filterMin;
+        }
       } else {
-        let regex = new RegExp('^'+escapedFilter+'$', 'i');
+        let escapedFilter = filter.toString().match(/\d*/g).join('');
+        let regex = new RegExp('^' + escapedFilter + '$', 'i');
         return regex.test(numberStr);
       }
     };
@@ -218,7 +231,6 @@ let columnFilterFunctions = {
 //       Basically, when the new filter doesn't contain the previous filter inside
 function filter (item) {
   for (let columnId in columnFilters) {
-    debugger;
     if (columnFilters[columnId]) {
       if (!columnFilterFunctions[columnId](item[columnId], columnFilters[columnId])) {
         return false;
