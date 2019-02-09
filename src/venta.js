@@ -43,6 +43,7 @@ let columns = [
     name: '$ Unit',
     field: 'PRECIO_UNITARIO',
     minWidth: 80,
+    editor: Slick.Editors.Text,
     cssClass: 'cell-title'
   },
   {
@@ -50,6 +51,14 @@ let columns = [
     name: '$ Total',
     field: 'PRECIO_TOTAL',
     minWidth: 80,
+    cssClass: 'cell-title'
+  },
+  {
+    id: 'DESCUENTO',
+    name: 'Descuento',
+    field: 'DESCUENTO',
+    minWidth: 80,
+    editor: Slick.Editors.Text,
     cssClass: 'cell-title'
   }
 ];
@@ -72,8 +81,7 @@ dataView.onRowsChanged.subscribe(function (e, args) {
 });
 
 grid.onCellChange.subscribe(function(event,activeCell) {
-  let {row, item} = activeCell;
-  updateArticuloPrice(item);
+  updateArticuloPrice(activeCell.item);
 })
 
 grid.init();
@@ -103,6 +111,8 @@ async function addVentaItem (codigo) {
   } else {
     articulo = await getArticuloByCodigo(codigo);
     articulo.CANTIDAD = 1;
+    articulo.DESCUENTO = 0; // TODO: HOOK UP GLOBAL DISCOUNT
+    articulo.PRECIO_UNITARIO = articulo.PRECIO_LISTA; // TODO: HOOK UP LISTA/CONTADO/ETC
     data.push(articulo);
     updateArticuloPrice(articulo);
     dataView.beginUpdate();
@@ -112,9 +122,8 @@ async function addVentaItem (codigo) {
 }
 
 function updateArticuloPrice(articulo) {
-  articulo.PRECIO_UNITARIO = articulo.PRECIO_LISTA;
   if(articulo.DESCUENTO){
-    articulo.PRECIO_UNITARIO = Math.round(articulo.PRECIO_UNITARIO * articulo.DESCUENTO / 10) * 10;
+    articulo.PRECIO_UNITARIO = articulo.PRECIO_UNITARIO * articulo.DESCUENTO;
   }
   articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
   grid.invalidateRow(dataView.getIdxById(articulo.id));
