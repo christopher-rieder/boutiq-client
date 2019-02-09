@@ -72,10 +72,8 @@ dataView.onRowsChanged.subscribe(function (e, args) {
 });
 
 grid.onCellChange.subscribe(function(event,activeCell) {
-  let {cell, row, item} = activeCell;
-  item.PRECIO_TOTAL = item.PRECIO_UNITARIO * item.CANTIDAD;
-  grid.invalidateRow(row);
-  grid.render()
+  let {row, item} = activeCell;
+  updateArticuloPrice(item);
 })
 
 grid.init();
@@ -99,20 +97,26 @@ async function addVentaItem (codigo) {
   let articulo;
 
   if (idx !== -1) {
-    articulo = data[idx];
+    articulo = data[idx]; // it exists, add one.
     articulo.CANTIDAD += 1;
-    articulo.PRECIO_UNITARIO = articulo.PRECIO_LISTA;
-    articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
-    grid.invalidateRow(dataView.getIdxById(articulo.id));
-    grid.render()
+    updateArticuloPrice(articulo);
   } else {
     articulo = await getArticuloByCodigo(codigo);
     articulo.CANTIDAD = 1;
-    articulo.PRECIO_UNITARIO = articulo.PRECIO_LISTA;
-    articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
     data.push(articulo);
+    updateArticuloPrice(articulo);
     dataView.beginUpdate();
     dataView.setItems(data);
     dataView.endUpdate();
   }
+}
+
+function updateArticuloPrice(articulo) {
+  articulo.PRECIO_UNITARIO = articulo.PRECIO_LISTA;
+  if(articulo.DESCUENTO){
+    articulo.PRECIO_UNITARIO = Math.round(articulo.PRECIO_UNITARIO * articulo.DESCUENTO / 10) * 10;
+  }
+  articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
+  grid.invalidateRow(dataView.getIdxById(articulo.id));
+  grid.render()
 }
