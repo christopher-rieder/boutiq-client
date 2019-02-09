@@ -13,107 +13,100 @@ let options = {
   },
   enableCellNavigation: true,
   showHeaderRow: true,
-  headerRowHeight: 30,
+  headerRowHeight: 40,
   multiSelect: false,
-  topPanelHeight: 25,
+  topPanelHeight: 30,
+  rowHeight: 30,
   explicitInitialization: true
 };
 
 // TODO: read column preferences from a configuration file, persist this preferences
 // COLUMNS DEFINITIONS
-let columns = [{
-  id: 'CODIGO',
-  name: 'codigo',
-  field: 'CODIGO',
-  width: 100,
-  minWidth: 100,
-  cssClass: 'cell-title',
-  sortable: true
-},
-{
-  id: 'DESCRIPCION',
-  name: 'Descripcion',
-  field: 'DESCRIPCION',
-  width: 120,
-  minWidth: 120,
-  cssClass: 'cell-title',
-  sortable: true
-},
-{
-  id: 'PRECIO_LISTA',
-  name: 'Precio Lista',
-  field: 'PRECIO_LISTA',
-  width: 70,
-  minWidth: 70,
-  cssClass: 'cell-title',
-  sortable: true
-},
-{
-  id: 'PRECIO_CONTADO',
-  name: 'Precio Contado',
-  field: 'PRECIO_CONTADO',
-  width: 85,
-  minWidth: 85,
-  cssClass: 'cell-title',
-  sortable: true
-},
-{
-  id: 'PRECIO_COSTO',
-  name: 'Precio Costo',
-  field: 'PRECIO_COSTO',
-  width: 75,
-  minWidth: 75,
-  cssClass: 'cell-title',
-  sortable: true
-},
-{
-  id: 'STOCK',
-  name: 'Stock',
-  field: 'STOCK',
-  width: 40,
-  minWidth: 40,
-  cssClass: 'cell-title',
-  sortable: true
-},
-{
-  id: 'RUBRO',
-  name: 'Rubro',
-  field: 'RUBRO',
-  width: 120,
-  minWidth: 120,
-  cssClass: 'cell-title',
-  doubleClickFilter: true,
-  sortable: true
-},
-{
-  id: 'MARCA',
-  name: 'Marca',
-  field: 'MARCA',
-  width: 120,
-  minWidth: 120,
-  cssClass: 'cell-title',
-  doubleClickFilter: true,
-  sortable: true
-},
-{
-  id: 'PROMO_BOOL',
-  name: 'Promo',
-  width: 45,
-  maxWidth: 45,
-  cssClass: 'cell-effort-driven',
-  field: 'PROMO_BOOL',
-  formatter: Slick.Formatters.Checkmark,
-  resizable: false
-},
-{
-  id: 'PRECIO_PROMO',
-  name: 'Precio Promo',
-  field: 'PRECIO_PROMO',
-  width: 75,
-  minWidth: 75,
-  cssClass: 'cell-title',
-  sortable: true
-}
+let columns = [
+  {
+    id: 'CODIGO',
+    name: 'codigo',
+    field: 'CODIGO',
+    minWidth: 120,
+    cssClass: 'cell-title',
+    sortable: true
+  },
+  {
+    id: 'DESCRIPCION',
+    name: 'Descripcion',
+    field: 'DESCRIPCION',
+    minWidth: 300,
+    cssClass: 'cell-title',
+    sortable: true
+  },
+  {
+    id: 'PRECIO_LISTA',
+    name: 'Lista',
+    field: 'PRECIO_LISTA',
+    minWidth: 80,
+    cssClass: 'cell-title',
+    sortable: true
+  },
+  {
+    id: 'PRECIO_CONTADO',
+    name: 'Contado',
+    field: 'PRECIO_CONTADO',
+    minWidth: 80,
+    cssClass: 'cell-title',
+    sortable: true
+  },
+  {
+    id: 'PRECIO_COSTO',
+    name: 'Costo',
+    field: 'PRECIO_COSTO',
+    minWidth: 80,
+    cssClass: 'cell-title',
+    sortable: true
+  },
+  {
+    id: 'STOCK',
+    name: 'Stock',
+    field: 'STOCK',
+    minWidth: 50,
+    cssClass: 'cell-title',
+    sortable: true
+  },
+  {
+    id: 'RUBRO',
+    name: 'Rubro',
+    field: 'RUBRO',
+    minWidth: 150,
+    cssClass: 'cell-title',
+    doubleClickFilter: true,
+    sortable: true
+  },
+  {
+    id: 'MARCA',
+    name: 'Marca',
+    field: 'MARCA',
+    minWidth: 150,
+    cssClass: 'cell-title',
+    doubleClickFilter: true,
+    sortable: true
+  },
+  {
+    id: 'PROMO_BOOL',
+    name: 'Promo',
+    minWidth: 45,
+    maxWidth: 45,
+    cssClass: 'cell-effort-driven',
+    field: 'PROMO_BOOL',
+    formatter: Slick.Formatters.Checkmark,
+    resizable: false
+  },
+  {
+    id: 'PRECIO_PROMO',
+    name: 'Promo',
+    field: 'PRECIO_PROMO',
+    minWidth: 80,
+    cssClass: 'cell-title',
+    sortable: true
+  }
 ];
 
 dataView = new Slick.Data.DataView();

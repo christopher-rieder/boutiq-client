@@ -27,6 +27,29 @@
   box-sizing: border-box;
 }
 
+.slick-row.even {
+  background-color: #fff6f6;
+}
+
+.slick-row.odd {
+  background-color: #f6ffff;
+}
+
+.slick-cell {
+  border-right: 4px solid #EEE;
+  border-bottom: 4px solid #EEE;
+  transition: all .1s;
+}
+
+.slick-cell:hover {
+  transform: scale(1.5);
+  width: initial;
+  min-width: max-content;
+  background-color: #FFF;
+  border: 1px solid black;
+  z-index: 1000;
+}
+
 .slick-headerrow-column input {
   margin: 0;
   padding: 0;
