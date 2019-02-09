@@ -225,14 +225,7 @@ let columnFilterFunctions = {
 //       in the filter, or selecting letters and replacing them with another letter
 //       Basically, when the new filter doesn't contain the previous filter inside
 function filter (item) {
-  for (let columnId in columnFilters) {
-    if (columnFilters[columnId]) {
-      if (!columnFilterFunctions[columnId](item[columnId], columnFilters[columnId])) {
-        return false;
-      }
-    }
-  }
-  return true;
+  return Object.keys(columnFilters).every(col => columnFilterFunctions[col](item[col], columnFilters[col]));
 }
 
 // this function attachs the data to the input elements in the DOM
