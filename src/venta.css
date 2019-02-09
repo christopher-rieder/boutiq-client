@@ -1,0 +1,14 @@
+.top-panel {
+  display: flex;
+  margin-bottom: 2rem;
+}
+
+.top-panel__fecha {
+  margin-left: auto;
+}
+
+#myGrid {
+  width: 95%;
+  margin: 2rem 2.5%;
+  height: 400px;
+}
