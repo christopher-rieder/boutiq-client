@@ -41,7 +41,7 @@ let columns = [
   },
   {
     id: 'PRECIO_LISTA',
-    name: 'Lista',
+    name: '$ Lista',
     field: 'PRECIO_LISTA',
     minWidth: 80,
     cssClass: 'cell-title',
@@ -49,7 +49,7 @@ let columns = [
   },
   {
     id: 'PRECIO_CONTADO',
-    name: 'Contado',
+    name: '$ Contado',
     field: 'PRECIO_CONTADO',
     minWidth: 80,
     cssClass: 'cell-title',
@@ -93,7 +93,7 @@ let columns = [
   },
   {
     id: 'PRECIO_PROMO',
-    name: 'Promo',
+    name: '$ Promo',
     field: 'PRECIO_PROMO',
     minWidth: 80,
     cssClass: 'cell-title',
