@@ -56,14 +56,6 @@ let columns = [
     sortable: true
   },
   {
-    id: 'PRECIO_COSTO',
-    name: 'Costo',
-    field: 'PRECIO_COSTO',
-    minWidth: 80,
-    cssClass: 'cell-title',
-    sortable: true
-  },
-  {
     id: 'STOCK',
     name: 'Stock',
     field: 'STOCK',
