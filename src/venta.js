@@ -111,7 +111,7 @@ async function addVentaItem (codigo) {
   } else {
     articulo = await getArticuloByCodigo(codigo);
     articulo.CANTIDAD = 1;
-    articulo.DESCUENTO = 0; // TODO: HOOK UP GLOBAL DISCOUNT
+    articulo.DESCUENTO = 0; // TODO: HOOK UP GLOBAL DISCOUNT //STORE AS INT, DISLPAY AS INT AND PERCENTAJE, TAKE INPUT AS INT AND PERCENTAJE
     articulo.PRECIO_UNITARIO = articulo.PRECIO_LISTA; // TODO: HOOK UP LISTA/CONTADO/ETC
     data.push(articulo);
     updateArticuloPrice(articulo);
@@ -121,6 +121,7 @@ async function addVentaItem (codigo) {
   }
 }
 
+// TODO: VALIDATIONS. MAKE BETTER WAY TO ADJUST PRICE
 function updateArticuloPrice(articulo) {
   if(articulo.DESCUENTO){
     articulo.PRECIO_UNITARIO = articulo.PRECIO_UNITARIO * articulo.DESCUENTO;
@@ -128,4 +129,43 @@ function updateArticuloPrice(articulo) {
   articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
   grid.invalidateRow(dataView.getIdxById(articulo.id));
   grid.render()
+}
+
+function preVentaStuff() {
+  // TODO: get nro_venta, condiciones de pago, vendedor, turno, fecha, cliente consumidor final
+}
+
+function selectCondicionPago() {
+  // TODO: HANDLE CONDICIONES DE PAGO SELECTION
+}
+
+function selectClient(){
+  // TODO: handle client selection
+}
+
+function addPago() {
+  // TODO: add pagos
+  // TODO: VALIDATIONS
+}
+
+function descuentoGlobal() {
+  // TODO: set descuento global
+  // TODO: VALIDATIONS
+}
+
+function processSeña(){
+  // TODO: process seña stuff
+}
+
+function articuloSearchFunctionality() {
+  // TODO: handle the selection and search of articulos
+}
+
+
+function postVentaStuff() {
+  // TODO: VALIDATIONS
+  // TODO: make confirmation stage
+  // TODO: make post to api
+  // TODO: inform user
+
 }
