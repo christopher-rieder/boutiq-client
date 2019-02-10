@@ -14,7 +14,7 @@ let options = {
   topPanelHeight: 30,
   rowHeight: 30,
   editable: true,
-  autoEdit:true,
+  autoEdit: true,
   explicitInitialization: true
 };
 
@@ -85,19 +85,18 @@ dataView.onRowsChanged.subscribe(function (e, args) {
   grid.render();
 });
 
-grid.onCellChange.subscribe(function(event,activeCell) {
+grid.onCellChange.subscribe(function (event, activeCell) {
   updateArticuloPrice(activeCell.item);
-})
+});
 
 grid.init();
 // initialize the model after all the events have been hooked up
 $('#gridContainer').resizable();
 
-
-setTimeout(e=>addVentaItem('ZH2932030828'),100)
-setTimeout(e=>addVentaItem('5985561826014'),200)
-setTimeout(e=>addVentaItem('4883803077006'),300)
-setTimeout(e=>addVentaItem('4883803077006'),1000)
+setTimeout(e => addVentaItem('ZH2932030828'), 100);
+setTimeout(e => addVentaItem('5985561826014'), 200);
+setTimeout(e => addVentaItem('4883803077006'), 300);
+setTimeout(e => addVentaItem('4883803077006'), 1000);
 
 preVentaStuff();
 
@@ -139,20 +138,20 @@ async function addVentaItem (codigo) {
 }
 
 // TODO: VALIDATIONS. MAKE BETTER WAY TO ADJUST PRICE
-function updateArticuloPrice(articulo) {
-  if(articulo.DESCUENTO){
+function updateArticuloPrice (articulo) {
+  if (articulo.DESCUENTO) {
     articulo.PRECIO_UNITARIO = articulo.PRECIO_UNITARIO * articulo.DESCUENTO;
   }
   articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
   grid.invalidateRow(dataView.getIdxById(articulo.id));
-  grid.render()
+  grid.render();
 }
 
-async function preVentaStuff() {
-  let lastNumeroFactura = await axios(`http://192.168.0.2:3000/api/factura/last`); 
-  state.factura.numeroFactura = lastNumeroFactura.data+1;
+async function preVentaStuff () {
+  let lastNumeroFactura = await axios(`http://192.168.0.2:3000/api/factura/last`);
+  state.factura.numeroFactura = lastNumeroFactura.data + 1;
   document.querySelector('#venta-factura').value = state.factura.numeroFactura;
-  
+
   let cliente = await getClienteById(1);
   state.factura.cliente = cliente;
   document.querySelector('#venta-cliente').value = state.factura.cliente.NOMBRE;
@@ -164,49 +163,48 @@ async function preVentaStuff() {
     option.value = condicion;
     option.innerHTML = condicion;
     dropdownCondicionesDePago.appendChild(option);
-  })
+  });
 
   let vendedor = await getVendedorById(1);
   state.factura.vendedor = vendedor;
   document.querySelector('#venta-vendedor').value = state.factura.vendedor.NOMBRE;
-  
+
   const time = new Date();
   state.factura.fecha = time;
   // FIXME: use library...
-  const dateString = `${time.getDate()}/${time.getUTCMonth()+1}/${time.getFullYear()}`;
+  const dateString = `${time.getDate()}/${time.getUTCMonth() + 1}/${time.getFullYear()}`;
   document.querySelector('#venta-fecha').value = dateString;
 
   // TODO: get turno
 }
 
-function selectCondicionPago() {
+function selectCondicionPago () {
   // TODO: HANDLE CONDICIONES DE PAGO SELECTION
 }
 
-function selectClient(){
+function selectClient () {
   // TODO: handle client selection
 }
 
-function addPago() {
+function addPago () {
   // TODO: add pagos
   // TODO: VALIDATIONS
 }
 
-function descuentoGlobal() {
+function descuentoGlobal () {
   // TODO: set descuento global
   // TODO: VALIDATIONS
 }
 
-function processSeña(){
+function processSeña () {
   // TODO: process seña stuff
 }
 
-function articuloSearchFunctionality() {
+function articuloSearchFunctionality () {
   // TODO: handle the selection and search of articulos
 }
 
-
-function postVentaStuff() {
+function postVentaStuff () {
   // TODO: VALIDATIONS
   // TODO: make confirmation stage
   // TODO: make post to api
