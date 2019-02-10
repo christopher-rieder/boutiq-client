@@ -163,14 +163,18 @@ let filterFunctions = {
         let escapedFilter = filter.toString().match(/[\d\-+\s]*/g).join('');
         let filterNumber = escapedFilter.toString().match(/\d*/g).join('');
 
+        // this tests for '300'
+        if (/^\d+$/.test(escapedFilter)) {
+          return parseInt(numberStr) == parseInt(filterNumber);
+        }
         // this tests for '+300' or '300+'
         if (/^\+/.test(escapedFilter) || /\+$/.test(escapedFilter)) {
-          return numberStr >= filterNumber;
+          return parseInt(numberStr) >= parseInt(filterNumber);
         }
 
         // this tests for '-300' or '300-'
         if (/^-/.test(escapedFilter) || /-$/.test(escapedFilter)) {
-          return numberStr <= filterNumber;
+          return parseInt(numberStr) <= parseInt(filterNumber);
         }
 
         // this tests for '300-500' or '300 500'
@@ -178,8 +182,9 @@ let filterFunctions = {
           let regex = /\d+/g;
           let filterMin = Math.min(...escapedFilter.match(regex));
           let filterMax = Math.max(...escapedFilter.match(regex));
-          return numberStr <= filterMax && numberStr >= filterMin;
+          return parseInt(numberStr) <= parseInt(filterMax) && parseInt(numberStr) >= parseInt(filterMin);
         }
+        return true;
       };
     } else {
       return function (numberStr, filter) {
