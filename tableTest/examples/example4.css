@@ -42,11 +42,9 @@
 }
 
 .slick-cell:hover {
-  transform: scale(1.5);
   width: initial;
   min-width: max-content;
-  background-color: #FFF;
-  border: 1px solid black;
+  background-color: #FDA;
   z-index: 1000;
 }
 
