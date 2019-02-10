@@ -112,6 +112,11 @@ async function getClienteById (id) {
   return res.data[0];
 }
 
+async function getVendedorById (id) {
+  const res = await axios(`http://192.168.0.2:3000/api/vendedor/${id}`);
+  return res.data[0];
+}
+
 async function addVentaItem (codigo) {
   let idx = data.findIndex(e => e.CODIGO === codigo);
   let articulo;
@@ -161,9 +166,17 @@ async function preVentaStuff() {
     dropdownCondicionesDePago.appendChild(option);
   })
 
+  let vendedor = await getVendedorById(1);
+  state.factura.vendedor = vendedor;
+  document.querySelector('#venta-vendedor').value = state.factura.vendedor.NOMBRE;
   
-  console.log(state.factura.numeroFactura);
-  // TODO: get nro_venta, vendedor, turno, fecha, cliente consumidor final
+  const time = new Date();
+  state.factura.fecha = time;
+  // FIXME: use library...
+  const dateString = `${time.getDate()}/${time.getUTCMonth()+1}/${time.getFullYear()}`;
+  document.querySelector('#venta-fecha').value = dateString;
+
+  // TODO: get turno
 }
 
 function selectCondicionPago() {
