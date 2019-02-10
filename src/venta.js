@@ -2,6 +2,10 @@
 let dataView;
 let grid;
 let data = [];
+let state = {
+  tiposDePago: ['EFECTIVO', 'TARJETA', 'DEBITO', 'CREDITO_PROPIO'],
+  factura: {}
+};
 
 let options = {
   enableCellNavigation: true,
@@ -94,6 +98,8 @@ setTimeout(e=>addVentaItem('5985561826014'),200)
 setTimeout(e=>addVentaItem('4883803077006'),300)
 setTimeout(e=>addVentaItem('4883803077006'),1000)
 
+preVentaStuff();
+
 // TODO: separate fetching data from intializing the grid
 async function getArticuloByCodigo (codigo) {
   const res = await axios(`http://192.168.0.2:3000/api/articulo/${codigo}`);
@@ -131,8 +137,12 @@ function updateArticuloPrice(articulo) {
   grid.render()
 }
 
-function preVentaStuff() {
-  // TODO: get nro_venta, condiciones de pago, vendedor, turno, fecha, cliente consumidor final
+async function preVentaStuff() {
+  let lastNumeroFactura = await axios(`http://192.168.0.2:3000/api/factura/last`); 
+  state.factura.numeroFactura = lastNumeroFactura.data+1;
+  document.querySelector('#venta-factura').value = state.factura.numeroFactura;
+  console.log(state.factura.numeroFactura);
+  // TODO: get nro_venta, vendedor, turno, fecha, cliente consumidor final
 }
 
 function selectCondicionPago() {
