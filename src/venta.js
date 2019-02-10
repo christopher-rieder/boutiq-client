@@ -3,7 +3,8 @@ let dataView;
 let grid;
 let data = [];
 let state = {
-  tiposDePago: ['EFECTIVO', 'TARJETA', 'DEBITO', 'CREDITO_PROPIO'],
+  condicionPago: ['TARJETA', 'EFECTIVO', 'DEBITO', 'CREDITO_PROPIO'],
+  tipoPago: 'TARJETA',
   factura: {}
 };
 
@@ -106,6 +107,11 @@ async function getArticuloByCodigo (codigo) {
   return res.data[0];
 }
 
+async function getClienteById (id) {
+  const res = await axios(`http://192.168.0.2:3000/api/cliente/${id}`);
+  return res.data[0];
+}
+
 async function addVentaItem (codigo) {
   let idx = data.findIndex(e => e.CODIGO === codigo);
   let articulo;
@@ -141,6 +147,21 @@ async function preVentaStuff() {
   let lastNumeroFactura = await axios(`http://192.168.0.2:3000/api/factura/last`); 
   state.factura.numeroFactura = lastNumeroFactura.data+1;
   document.querySelector('#venta-factura').value = state.factura.numeroFactura;
+  
+  let cliente = await getClienteById(1);
+  state.factura.cliente = cliente;
+  document.querySelector('#venta-cliente').value = state.factura.cliente.NOMBRE;
+
+  let dropdownCondicionesDePago = document.querySelector('#venta-condicion-de-pago');
+
+  state.condicionPago.forEach(condicion => {
+    var option = document.createElement('option');
+    option.value = condicion;
+    option.innerHTML = condicion;
+    dropdownCondicionesDePago.appendChild(option);
+  })
+
+  
   console.log(state.factura.numeroFactura);
   // TODO: get nro_venta, vendedor, turno, fecha, cliente consumidor final
 }
