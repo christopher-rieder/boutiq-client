@@ -70,40 +70,33 @@ class Venta extends Component {
     this.handleCondicionPago = this.handleCondicionPago.bind(this);
   }
 
-  handleObservaciones (event) {
-    this.setState({ observaciones: event.target.value });
-  }
-
-  handleCodigo (event) {
-    const codigo = event.target.value;
-    this.setState({ codigo });
-  }
+  handleObservaciones (event) { this.setState({ observaciones: event.target.value }); }
+  handleCodigo (event) { const codigo = event.target.value; this.setState({ codigo }); }
 
   handleDescuento (event) {
     let descuento = event.target.value;
-    if (!(/^[1-9]+\.\d*$/.test(descuento))) {
-      descuento = parseFloat(descuento) || '';
-      descuento = descuento > 80 ? 80 : descuento;
-    }
     this.setState(prevState => { // FIXME: IN 80 UPDATE PRICES CORRECTLY
-      if (prevState.descuento === descuento) {
+      if (/^[1-9]+\.?\d*$/.test(descuento) || descuento === '') { // valid positive float
+        console.log('PONCHO');
+        if (descuento === '') {
+          descuento = 0;
+        }
+        descuento = parseFloat(descuento) || '';
+        descuento = descuento > 80 ? 80 : descuento;
+        updateAllPrices(descuento, this.state.condicionPago);
+        return {descuento};
+      } else {
         this.descuentoInput.current.classList.add('error-shake');
         setTimeout(e => this.descuentoInput.current.classList.remove('error-shake'), 500);
-        // TODO: shake input
-        updatePrices(0, this.state.condicionPago);
-      } else {
-        updatePrices(descuento, this.state.condicionPago);
+        updateAllPrices(0, this.state.condicionPago);
+        return {prevState};
       }
-      if (descuento === '') {
-        updatePrices(0, this.state.condicionPago);
-      }
-      return {descuento};
     });
   }
 
   handleCondicionPago (event) {
     this.setState({condicionPago: event.target.value});
-    updatePrices(this.state.descuento, this.state.condicionPago);
+    updateAllPrices(this.state.descuento, this.state.condicionPago);
   }
 
   async onSubmit (event) {
@@ -134,6 +127,10 @@ class Venta extends Component {
 
   componentDidMount () {
     this.codigoInput.current.focus();
+    setTimeout(e => addVentaItem('ZH2932030828'), 100);
+    setTimeout(e => addVentaItem('5985561826014'), 200);
+    setTimeout(e => addVentaItem('4883803077006'), 300);
+    setTimeout(e => addVentaItem('4883803077006'), 1000);
   }
 
   getDate () {
@@ -285,11 +282,6 @@ grid.init();
 // initialize the model after all the events have been hooked up
 $('#gridContainer').resizable();
 
-setTimeout(e => addVentaItem('ZH2932030828'), 100);
-setTimeout(e => addVentaItem('5985561826014'), 200);
-setTimeout(e => addVentaItem('4883803077006'), 300);
-setTimeout(e => addVentaItem('4883803077006'), 1000);
-
 // TODO: separate fetching data from intializing the grid
 async function getArticuloByCodigo (codigo) {
   const res = await axios(`http://192.168.0.2:3000/api/articulo/${codigo}`);
@@ -307,29 +299,21 @@ async function getVendedorById (id) {
 }
 
 async function addVentaItem (codigo) {
-  let idx = data.findIndex(e => e.CODIGO === codigo);
-  let articulo;
+  let articulo = data.find(e => e.CODIGO === codigo);
 
-  if (idx !== -1) {
-    articulo = data[idx]; // it exists, add one.
+  if (articulo) {
     articulo.CANTIDAD += 1;
-    updateArticuloPrice(articulo);
   } else {
     articulo = await getArticuloByCodigo(codigo);
-    if (articulo) {
-      articulo.CANTIDAD = 1;
-      articulo.DESCUENTO = 0; // TODO: HOOK UP GLOBAL DISCOUNT //STORE AS INT, DISLPAY AS INT AND PERCENTAJE, TAKE INPUT AS INT AND PERCENTAJE
-      articulo.PRECIO_UNITARIO = articulo.PRECIO_LISTA; // TODO: HOOK UP LISTA/CONTADO/ETC
-      data.push(articulo);
-      updateArticuloPrice(articulo);
-      dataView.beginUpdate();
-      dataView.setItems(data);
-      dataView.endUpdate();
-    } else {
-      return false;
-    }
+    if (!articulo) return false;
+    articulo.CANTIDAD = 1;
+    data.push(articulo);
+    dataView.beginUpdate();
+    dataView.setItems(data);
+    dataView.endUpdate();
   }
 
+  updateArticulo(articulo);
   return true;
 }
 
@@ -344,18 +328,19 @@ function addPago () {
   // TODO: VALIDATIONS
 }
 
-function updateArticuloPrice (articulo, descuento, condicion) {
+function updateArticulo (articulo, descuento = 0, condicion = 'TARJETA') {
   const tipoPrecio = condicion === 'EFECTIVO' ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
+
   articulo.PRECIO_UNITARIO = articulo[tipoPrecio] * (100 - descuento) / 100;
   if (articulo.DESCUENTO) { // descuento individual del item
-    articulo.PRECIO_UNITARIO = articulo.PRECIO_UNITARIO * articulo.DESCUENTO;
+    articulo.PRECIO_UNITARIO *= (100 - articulo.DESCUENTO) / 100;
   }
   articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
   grid.invalidateRow(dataView.getIdxById(articulo.id));
   grid.render();
 }
 
-function updatePrices (descuento, condicion) {
+function updateAllPrices (descuento, condicion) {
   const tipoPrecio = condicion === 'EFECTIVO' ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
   data.forEach(articulo => {
     articulo.PRECIO_UNITARIO = articulo[tipoPrecio] * (100 - descuento) / 100;
