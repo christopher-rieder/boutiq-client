@@ -1,4 +1,4 @@
-import * as database from '../database/getData';
+import * as databaseRead from '../database/getData';
 import {Input, InputText} from '../components/inputs';
 import './jquery-global.js';
 import './jquery-ui-1.11.3.min.js';
@@ -77,11 +77,11 @@ class Venta extends Component {
 
   // preload info
   async componentWillMount () {
-    const currentNroFactura = await database.getNewNumeroFactura();
+    const currentNroFactura = await databaseRead.getNewNumeroFactura();
     this.setState({currentNroFactura});
-    const cliente = await database.getClienteById(1);
+    const cliente = await databaseRead.getClienteById(1);
     this.setState({cliente});
-    const vendedor = await database.getVendedorById(1);
+    const vendedor = await databaseRead.getVendedorById(1);
     this.setState({vendedor});
 
     let dropdownCondicionesDePago = document.querySelector('#venta-condicion-de-pago');
@@ -261,7 +261,7 @@ async function addVentaItem (codigo) {
   if (articulo) {
     articulo.CANTIDAD += 1;
   } else {
-    articulo = await database.getArticuloByCodigo(codigo);
+    articulo = await databaseRead.getArticuloByCodigo(codigo);
     if (!articulo) return false;
     articulo.CANTIDAD = 1;
     data.push(articulo);
@@ -275,7 +275,7 @@ async function addVentaItem (codigo) {
 }
 
 async function selectClient (nro) {
-  let cliente = await database.getClienteById(nro);
+  let cliente = await databaseRead.getClienteById(nro);
   state.factura.cliente = cliente;
   document.querySelector('#venta-cliente').value = state.factura.cliente.NOMBRE;
 }
