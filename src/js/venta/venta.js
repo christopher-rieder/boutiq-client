@@ -1,5 +1,6 @@
 import * as databaseRead from '../database/getData';
 import {Input, InputText} from '../components/inputs';
+import {errorShakeEffect} from '../components/effects';
 import './jquery-global.js';
 import './jquery-ui-1.11.3.min.js';
 import './jquery.event.drag-2.3.0';
@@ -48,7 +49,6 @@ class Venta extends Component {
     let descuento = event.target.value;
     this.setState(prevState => { // FIXME: IN 80 UPDATE PRICES CORRECTLY
       if (/^[1-9]+\.?\d*$/.test(descuento) || descuento === '') { // valid positive float
-        console.log('PONCHO');
         if (descuento === '') {
           descuento = 0;
         }
@@ -57,8 +57,7 @@ class Venta extends Component {
         updateAllPrices(descuento, this.state.condicionPago);
         return {descuento};
       } else {
-        this.descuentoInput.current.classList.add('error-shake');
-        setTimeout(e => this.descuentoInput.current.classList.remove('error-shake'), 500);
+        errorShakeEffect(this.descuentoInput.current);
         updateAllPrices(0, this.state.condicionPago);
         return {prevState};
       }
@@ -119,8 +118,7 @@ class Venta extends Component {
       var aud = new Audio(audioOk);
       aud.play();
     } else {
-      this.codigoInput.current.classList.add('error-shake');
-      setTimeout(e => this.codigoInput.current.classList.remove('error-shake'), 500);
+      errorShakeEffect(this.codigoInput.current);
       var aud2 = new Audio(audioError);
       aud2.play();
     }
