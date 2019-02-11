@@ -54,6 +54,7 @@ class Venta extends Component {
       turno: {},
       observaciones: '',
       codigo: '',
+      condicionPago: 'TARJETA',
       descuento: ''
     };
 
@@ -65,6 +66,7 @@ class Venta extends Component {
     this.handleDescuento = this.handleDescuento.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.addItem = this.addItem.bind(this);
+    this.handleCondicionPago = this.handleCondicionPago.bind(this);
   }
 
   handleObservaciones (event) {
@@ -90,6 +92,11 @@ class Venta extends Component {
       }
       return {descuento};
     });
+  }
+
+  handleCondicionPago (event) {
+    this.setState({condicionPago: event.target.value});
+    selectCondicionPago(event.target.value);
   }
 
   async onSubmit (event) {
@@ -155,7 +162,7 @@ class Venta extends Component {
           <div className='panel'>
             <div>
               <label htmlFor='venta-condicion-de-pago'>Condicion de pago</label>
-              <select name='venta-condicion-de-pago' id='venta-condicion-de-pago' />
+              <select value={this.state.condicionPago} name='venta-condicion-de-pago' id='venta-condicion-de-pago' onChange={this.handleCondicionPago} />
             </div>
             <InputText tipo='descuento' value={this.state.descuento} onChange={this.handleDescuento} ref={this.descuentoInput} />
           </div>
@@ -329,8 +336,21 @@ function updateArticuloPrice (articulo) {
   grid.render();
 }
 
-function selectCondicionPago () {
+function selectCondicionPago (condicion) {
   // TODO: HANDLE CONDICIONES DE PAGO SELECTION
+  if (condicion === 'EFECTIVO') {
+    data.forEach(e => {
+      e.PRECIO_UNITARIO = e.PRECIO_CONTADO;
+      updateArticuloPrice(e);
+    });
+  } else {
+    data.forEach(e => {
+      e.PRECIO_UNITARIO = e.PRECIO_LISTA;
+      updateArticuloPrice(e);
+    });
+  }
+  grid.invalidateAllRows();
+  grid.render();
 }
 
 async function selectClient (nro) {
