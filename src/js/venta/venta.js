@@ -1,4 +1,5 @@
 import * as database from '../database/getData';
+import {Input, InputText} from '../components/inputs';
 import './jquery-global.js';
 import './jquery-ui-1.11.3.min.js';
 import './jquery.event.drag-2.3.0';
@@ -14,41 +15,11 @@ let audioError = require('./error.wav');
 let audioOk = require('./ok.wav');
 
 const condicionPago = ['TARJETA', 'EFECTIVO', 'DEBITO', 'CREDITO_PROPIO'];
-
-const Input = ({tipo, value, disabled, onChange}) => {
-  return (
-    <div>
-      <label className='venta__label' htmlFor={'venta-' + tipo}>{tipo}</label>
-      <input
-        type='text'
-        disabled={disabled}
-        name={'venta-' + tipo}
-        id={'venta-' + tipo}
-        value={value}
-        onChange={onChange} />
-    </div>
-  );
-};
-
-const InputText = React.forwardRef((props, ref) => (
-  <div>
-    <label className='venta__label' htmlFor={'venta-' + props.tipo}>{props.tipo}</label>
-    <input type='text'
-      disabled={props.disabled}
-      autoComplete='off'
-      name={'venta-' + props.tipo}
-      id={'venta-' + props.tipo}
-      value={props.value}
-      onChange={props.onChange}
-      ref={ref} />
-  </div>
-));
-
 class Venta extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      currFactura: 0,
+      currentNroFactura: 0,
       cliente: {},
       vendedor: {},
       fecha: new Date(),
@@ -106,11 +77,11 @@ class Venta extends Component {
 
   // preload info
   async componentWillMount () {
-    const currFactura = database.getNewNumeroFactura();
-    this.setState({currFactura});
-    const cliente = database.getClienteById(1);
+    const currentNroFactura = await database.getNewNumeroFactura();
+    this.setState({currentNroFactura});
+    const cliente = await database.getClienteById(1);
     this.setState({cliente});
-    const vendedor = database.getVendedorById(1);
+    const vendedor = await database.getVendedorById(1);
     this.setState({vendedor});
 
     let dropdownCondicionesDePago = document.querySelector('#venta-condicion-de-pago');
@@ -160,28 +131,28 @@ class Venta extends Component {
       <div>
         <form onSubmit={this.onSubmit} className='venta' id='venta'>
           <div className='panel'>
-            <Input disabled tipo='factura' value={this.state.currFactura} />
-            <Input tipo='cliente' value={this.state.cliente.NOMBRE} />
+            <Input context='venta' disabled tipo='factura' value={this.state.currentNroFactura} />
+            <Input context='venta' tipo='cliente' value={this.state.cliente.NOMBRE} />
           </div>
           <div className='panel'>
             <div>
               <label htmlFor='venta-condicion-de-pago'>Condicion de pago</label>
               <select value={this.state.condicionPago} name='venta-condicion-de-pago' id='venta-condicion-de-pago' onChange={this.handleCondicionPago} />
             </div>
-            <InputText tipo='descuento' value={this.state.descuento} onChange={this.handleDescuento} ref={this.descuentoInput} />
+            <InputText context='venta' tipo='descuento' value={this.state.descuento} onChange={this.handleDescuento} ref={this.descuentoInput} />
           </div>
           <div className='panel'>
-            <InputText tipo='codigo' value={this.state.codigo} onChange={this.handleCodigo} ref={this.codigoInput} />
+            <InputText context='venta' tipo='codigo' value={this.state.codigo} onChange={this.handleCodigo} ref={this.codigoInput} />
             <button className='codigo-search' onClick={this.addItem}>BUTTON</button>
           </div>
           <div className='panel'>
-            <Input tipo='observaciones' value={this.state.observaciones} onChange={this.handleObservaciones} />
+            <Input context='venta' tipo='observaciones' value={this.state.observaciones} onChange={this.handleObservaciones} />
           </div>
           <div id='myGrid' />
           <div className='panel'>
-            <Input disabled tipo='vendedor' value={this.state.vendedor.NOMBRE} />
-            <Input disabled tipo='turno' value={this.state.turno} />
-            <Input disabled tipo='fecha' value={this.getDate()} />
+            <Input context='venta' disabled tipo='vendedor' value={this.state.vendedor.NOMBRE} />
+            <Input context='venta' disabled tipo='turno' value={this.state.turno} />
+            <Input context='venta' disabled tipo='fecha' value={this.getDate()} />
           </div>
         </form>
       </div>

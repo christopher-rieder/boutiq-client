@@ -17,7 +17,7 @@ async function getVendedorById (id) {
 
 async function getNewNumeroFactura () {
   let lastNumeroFactura = await axios(`http://192.168.0.2:3000/api/factura/last`);
-  return lastNumeroFactura + 1;
+  return lastNumeroFactura.data + 1;
 }
 
 export {
