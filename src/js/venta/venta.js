@@ -35,6 +35,7 @@ const InputText = React.forwardRef((props, ref) => (
     <label className='venta__label' htmlFor={'venta-' + props.tipo}>{props.tipo}</label>
     <input type='text'
       disabled={props.disabled}
+      autocomplete='off'
       name={'venta-' + props.tipo}
       id={'venta-' + props.tipo}
       value={props.value}
