@@ -12,16 +12,23 @@ require('slickgrid/slick.editors.js');
 require('slickgrid/plugins/slick.rowselectionmodel.js');
 require('slickgrid/slick.dataview.js');
 
-let condicionPago = ['TARJETA', 'EFECTIVO', 'DEBITO', 'CREDITO_PROPIO'];
+const condicionPago = ['TARJETA', 'EFECTIVO', 'DEBITO', 'CREDITO_PROPIO'];
 
-let Input = ({tipo, nombre, disabled, onChange}) => {
+const Input = ({tipo, value, disabled, onChange}) => {
   return (
     <div>
       <label className='venta__label' htmlFor={'venta-' + tipo}>{tipo}</label>
-      <input type='text' disabled={disabled} name={'venta-' + tipo} id={'venta-' + tipo} value={nombre} onChange={onChange} />
+      <input type='text' disabled={disabled} name={'venta-' + tipo} id={'venta-' + tipo} value={value} onChange={onChange} />
     </div>
   );
 };
+
+const InputText = React.forwardRef((props, ref) => (
+  <div>
+    <label className='venta__label' htmlFor={'venta-' + props.tipo}>{props.tipo}</label>
+    <input type='text' disabled={props.disabled} name={'venta-' + props.tipo} id={'venta-' + props.tipo} value={props.value} onChange={props.onChange} ref={ref} />
+  </div>
+));
 
 class Venta extends Component {
   constructor (props) {
@@ -32,14 +39,49 @@ class Venta extends Component {
       vendedor: {},
       fecha: new Date(),
       turno: {},
-      observaciones: ''
+      observaciones: '',
+      codigo: 0,
+      descuento: ''
     };
 
+    this.codigoInput = React.createRef();
+    this.descuentoInput = React.createRef();
+
     this.handleObservaciones = this.handleObservaciones.bind(this);
+    this.handleCodigo = this.handleCodigo.bind(this);
+    this.handleDescuento = this.handleDescuento.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.addItem = this.addItem.bind(this);
   }
 
-  handleObservaciones (e) {
-    this.setState({ observaciones: e.target.value });
+  handleObservaciones (event) {
+    this.setState({ observaciones: event.target.value });
+  }
+
+  handleCodigo (event) {
+    const codigo = event.target.value;
+    this.setState({ codigo });
+  }
+
+  handleDescuento (event) {
+    let descuento = event.target.value;
+    if (!(/^[1-9]+\.\d*$/.test(descuento))) {
+      descuento = parseFloat(descuento) || '';
+      descuento = descuento > 80 ? 80 : descuento;
+    }
+    this.setState(prevState => {
+      if (prevState.descuento === descuento) {
+        this.descuentoInput.current.classList.add('error-shake');
+        setTimeout(e => this.descuentoInput.current.classList.remove('error-shake'), 500);
+        // TODO: shake input
+      }
+      return {descuento};
+    });
+  }
+
+  async onSubmit (event) {
+    event.preventDefault();
+    // TODO: POST DATA TO API AFTER CONFIRMATION AND VALIDATION
   }
 
   // preload info
@@ -69,41 +111,46 @@ class Venta extends Component {
     return `${time.getDate()}/${time.getUTCMonth() + 1}/${time.getFullYear()}`;
   }
 
+  async addItem (event) { // ZH2932030828
+    let boolAdded = await addVentaItem(this.state.codigo);
+    this.setState({codigo: ''});
+    this.codigoInput.current.focus();
+    if (!boolAdded) {
+      this.codigoInput.current.classList.add('error-shake');
+      setTimeout(e => this.codigoInput.current.classList.remove('error-shake'), 500);
+    }
+  }
+
   render () {
     return (
       <div>
-        <form action='#' className='venta' id='venta'>
+        <form onSubmit={this.onSubmit} className='venta' id='venta'>
           <div className='panel'>
-            <Input disabled tipo='factura' nombre={this.state.currFactura} />
-            <Input tipo='cliente' nombre={this.state.cliente.NOMBRE} />
+            <Input disabled tipo='factura' value={this.state.currFactura} />
+            <Input tipo='cliente' value={this.state.cliente.NOMBRE} />
           </div>
           <div className='panel'>
             <div>
               <label htmlFor='venta-condicion-de-pago'>Condicion de pago</label>
               <select name='venta-condicion-de-pago' id='venta-condicion-de-pago' />
             </div>
-            <div>
-              <label htmlFor='venta-descuento-global'>Descuento Global</label>
-              <input type='text' name='venta-descuento-global' id='venta-descuento-global' />
-            </div>
-            <div>
-              <label htmlFor='venta-descuento-global'>Descuento Global</label>
-              <input type='text' name='venta-descuento-global' id='venta-descuento-global' />
-            </div>
+            <InputText tipo='descuento' value={this.state.descuento} onChange={this.handleDescuento} ref={this.descuentoInput} />
           </div>
           <div className='panel'>
-            <label htmlFor='venta-codigo'>Codigo</label>
-            <input type='text' name='venta__input-codigo' id='venta-codigo' />
-            <button className='codigo-search'>BUTTON</button>
+            <div>
+              <label className='venta__label' htmlFor='venta-codigo'>codigo</label>
+              <input autoFocus type='text' name='venta-codigo' id='venta-codigo' value={this.state.codigo} onChange={this.handleCodigo} ref={this.codigoInput} />
+            </div>
+            <button className='codigo-search' onClick={this.addItem}>BUTTON</button>
           </div>
           <div className='panel'>
-            <Input tipo='observaciones' nombre={this.state.observaciones} onChange={this.handleObservaciones} />
+            <Input tipo='observaciones' value={this.state.observaciones} onChange={this.handleObservaciones} />
           </div>
           <div id='myGrid' />
           <div className='panel'>
-            <Input disabled tipo='vendedor' nombre={this.state.vendedor.NOMBRE} />
-            <Input disabled tipo='turno' nombre={this.state.turno} />
-            <Input disabled tipo='fecha' nombre={this.getDate()} />
+            <Input disabled tipo='vendedor' value={this.state.vendedor.NOMBRE} />
+            <Input disabled tipo='turno' value={this.state.turno} />
+            <Input disabled tipo='fecha' value={this.getDate()} />
           </div>
         </form>
       </div>
@@ -235,14 +282,18 @@ async function addVentaItem (codigo) {
     updateArticuloPrice(articulo);
   } else {
     articulo = await getArticuloByCodigo(codigo);
-    articulo.CANTIDAD = 1;
-    articulo.DESCUENTO = 0; // TODO: HOOK UP GLOBAL DISCOUNT //STORE AS INT, DISLPAY AS INT AND PERCENTAJE, TAKE INPUT AS INT AND PERCENTAJE
-    articulo.PRECIO_UNITARIO = articulo.PRECIO_LISTA; // TODO: HOOK UP LISTA/CONTADO/ETC
-    data.push(articulo);
-    updateArticuloPrice(articulo);
-    dataView.beginUpdate();
-    dataView.setItems(data);
-    dataView.endUpdate();
+    if (articulo) {
+      articulo.CANTIDAD = 1;
+      articulo.DESCUENTO = 0; // TODO: HOOK UP GLOBAL DISCOUNT //STORE AS INT, DISLPAY AS INT AND PERCENTAJE, TAKE INPUT AS INT AND PERCENTAJE
+      articulo.PRECIO_UNITARIO = articulo.PRECIO_LISTA; // TODO: HOOK UP LISTA/CONTADO/ETC
+      data.push(articulo);
+      updateArticuloPrice(articulo);
+      dataView.beginUpdate();
+      dataView.setItems(data);
+      dataView.endUpdate();
+    } else {
+      return false;
+    }
   }
 }
 
