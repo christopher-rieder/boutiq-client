@@ -1,4 +1,4 @@
-import axios from 'axios';
+import * as database from '../database/getData';
 import './jquery-global.js';
 import './jquery-ui-1.11.3.min.js';
 import './jquery.event.drag-2.3.0';
@@ -106,11 +106,11 @@ class Venta extends Component {
 
   // preload info
   async componentWillMount () {
-    let lastNumeroFactura = await axios(`http://192.168.0.2:3000/api/factura/last`);
-    this.setState({currFactura: lastNumeroFactura.data + 1});
-    let cliente = await getClienteById(1);
+    const currFactura = database.getNewNumeroFactura();
+    this.setState({currFactura});
+    const cliente = database.getClienteById(1);
     this.setState({cliente});
-    let vendedor = await getVendedorById(1);
+    const vendedor = database.getVendedorById(1);
     this.setState({vendedor});
 
     let dropdownCondicionesDePago = document.querySelector('#venta-condicion-de-pago');
@@ -283,20 +283,6 @@ grid.init();
 $('#gridContainer').resizable();
 
 // TODO: separate fetching data from intializing the grid
-async function getArticuloByCodigo (codigo) {
-  const res = await axios(`http://192.168.0.2:3000/api/articulo/${codigo}`);
-  return res.data[0];
-}
-
-async function getClienteById (id) {
-  const res = await axios(`http://192.168.0.2:3000/api/cliente/${id}`);
-  return res.data[0];
-}
-
-async function getVendedorById (id) {
-  const res = await axios(`http://192.168.0.2:3000/api/vendedor/${id}`);
-  return res.data[0];
-}
 
 async function addVentaItem (codigo) {
   let articulo = data.find(e => e.CODIGO === codigo);
@@ -304,7 +290,7 @@ async function addVentaItem (codigo) {
   if (articulo) {
     articulo.CANTIDAD += 1;
   } else {
-    articulo = await getArticuloByCodigo(codigo);
+    articulo = await database.getArticuloByCodigo(codigo);
     if (!articulo) return false;
     articulo.CANTIDAD = 1;
     data.push(articulo);
@@ -318,7 +304,7 @@ async function addVentaItem (codigo) {
 }
 
 async function selectClient (nro) {
-  let cliente = await getClienteById(nro);
+  let cliente = await database.getClienteById(nro);
   state.factura.cliente = cliente;
   document.querySelector('#venta-cliente').value = state.factura.cliente.NOMBRE;
 }
