@@ -35,7 +35,7 @@ const InputText = React.forwardRef((props, ref) => (
     <label className='venta__label' htmlFor={'venta-' + props.tipo}>{props.tipo}</label>
     <input type='text'
       disabled={props.disabled}
-      autocomplete='off'
+      autoComplete='off'
       name={'venta-' + props.tipo}
       id={'venta-' + props.tipo}
       value={props.value}
@@ -85,11 +85,17 @@ class Venta extends Component {
       descuento = parseFloat(descuento) || '';
       descuento = descuento > 80 ? 80 : descuento;
     }
-    this.setState(prevState => {
+    this.setState(prevState => { // FIXME: IN 80 UPDATE PRICES CORRECTLY
       if (prevState.descuento === descuento) {
         this.descuentoInput.current.classList.add('error-shake');
         setTimeout(e => this.descuentoInput.current.classList.remove('error-shake'), 500);
         // TODO: shake input
+        updatePrices(0, this.state.condicionPago);
+      } else {
+        updatePrices(descuento, this.state.condicionPago);
+      }
+      if (descuento === '') {
+        updatePrices(0, this.state.condicionPago);
       }
       return {descuento};
     });
@@ -97,7 +103,7 @@ class Venta extends Component {
 
   handleCondicionPago (event) {
     this.setState({condicionPago: event.target.value});
-    selectCondicionPago(event.target.value);
+    updatePrices(this.state.descuento, this.state.condicionPago);
   }
 
   async onSubmit (event) {
@@ -327,33 +333,6 @@ async function addVentaItem (codigo) {
   return true;
 }
 
-// TODO: VALIDATIONS. MAKE BETTER WAY TO ADJUST PRICE
-function updateArticuloPrice (articulo) {
-  if (articulo.DESCUENTO) {
-    articulo.PRECIO_UNITARIO = articulo.PRECIO_UNITARIO * articulo.DESCUENTO;
-  }
-  articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
-  grid.invalidateRow(dataView.getIdxById(articulo.id));
-  grid.render();
-}
-
-function selectCondicionPago (condicion) {
-  // TODO: HANDLE CONDICIONES DE PAGO SELECTION
-  if (condicion === 'EFECTIVO') {
-    data.forEach(e => {
-      e.PRECIO_UNITARIO = e.PRECIO_CONTADO;
-      updateArticuloPrice(e);
-    });
-  } else {
-    data.forEach(e => {
-      e.PRECIO_UNITARIO = e.PRECIO_LISTA;
-      updateArticuloPrice(e);
-    });
-  }
-  grid.invalidateAllRows();
-  grid.render();
-}
-
 async function selectClient (nro) {
   let cliente = await getClienteById(nro);
   state.factura.cliente = cliente;
@@ -365,9 +344,28 @@ function addPago () {
   // TODO: VALIDATIONS
 }
 
-function descuentoGlobal () {
-  // TODO: set descuento global
-  // TODO: VALIDATIONS
+function updateArticuloPrice (articulo, descuento, condicion) {
+  const tipoPrecio = condicion === 'EFECTIVO' ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
+  articulo.PRECIO_UNITARIO = articulo[tipoPrecio] * (100 - descuento) / 100;
+  if (articulo.DESCUENTO) { // descuento individual del item
+    articulo.PRECIO_UNITARIO = articulo.PRECIO_UNITARIO * articulo.DESCUENTO;
+  }
+  articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
+  grid.invalidateRow(dataView.getIdxById(articulo.id));
+  grid.render();
+}
+
+function updatePrices (descuento, condicion) {
+  const tipoPrecio = condicion === 'EFECTIVO' ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
+  data.forEach(articulo => {
+    articulo.PRECIO_UNITARIO = articulo[tipoPrecio] * (100 - descuento) / 100;
+    if (articulo.DESCUENTO) { // descuento individual del item
+      articulo.PRECIO_UNITARIO = articulo.PRECIO_UNITARIO * articulo.DESCUENTO;
+    }
+    articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
+  });
+  grid.invalidateAllRows();
+  grid.render();
 }
 
 function processSeña () {
