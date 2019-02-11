@@ -4,13 +4,14 @@ import './jquery-ui-1.11.3.min.js';
 import './jquery.event.drag-2.3.0';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-
 require('slickgrid/slick.core.js');
 require('slickgrid/slick.grid.js');
 require('slickgrid/slick.formatters.js');
 require('slickgrid/slick.editors.js');
 require('slickgrid/plugins/slick.rowselectionmodel.js');
 require('slickgrid/slick.dataview.js');
+let audioError = require('./error.wav');
+let audioOk = require('./ok.wav');
 
 const condicionPago = ['TARJETA', 'EFECTIVO', 'DEBITO', 'CREDITO_PROPIO'];
 
@@ -18,7 +19,13 @@ const Input = ({tipo, value, disabled, onChange}) => {
   return (
     <div>
       <label className='venta__label' htmlFor={'venta-' + tipo}>{tipo}</label>
-      <input type='text' disabled={disabled} name={'venta-' + tipo} id={'venta-' + tipo} value={value} onChange={onChange} />
+      <input
+        type='text'
+        disabled={disabled}
+        name={'venta-' + tipo}
+        id={'venta-' + tipo}
+        value={value}
+        onChange={onChange} />
     </div>
   );
 };
@@ -26,7 +33,13 @@ const Input = ({tipo, value, disabled, onChange}) => {
 const InputText = React.forwardRef((props, ref) => (
   <div>
     <label className='venta__label' htmlFor={'venta-' + props.tipo}>{props.tipo}</label>
-    <input type='text' disabled={props.disabled} name={'venta-' + props.tipo} id={'venta-' + props.tipo} value={props.value} onChange={props.onChange} ref={ref} />
+    <input type='text'
+      disabled={props.disabled}
+      name={'venta-' + props.tipo}
+      id={'venta-' + props.tipo}
+      value={props.value}
+      onChange={props.onChange}
+      ref={ref} />
   </div>
 ));
 
@@ -40,7 +53,7 @@ class Venta extends Component {
       fecha: new Date(),
       turno: {},
       observaciones: '',
-      codigo: 0,
+      codigo: '',
       descuento: ''
     };
 
@@ -105,6 +118,10 @@ class Venta extends Component {
   // TODO: get turno
   }
 
+  componentDidMount () {
+    this.codigoInput.current.focus();
+  }
+
   getDate () {
   // FIXME: use library...
     const time = this.state.fecha;
@@ -115,9 +132,15 @@ class Venta extends Component {
     let boolAdded = await addVentaItem(this.state.codigo);
     this.setState({codigo: ''});
     this.codigoInput.current.focus();
-    if (!boolAdded) {
+    if (boolAdded) {
+      // TODO: USER POSITIVE FEEDBACK. TOAST?
+      var aud = new Audio(audioOk);
+      aud.play();
+    } else {
       this.codigoInput.current.classList.add('error-shake');
       setTimeout(e => this.codigoInput.current.classList.remove('error-shake'), 500);
+      var aud2 = new Audio(audioError);
+      aud2.play();
     }
   }
 
@@ -137,10 +160,7 @@ class Venta extends Component {
             <InputText tipo='descuento' value={this.state.descuento} onChange={this.handleDescuento} ref={this.descuentoInput} />
           </div>
           <div className='panel'>
-            <div>
-              <label className='venta__label' htmlFor='venta-codigo'>codigo</label>
-              <input autoFocus type='text' name='venta-codigo' id='venta-codigo' value={this.state.codigo} onChange={this.handleCodigo} ref={this.codigoInput} />
-            </div>
+            <InputText tipo='codigo' value={this.state.codigo} onChange={this.handleCodigo} ref={this.codigoInput} />
             <button className='codigo-search' onClick={this.addItem}>BUTTON</button>
           </div>
           <div className='panel'>
@@ -295,6 +315,8 @@ async function addVentaItem (codigo) {
       return false;
     }
   }
+
+  return true;
 }
 
 // TODO: VALIDATIONS. MAKE BETTER WAY TO ADJUST PRICE
