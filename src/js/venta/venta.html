@@ -6,88 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-  <link rel="stylesheet" href="/src/vendor/slickgrid/slick.grid.css" type="text/css" />
-  <link rel="stylesheet" href="/src/vendor/slickgrid/slick.grid.css" type="text/css" />
-  <link rel="stylesheet" href="/src/vendor/slickgrid/controls/slick.pager.css" type="text/css" />
-  <link rel="stylesheet" href="/src/vendor/slickgrid/css/smoothness/jquery-ui-1.11.3.custom.css" type="text/css" />
-  <link rel="stylesheet" href="/src/vendor/slickgrid/examples.css" type="text/css" />
-  <link rel="stylesheet" href="/src/vendor/slickgrid/controls/slick.columnpicker.css" type="text/css" />
-  <link rel="stylesheet" href="venta.css">
+  <link rel="stylesheet" href="../../vendor/slickgrid/slick.grid.css" type="text/css" />
+  <link rel="stylesheet" href="../../vendor/slickgrid/slick.grid.css" type="text/css" />
+  <link rel="stylesheet" href="../../vendor/slickgrid/controls/slick.pager.css" type="text/css" />
+  <link rel="stylesheet" href="../../vendor/slickgrid/css/smoothness/jquery-ui-1.11.3.custom.css" type="text/css" />
+  <link rel="stylesheet" href="../../vendor/slickgrid/examples.css" type="text/css" />
+  <link rel="stylesheet" href="../../vendor/slickgrid/controls/slick.columnpicker.css" type="text/css" />
+  <link rel="stylesheet" href="venta.css" />
   <title>Venta</title>
 </head>
 
 <body>
-  <form action="#" class="venta" id="venta">
-    <div class="panel">
-      <div>
-        <label for="venta-factura">Factura</label>
-        <input type="text" disabled name="venta-factura" id="venta-factura">
-      </div>
-      <div>
-        <label for="venta-cliente">Cliente</label>
-        <input type="text" name="venta-cliente" id="venta-cliente">
-      </div>
-    </div>
-    <div class="panel">
-      <div>
-        <label for="venta-condicion-de-pago">Condicion de pago</label>
-        <select name="venta-condicion-de-pago" id="venta-condicion-de-pago">
-        </select>
-      </div>
-      <div>
-        <label for="venta-descuento-global">Descuento Global</label>
-        <input type="text" name="venta-descuento-global" id="venta-descuento-global">
-      </div>
-      <div>
-        <label for="venta-descuento-global">Descuento Global</label>
-        <input type="text" name="venta-descuento-global" id="venta-descuento-global">
-      </div>
-    </div>
-    <div class="panel">
-      <label for="venta-codigo">Codigo</label>
-      <input type="text" name="venta__input-codigo" id="venta-codigo">
-      <button class="codigo-search">BUTTON</button>
-    </div>
-    </div>
-    <div class="panel">
-      <div>
-        <label for="venta-Observaciones">Observaciones</label>
-        <input type="text" name="venta-Observaciones" id="venta-Observaciones">
-      </div>
-    </div>
-    <div id="myGrid"></div>
-    <div class="panel">
-      <div>
-        <label for="venta-vendedor">Vendedor</label>
-        <input type="text" disabled name="venta-vendedor" id="venta-vendedor">
-      </div>
-      <div>
-        <label for="venta-turno">Turno</label>
-        <input type="text" disabled name="venta-turno" id="venta-turno">
-      </div>
-      <div class="venta-fecha">
-        <label for="venta-fecha">Fecha</label>
-        <input type="text" disabled name="venta-fecha" id="venta-fecha">
-      </div>
-    </div>
-  </form>
+  <div id="app"></div>
 </body>
-
-<script src="/src/vendor/axios/axios.min.js"></script>
-
-<script src="/src/vendor/slickgrid/lib/firebugx.js"></script>
-
-<script src="/src/vendor/slickgrid/lib/jquery-1.11.2.min.js"></script>
-<script src="/src/vendor/slickgrid/lib/jquery-ui-1.11.3.min.js"></script>
-<script src="/src/vendor/slickgrid/lib/jquery.event.drag-2.3.0.js"></script>
-
-<script src="/src/vendor/slickgrid/slick.core.js"></script>
-<script src="/src/vendor/slickgrid/slick.formatters.js"></script>
-<script src="/src/vendor/slickgrid/slick.editors.js"></script>
-<script src="/src/vendor/slickgrid/plugins/slick.rowselectionmodel.js"></script>
-<script src="/src/vendor/slickgrid/slick.grid.js"></script>
-<script src="/src/vendor/slickgrid/slick.dataview.js"></script>
-
 <script src="venta.js"></script>
 
 </html>

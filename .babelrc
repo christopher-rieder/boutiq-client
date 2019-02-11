@@ -1,12 +1,3 @@
 {
-  "presets": [
-    ["env", {
-      "targets": {
-        "browser": [
-          "last 5 versions",
-          "ie >= 11"
-        ]
-      }
-    }]
-  ]
+  "plugins": ["@babel/plugin-transform-runtime"]
 }

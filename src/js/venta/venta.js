@@ -1,12 +1,123 @@
+import axios from 'axios';
+import './jquery-global.js';
+import './jquery-ui-1.11.3.min.js';
+import './jquery.event.drag-2.3.0';
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+
+require('slickgrid/slick.core.js');
+require('slickgrid/slick.grid.js');
+require('slickgrid/slick.formatters.js');
+require('slickgrid/slick.editors.js');
+require('slickgrid/plugins/slick.rowselectionmodel.js');
+require('slickgrid/slick.dataview.js');
+
+let condicionPago = ['TARJETA', 'EFECTIVO', 'DEBITO', 'CREDITO_PROPIO'];
+
+let Input = ({tipo, nombre, disabled, onChange}) => {
+  return (
+    <div>
+      <label className='venta__label' htmlFor={'venta-' + tipo}>{tipo}</label>
+      <input type='text' disabled={disabled} name={'venta-' + tipo} id={'venta-' + tipo} value={nombre} onChange={onChange} />
+    </div>
+  );
+};
+
+class Venta extends Component {
+  constructor (props) {
+    super(props);
+    this.state = {
+      currFactura: 0,
+      cliente: {},
+      vendedor: {},
+      fecha: new Date(),
+      turno: {},
+      observaciones: ''
+    };
+
+    this.handleObservaciones = this.handleObservaciones.bind(this);
+  }
+
+  handleObservaciones (e) {
+    this.setState({ observaciones: e.target.value });
+  }
+
+  // preload info
+  async componentWillMount () {
+    let lastNumeroFactura = await axios(`http://192.168.0.2:3000/api/factura/last`);
+    this.setState({currFactura: lastNumeroFactura.data + 1});
+    let cliente = await getClienteById(1);
+    this.setState({cliente});
+    let vendedor = await getVendedorById(1);
+    this.setState({vendedor});
+
+    let dropdownCondicionesDePago = document.querySelector('#venta-condicion-de-pago');
+
+    condicionPago.forEach(condicion => {
+      var option = document.createElement('option');
+      option.value = condicion;
+      option.innerHTML = condicion;
+      dropdownCondicionesDePago.appendChild(option);
+    });
+
+  // TODO: get turno
+  }
+
+  getDate () {
+  // FIXME: use library...
+    const time = this.state.fecha;
+    return `${time.getDate()}/${time.getUTCMonth() + 1}/${time.getFullYear()}`;
+  }
+
+  render () {
+    return (
+      <div>
+        <form action='#' className='venta' id='venta'>
+          <div className='panel'>
+            <Input disabled tipo='factura' nombre={this.state.currFactura} />
+            <Input tipo='cliente' nombre={this.state.cliente.NOMBRE} />
+          </div>
+          <div className='panel'>
+            <div>
+              <label htmlFor='venta-condicion-de-pago'>Condicion de pago</label>
+              <select name='venta-condicion-de-pago' id='venta-condicion-de-pago' />
+            </div>
+            <div>
+              <label htmlFor='venta-descuento-global'>Descuento Global</label>
+              <input type='text' name='venta-descuento-global' id='venta-descuento-global' />
+            </div>
+            <div>
+              <label htmlFor='venta-descuento-global'>Descuento Global</label>
+              <input type='text' name='venta-descuento-global' id='venta-descuento-global' />
+            </div>
+          </div>
+          <div className='panel'>
+            <label htmlFor='venta-codigo'>Codigo</label>
+            <input type='text' name='venta__input-codigo' id='venta-codigo' />
+            <button className='codigo-search'>BUTTON</button>
+          </div>
+          <div className='panel'>
+            <Input tipo='observaciones' nombre={this.state.observaciones} onChange={this.handleObservaciones} />
+          </div>
+          <div id='myGrid' />
+          <div className='panel'>
+            <Input disabled tipo='vendedor' nombre={this.state.vendedor.NOMBRE} />
+            <Input disabled tipo='turno' nombre={this.state.turno} />
+            <Input disabled tipo='fecha' nombre={this.getDate()} />
+          </div>
+        </form>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<Venta />, document.getElementById('app'));
+
+// GRID STUFF
 // VARIABLE DEFINITIONS FOR SLICKGRID TABLE
 let dataView;
 let grid;
 let data = [];
-let state = {
-  condicionPago: ['TARJETA', 'EFECTIVO', 'DEBITO', 'CREDITO_PROPIO'],
-  tipoPago: 'TARJETA',
-  factura: {}
-};
 
 let options = {
   enableCellNavigation: true,
@@ -98,8 +209,6 @@ setTimeout(e => addVentaItem('5985561826014'), 200);
 setTimeout(e => addVentaItem('4883803077006'), 300);
 setTimeout(e => addVentaItem('4883803077006'), 1000);
 
-preVentaStuff();
-
 // TODO: separate fetching data from intializing the grid
 async function getArticuloByCodigo (codigo) {
   const res = await axios(`http://192.168.0.2:3000/api/articulo/${codigo}`);
@@ -145,35 +254,6 @@ function updateArticuloPrice (articulo) {
   articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
   grid.invalidateRow(dataView.getIdxById(articulo.id));
   grid.render();
-}
-
-async function preVentaStuff () {
-  let lastNumeroFactura = await axios(`http://192.168.0.2:3000/api/factura/last`);
-  state.factura.numeroFactura = lastNumeroFactura.data + 1;
-  document.querySelector('#venta-factura').value = state.factura.numeroFactura;
-
-  await selectClient(1);
-
-  let dropdownCondicionesDePago = document.querySelector('#venta-condicion-de-pago');
-
-  state.condicionPago.forEach(condicion => {
-    var option = document.createElement('option');
-    option.value = condicion;
-    option.innerHTML = condicion;
-    dropdownCondicionesDePago.appendChild(option);
-  });
-
-  let vendedor = await getVendedorById(1);
-  state.factura.vendedor = vendedor;
-  document.querySelector('#venta-vendedor').value = state.factura.vendedor.NOMBRE;
-
-  const time = new Date();
-  state.factura.fecha = time;
-  // FIXME: use library...
-  const dateString = `${time.getDate()}/${time.getUTCMonth() + 1}/${time.getFullYear()}`;
-  document.querySelector('#venta-fecha').value = dateString;
-
-  // TODO: get turno
 }
 
 function selectCondicionPago () {
