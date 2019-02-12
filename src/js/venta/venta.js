@@ -100,11 +100,11 @@ class Venta extends Component {
     this.codigoInput.current.focus();
     if (boolAdded) {
       // TODO: USER POSITIVE FEEDBACK. TOAST?
-      var aud = new Audio(audioOk);
+      var aud = new window.Audio(audioOk);
       aud.play();
     } else {
       errorShakeEffect(this.codigoInput.current);
-      var aud2 = new Audio(audioError);
+      var aud2 = new window.Audio(audioError);
       aud2.play();
     }
   }
@@ -179,7 +179,7 @@ ReactDOM.render(<Venta ref={(ventaApp) => { window.ventaApp = ventaApp; }} />, d
 // VARIABLE DEFINITIONS FOR SLICKGRID TABLE
 window.dataView = {}; // FIXME: TOO HACKY
 window.grid = {}; // FIXME: TOO HACKY
-window.data = []; // FIXME: TOO HACKY
+window.dataSet = []; // FIXME: TOO HACKY
 
 // TODO: read column preferences from a configuration file, persist this preferences
 // COLUMNS DEFINITIONS
@@ -189,7 +189,7 @@ let columns = [
     name: 'cantidad',
     field: 'CANTIDAD',
     minWidth: 60,
-    editor: Slick.Editors.Text,
+    editor: window.Slick.Editors.Text,
     cssClass: 'cell-title'
   },
   {
@@ -211,7 +211,7 @@ let columns = [
     name: '$ Unit',
     field: 'PRECIO_UNITARIO',
     minWidth: 80,
-    editor: Slick.Editors.Text,
+    editor: window.Slick.Editors.Text,
     cssClass: 'cell-title'
   },
   {
@@ -226,40 +226,40 @@ let columns = [
     name: 'Descuento',
     field: 'DESCUENTO',
     minWidth: 80,
-    editor: Slick.Editors.Text,
+    editor: window.Slick.Editors.Text,
     cssClass: 'cell-title'
   }
 ];
 
-dataView = new Slick.Data.DataView();
-grid = new Slick.Grid('#myGrid', dataView, columns, options);
-grid.setSelectionModel(new Slick.RowSelectionModel());
+window.dataView = new window.Slick.Data.DataView();
+window.grid = new window.Slick.Grid('#myGrid', window.dataView, columns, options);
+window.grid.setSelectionModel(new window.Slick.RowSelectionModel());
 
 // wire up model events to drive the grid
 // !! both dataView.onRowCountChanged and dataView.onRowsChanged MUST be wired to correctly update the grid
 // see Issue#91
-dataView.onRowCountChanged.subscribe(function (e, args) {
-  grid.updateRowCount();
-  grid.render();
+window.dataView.onRowCountChanged.subscribe(function (e, args) {
+  window.grid.updateRowCount();
+  window.grid.render();
 });
 
-dataView.onRowsChanged.subscribe(function (e, args) {
-  grid.invalidateRows(args.rows);
-  grid.render();
+window.dataView.onRowsChanged.subscribe(function (e, args) {
+  window.grid.invalidateRows(args.rows);
+  window.grid.render();
 });
 
-grid.onCellChange.subscribe(function (event, activeCell) {
+window.grid.onCellChange.subscribe(function (event, activeCell) {
   updateArticulo(activeCell.item, window.ventaApp.state.descuento, window.ventaApp.state.condicionPago);
 });
 
-grid.init();
+window.grid.init();
 // initialize the model after all the events have been hooked up
-$('#gridContainer').resizable();
+window.$('#gridContainer').resizable();
 
 // TODO: separate fetching data from intializing the grid
 
 async function addVentaItem (codigo) {
-  let articulo = data.find(e => e.CODIGO === codigo);
+  let articulo = window.dataSet.find(e => e.CODIGO === codigo);
 
   if (articulo) {
     articulo.CANTIDAD += 1;
@@ -267,10 +267,10 @@ async function addVentaItem (codigo) {
     articulo = await databaseRead.getArticuloByCodigo(codigo);
     if (!articulo) return false;
     articulo.CANTIDAD = 1;
-    data.push(articulo);
-    dataView.beginUpdate();
-    dataView.setItems(data);
-    dataView.endUpdate();
+    window.dataSet.push(articulo);
+    window.dataView.beginUpdate();
+    window.dataView.setItems(window.dataSet);
+    window.dataView.endUpdate();
   }
 
   updateArticulo(articulo, window.ventaApp.state.descuento, window.ventaApp.state.condicionPago);
@@ -285,19 +285,19 @@ function updateArticulo (articulo, descuento = 0, condicion = condicionesPago.TA
     articulo.PRECIO_UNITARIO *= (100 - articulo.DESCUENTO) / 100;
   }
   articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
-  grid.invalidateRow(dataView.getIdxById(articulo.id));
-  grid.render();
+  window.grid.invalidateRow(window.dataView.getIdxById(articulo.id));
+  window.grid.render();
 }
 
 function updateAllPrices (descuento, condicion = condicionesPago.TARJETA) {
   const tipoPrecio = condicion === condicionesPago.EFECTIVO ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
-  data.forEach(articulo => {
+  window.dataSet.forEach(articulo => {
     articulo.PRECIO_UNITARIO = articulo[tipoPrecio] * (100 - descuento) / 100;
     if (articulo.DESCUENTO) { // descuento individual del item
       articulo.PRECIO_UNITARIO = articulo.PRECIO_UNITARIO * articulo.DESCUENTO;
     }
     articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
   });
-  grid.invalidateAllRows();
-  grid.render();
+  window.grid.invalidateAllRows();
+  window.grid.render();
 }
