@@ -3,8 +3,8 @@ import './jquery-ui-1.11.3.min.js';
 import './jquery.event.drag-2.3.0';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import axios from 'axios';
 import columnFilterFunctions from './columnFilterFunctions';
+import {getAllArticulos} from '../database/getData';
 
 require('slickgrid/slick.core.js');
 require('slickgrid/slick.grid.js');
@@ -40,9 +40,9 @@ class Articulo extends Component {
 ReactDOM.render(<Articulo ref={(articuloApp) => { window.articuloApp = articuloApp; }} />, document.getElementById('app'));
 
 // VARIABLE DEFINITIONS FOR SLICKGRID TABLE
-let dataView;
-let grid;
-let data = [];
+window.dataView = {};
+window.grid = {};
+window.data = [];
 
 let options = {
   columnPicker: {
@@ -129,7 +129,7 @@ let columns = [
     maxWidth: 45,
     cssClass: 'cell-effort-driven',
     field: 'PROMO_BOOL',
-    formatter: Slick.Formatters.Checkmark,
+    formatter: window.Slick.Formatters.Checkmark,
     resizable: false
   },
   {
@@ -142,12 +142,12 @@ let columns = [
   }
 ];
 
-dataView = new Slick.Data.DataView();
-grid = new Slick.Grid('#myGrid', dataView, columns, options);
-grid.setSelectionModel(new Slick.RowSelectionModel());
+window.dataView = new window.Slick.Data.DataView();
+window.grid = new window.Slick.Grid('#myGrid', window.dataView, columns, options);
+window.grid.setSelectionModel(new window.Slick.RowSelectionModel());
 
-let pager = new Slick.Controls.Pager(dataView, grid, $('#pager'));
-let columnpicker = new Slick.Controls.ColumnPicker(columns, grid, options);
+let pager = new window.Slick.Controls.Pager(window.dataView, window.grid, window.$('#pager'));
+let columnpicker = new window.Slick.Controls.ColumnPicker(columns, window.grid, options);
 
 // COMPARISON AND FILTERING
 let sortcol = 'title';
@@ -176,15 +176,15 @@ function filter (item) {
 
 // this function attachs the data to the input elements in the DOM
 // here i can modify if a want a checkbox, like in this case
-grid.onHeaderRowCellRendered.subscribe(function (e, args) {
-  $(args.node).empty();
+window.grid.onHeaderRowCellRendered.subscribe(function (e, args) {
+  window.$(args.node).empty();
   if (args.column.id === 'PROMO_BOOL') {
-    $("<input type='checkbox'>") // add checkbox for promo_bool
+    window.$("<input type='checkbox'>") // add checkbox for promo_bool
       .data('columnId', args.column.id)
       .val(columnFilters[args.column.id])
       .appendTo(args.node);
   } else {
-    $("<input type='text'>") // for others, add text field
+    window.$("<input type='text'>") // for others, add text field
       .data('columnId', args.column.id)
       .val(columnFilters[args.column.id])
       .appendTo(args.node);
@@ -196,76 +196,66 @@ grid.onHeaderRowCellRendered.subscribe(function (e, args) {
 // get div containing selected cell, to obtain value from DOM
 // can't get it from data array, because we don't have the index in the dataset
 // we only have te index of the selected row in the current view, wich is probably different
-grid.onDblClick.subscribe(function (e) {
-  let cell = grid.getCellFromEvent(e); // row and column number of the active cell
+window.grid.onDblClick.subscribe(function (e) {
+  let cell = window.grid.getCellFromEvent(e); // row and column number of the active cell
   let {id, doubleClickFilter} = columns[cell.cell];
   if (doubleClickFilter) {
-    let dataValue = grid.getActiveCellNode().textContent; // Reading from the DOM
+    let dataValue = window.grid.getActiveCellNode().textContent; // Reading from the DOM
     columnFilters[id] = dataValue;
 
     // get div containt input element child, then get child and assign the value
     // to reflect the new state of the view.
-    grid.getHeaderRowColumn(id).firstChild.value = dataValue;
-    dataView.refresh();
+    window.grid.getHeaderRowColumn(id).firstChild.value = dataValue;
+    window.dataView.refresh();
   }
 });
 
-$(grid.getHeaderRow()).on('change keyup', ':input', function (e) {
-  let columnId = $(this).data('columnId');
+window.$(window.grid.getHeaderRow()).on('change keyup', ':input', function (e) {
+  let columnId = window.$(this).data('columnId');
   if (columnId != null) {
     if (columnId === 'PROMO_BOOL') {
       columnFilters[columnId] = this.checked;
     } else {
-      columnFilters[columnId] = $.trim($(this).val());
+      columnFilters[columnId] = window.$.trim(window.$(this).val());
     }
-    dataView.refresh();
+    window.dataView.refresh();
   }
 });
 
 let h_runfilters = null;
 
-grid.onSort.subscribe(function (e, args) {
+window.grid.onSort.subscribe(function (e, args) {
   sortdir = args.sortAsc ? 1 : -1;
   sortcol = args.sortCol.field;
 
-  dataView.sort(comparer, args.sortAsc);
+  window.dataView.sort(comparer, args.sortAsc);
 });
 
 // wire up model events to drive the grid
 // !! both dataView.onRowCountChanged and dataView.onRowsChanged MUST be wired to correctly update the grid
 // see Issue#91
-dataView.onRowCountChanged.subscribe(function (e, args) {
-  grid.updateRowCount();
-  grid.render();
+window.dataView.onRowCountChanged.subscribe(function (e, args) {
+  window.grid.updateRowCount();
+  window.grid.render();
 });
 
-dataView.onRowsChanged.subscribe(function (e, args) {
-  grid.invalidateRows(args.rows);
-  grid.render();
+window.dataView.onRowsChanged.subscribe(function (e, args) {
+  window.grid.invalidateRows(args.rows);
+  window.grid.render();
 });
 
-dataView.onPagingInfoChanged.subscribe(function (e, pagingInfo) {
-  grid.updatePagingStatusFromView(pagingInfo);
+window.dataView.onPagingInfoChanged.subscribe(function (e, pagingInfo) {
+  window.grid.updatePagingStatusFromView(pagingInfo);
 });
 
-getArticulos();
-
-// TODO: separate fetching data from intializing the grid
-async function getArticulos () {
-  const res = await axios(`http://192.168.0.2:3000/api/rawTables/full_articulos`);
-  // the data elements need an 'id' property for the slickgrid library
-  // this can come directly from the table or view in the database
-  data = res.data;
-  data[422].PROMO_BOOL = true;
-  data[12].PROMO_BOOL = true;
-  data[234].PROMO_BOOL = true;
-
-  grid.init();
+getAllArticulos().then((result) => {
+  window.data = result;
+  window.grid.init();
   // initialize the model after all the events have been hooked up
-  dataView.beginUpdate();
-  dataView.setItems(data);
-  dataView.setFilter(filter);
-  dataView.endUpdate();
+  window.dataView.beginUpdate();
+  window.dataView.setItems(window.data);
+  window.dataView.setFilter(filter);
+  window.dataView.endUpdate();
 
-  $('#gridContainer').resizable();
-}
+  window.$('#gridContainer').resizable();
+});
