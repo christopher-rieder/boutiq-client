@@ -58,6 +58,7 @@ class Venta extends Component {
           // Toast(descuentoMax es el limite maximo);
         }
         updateAllPrices(descuento, this.state.condicionPago);
+        window.decu = descuento; // FIXME: TOO HACKY
         return {descuento};
       } else {
         errorShakeEffect(this.descuentoInput.current);
@@ -70,6 +71,7 @@ class Venta extends Component {
   handleCondicionPago (event) {
     this.setState({condicionPago: event.target.value});
     updateAllPrices(this.state.descuento, event.target.value);
+    window.condu = event.target.value; // FIXME: TOO HACKY
   }
 
   async onSubmit (event) {
@@ -104,6 +106,8 @@ class Venta extends Component {
     setTimeout(e => addVentaItem('5985561826014'), 200);
     setTimeout(e => addVentaItem('4883803077006'), 300);
     setTimeout(e => addVentaItem('4883803077006'), 1000);
+    window.decu = this.state.descuento; // FIXME: TOO HACKY
+    window.condu = this.state.condicionPago; // FIXME: TOO HACKY
   }
 
   getDate () {
@@ -165,9 +169,9 @@ ReactDOM.render(<Venta />, document.getElementById('app'));
 
 // GRID STUFF
 // VARIABLE DEFINITIONS FOR SLICKGRID TABLE
-let dataView;
-let grid;
-let data = [];
+window.dataView = {}; // FIXME: TOO HACKY
+window.grid = {}; // FIXME: TOO HACKY
+window.data = []; // FIXME: TOO HACKY
 
 let options = {
   enableCellNavigation: true,
@@ -247,7 +251,7 @@ dataView.onRowsChanged.subscribe(function (e, args) {
 });
 
 grid.onCellChange.subscribe(function (event, activeCell) {
-  updateArticuloPrice(activeCell.item);
+  updateArticulo(activeCell.item, window.decu, window.condu); // FIXME: TOO HACKY
 });
 
 grid.init();
@@ -271,7 +275,7 @@ async function addVentaItem (codigo) {
     dataView.endUpdate();
   }
 
-  updateArticulo(articulo);
+  updateArticulo(articulo, window.decu, window.condu); // FIXME: TOO HACKY
   return true;
 }
 
