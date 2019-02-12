@@ -47,19 +47,22 @@ class Venta extends Component {
 
   handleDescuento (event) {
     let descuento = event.target.value;
-    this.setState(prevState => { // FIXME: IN 80 UPDATE PRICES CORRECTLY
-      if (/^[1-9]+\.?\d*$/.test(descuento) || descuento === '') { // valid positive float
-        if (descuento === '') {
-          descuento = 0;
-        }
+    this.setState(prevState => {
+      if (/^[1-9]\d*\.$/.test(descuento)) {
+        return {descuento}; // Allow ending in dot without processing, for floats numbers.
+      } else if (/^[1-9]\d*\.?\d*$/.test(descuento) || descuento === '') { // valid positive float
         descuento = parseFloat(descuento) || '';
-        descuento = descuento > 80 ? 80 : descuento;
+        if (descuento > 80) {
+          descuento = 80;
+          errorShakeEffect(this.descuentoInput.current);
+          // Toast('80' es el limite maximo);
+        }
         updateAllPrices(descuento, this.state.condicionPago);
         return {descuento};
       } else {
         errorShakeEffect(this.descuentoInput.current);
-        updateAllPrices(0, this.state.condicionPago);
-        return {prevState};
+        updateAllPrices(prevState.descuento, this.state.condicionPago);
+        return prevState;
       }
     });
   }
