@@ -1,4 +1,5 @@
 import * as databaseRead from '../database/getData';
+import {format as dateFormat} from 'date-fns';
 import {Input, InputText} from '../components/inputs';
 import {errorShakeEffect} from '../components/effects';
 import {condicionesPago, descuentoMax} from '../constants/bussinessConstants';
@@ -24,7 +25,6 @@ class Venta extends Component {
       currentNroFactura: 0,
       cliente: {},
       vendedor: {},
-      fecha: new Date(),
       turno: {},
       observaciones: '',
       codigo: '',
@@ -59,7 +59,6 @@ class Venta extends Component {
           // Toast(descuentoMax es el limite maximo);
         }
         updateAllPrices(descuento, this.state.condicionPago);
-        window.decu = descuento; // FIXME: TOO HACKY
         return {descuento};
       } else {
         errorShakeEffect(this.descuentoInput.current);
@@ -72,7 +71,6 @@ class Venta extends Component {
   handleCondicionPago (event) {
     this.setState({condicionPago: event.target.value});
     updateAllPrices(this.state.descuento, event.target.value);
-    window.condu = event.target.value; // FIXME: TOO HACKY
   }
 
   async onSubmit (event) {
@@ -80,41 +78,20 @@ class Venta extends Component {
     // TODO: POST DATA TO API AFTER CONFIRMATION AND VALIDATION
   }
 
-  // preload info
-  async componentWillMount () {
-    const currentNroFactura = await databaseRead.getNewNumeroFactura();
-    this.setState({currentNroFactura});
-    const cliente = await databaseRead.getClienteById(1);
-    this.setState({cliente});
-    const vendedor = await databaseRead.getVendedorById(1);
-    this.setState({vendedor});
-
-    let dropdownCondicionesDePago = document.querySelector('#venta-condicion-de-pago');
-
-    Object.keys(condicionesPago).forEach(condicion => {
-      var option = document.createElement('option');
-      option.value = condicion;
-      option.innerHTML = condicion;
-      dropdownCondicionesDePago.appendChild(option);
-    });
-
-  // TODO: get turno
-  }
-
   componentDidMount () {
+    databaseRead.getNewNumeroFactura().then((currentNroFactura) => this.setState({currentNroFactura}));
+    databaseRead.getClienteById(1).then((cliente) => this.setState({cliente})); // FIXME: DA WARNING EN REACT. PORQUE?
+    databaseRead.getVendedorById(1).then((vendedor) => this.setState({vendedor})); // FIXME: DA WARNING EN REACT. PORQUE?
+    // TODO: get turno
     this.codigoInput.current.focus();
     setTimeout(e => addVentaItem('ZH2932030828'), 100);
     setTimeout(e => addVentaItem('5985561826014'), 200);
     setTimeout(e => addVentaItem('4883803077006'), 300);
     setTimeout(e => addVentaItem('4883803077006'), 1000);
-    window.decu = this.state.descuento; // FIXME: TOO HACKY
-    window.condu = this.state.condicionPago; // FIXME: TOO HACKY
   }
 
   getDate () {
-  // FIXME: use library...
-    const time = this.state.fecha;
-    return `${time.getDate()}/${time.getUTCMonth() + 1}/${time.getFullYear()}`;
+    return dateFormat(new Date(), 'MM/dd/yyyy');
   }
 
   async addItem (event) { // ZH2932030828
@@ -171,7 +148,9 @@ function postVentaStuff () {
           <div className='panel'>
             <div>
               <label htmlFor='venta-condicion-de-pago'>Condicion de pago</label>
-              <select value={this.state.condicionPago} name='venta-condicion-de-pago' id='venta-condicion-de-pago' onChange={this.handleCondicionPago} />
+              <select value={this.state.condicionPago} name='venta-condicion-de-pago' id='venta-condicion-de-pago' onChange={this.handleCondicionPago}>
+                {Object.keys(condicionesPago).map((condicion, i) => <option key={i} value={condicion}>{condicion}</option>)}
+              </select>
             </div>
             <InputText context='venta' tipo='descuento' value={this.state.descuento} onChange={this.handleDescuento} ref={this.descuentoInput} />
           </div>
@@ -194,7 +173,7 @@ function postVentaStuff () {
   }
 }
 
-ReactDOM.render(<Venta />, document.getElementById('app'));
+ReactDOM.render(<Venta ref={(ventaApp) => { window.ventaApp = ventaApp; }} />, document.getElementById('app'));
 
 // GRID STUFF
 // VARIABLE DEFINITIONS FOR SLICKGRID TABLE
@@ -270,7 +249,7 @@ dataView.onRowsChanged.subscribe(function (e, args) {
 });
 
 grid.onCellChange.subscribe(function (event, activeCell) {
-  updateArticulo(activeCell.item, window.decu, window.condu); // FIXME: TOO HACKY
+  updateArticulo(activeCell.item, window.ventaApp.state.descuento, window.ventaApp.state.condicionPago);
 });
 
 grid.init();
@@ -294,7 +273,7 @@ async function addVentaItem (codigo) {
     dataView.endUpdate();
   }
 
-  updateArticulo(articulo, window.decu, window.condu); // FIXME: TOO HACKY
+  updateArticulo(articulo, window.ventaApp.state.descuento, window.ventaApp.state.condicionPago);
   return true;
 }
 

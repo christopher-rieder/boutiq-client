@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 const Input = ({context, tipo, value, disabled, onChange}) => {
   return (
@@ -32,5 +32,4 @@ const InputText = React.forwardRef((props, ref) => (
 export {
   Input,
   InputText
-}
-;
+};
