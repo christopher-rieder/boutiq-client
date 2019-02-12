@@ -1,6 +1,7 @@
 import * as databaseRead from '../database/getData';
 import {Input, InputText} from '../components/inputs';
 import {errorShakeEffect} from '../components/effects';
+import {condicionesPago, descuentoMax} from '../constants/bussinessConstants';
 import './jquery-global.js';
 import './jquery-ui-1.11.3.min.js';
 import './jquery.event.drag-2.3.0';
@@ -15,7 +16,6 @@ require('slickgrid/slick.dataview.js');
 let audioError = require('./error.wav');
 let audioOk = require('./ok.wav');
 
-const condicionPago = ['TARJETA', 'EFECTIVO', 'DEBITO', 'CREDITO_PROPIO'];
 class Venta extends Component {
   constructor (props) {
     super(props);
@@ -27,7 +27,7 @@ class Venta extends Component {
       turno: {},
       observaciones: '',
       codigo: '',
-      condicionPago: 'TARJETA',
+      condicionPago: condicionesPago.TARJETA,
       descuento: ''
     };
 
@@ -52,10 +52,10 @@ class Venta extends Component {
         return {descuento}; // Allow ending in dot without processing, for floats numbers.
       } else if (/^[1-9]\d*\.?\d*$/.test(descuento) || descuento === '') { // valid positive float
         descuento = parseFloat(descuento) || '';
-        if (descuento > 80) {
-          descuento = 80;
+        if (descuento > descuentoMax) {
+          descuento = descuentoMax;
           errorShakeEffect(this.descuentoInput.current);
-          // Toast('80' es el limite maximo);
+          // Toast(descuentoMax es el limite maximo);
         }
         updateAllPrices(descuento, this.state.condicionPago);
         return {descuento};
@@ -69,7 +69,7 @@ class Venta extends Component {
 
   handleCondicionPago (event) {
     this.setState({condicionPago: event.target.value});
-    updateAllPrices(this.state.descuento, this.state.condicionPago);
+    updateAllPrices(this.state.descuento, event.target.value);
   }
 
   async onSubmit (event) {
@@ -88,7 +88,7 @@ class Venta extends Component {
 
     let dropdownCondicionesDePago = document.querySelector('#venta-condicion-de-pago');
 
-    condicionPago.forEach(condicion => {
+    Object.keys(condicionesPago).forEach(condicion => {
       var option = document.createElement('option');
       option.value = condicion;
       option.innerHTML = condicion;
@@ -286,8 +286,8 @@ function addPago () {
   // TODO: VALIDATIONS
 }
 
-function updateArticulo (articulo, descuento = 0, condicion = 'TARJETA') {
-  const tipoPrecio = condicion === 'EFECTIVO' ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
+function updateArticulo (articulo, descuento = 0, condicion = condicionesPago.TARJETA) {
+  const tipoPrecio = condicion === condicionesPago.EFECTIVO ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
 
   articulo.PRECIO_UNITARIO = articulo[tipoPrecio] * (100 - descuento) / 100;
   if (articulo.DESCUENTO) { // descuento individual del item
@@ -298,8 +298,8 @@ function updateArticulo (articulo, descuento = 0, condicion = 'TARJETA') {
   grid.render();
 }
 
-function updateAllPrices (descuento, condicion) {
-  const tipoPrecio = condicion === 'EFECTIVO' ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
+function updateAllPrices (descuento, condicion = condicionesPago.TARJETA) {
+  const tipoPrecio = condicion === condicionesPago.EFECTIVO ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
   data.forEach(articulo => {
     articulo.PRECIO_UNITARIO = articulo[tipoPrecio] * (100 - descuento) / 100;
     if (articulo.DESCUENTO) { // descuento individual del item
