@@ -4,6 +4,7 @@ import './jquery.event.drag-2.3.0';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import columnFilterFunctions from './columnFilterFunctions';
+import options from './gridOptions';
 import {getAllArticulos} from '../database/getData';
 
 require('slickgrid/slick.core.js');
@@ -25,13 +26,11 @@ class Articulo extends Component {
   render () {
     return (
       <div className='main-container'>
-        <div>
-          <div className='grid-header'>
-            <label>SlickGrid</label>
-          </div>
-          <div id='myGrid' />
-          <div id='pager' />
+        <div className='grid-header'>
+          <label>SlickGrid</label>
         </div>
+        <div id='myGrid' />
+        <div id='pager' />
       </div>
     );
   }
@@ -43,23 +42,6 @@ ReactDOM.render(<Articulo ref={(articuloApp) => { window.articuloApp = articuloA
 window.dataView = {};
 window.grid = {};
 window.data = [];
-
-let options = {
-  columnPicker: {
-    columnTitle: 'Columns',
-    hideForceFitButton: true,
-    hideSyncResizeButton: true,
-    forceFitTitle: 'Force fit columns',
-    syncResizeTitle: 'Synchronous resize'
-  },
-  enableCellNavigation: true,
-  showHeaderRow: true,
-  headerRowHeight: 40,
-  multiSelect: false,
-  topPanelHeight: 30,
-  rowHeight: 30,
-  explicitInitialization: true
-};
 
 // TODO: read column preferences from a configuration file, persist this preferences
 // COLUMNS DEFINITIONS
@@ -129,7 +111,7 @@ let columns = [
     maxWidth: 45,
     cssClass: 'cell-effort-driven',
     field: 'PROMO_BOOL',
-    formatter: window.Slick.Formatters.Checkmark,
+    formatter: CheckmarkFormatter,
     resizable: false
   },
   {
@@ -142,12 +124,16 @@ let columns = [
   }
 ];
 
+function CheckmarkFormatter (row, cell, value, columnDef, dataContext) {
+  return value ? "<img src='./images/tick.png'>" : '';
+}
+
 window.dataView = new window.Slick.Data.DataView();
 window.grid = new window.Slick.Grid('#myGrid', window.dataView, columns, options);
 window.grid.setSelectionModel(new window.Slick.RowSelectionModel());
 
-let pager = new window.Slick.Controls.Pager(window.dataView, window.grid, window.$('#pager'));
-let columnpicker = new window.Slick.Controls.ColumnPicker(columns, window.grid, options);
+window.Slick.Controls.Pager(window.dataView, window.grid, window.$('#pager'));
+window.Slick.Controls.ColumnPicker(columns, window.grid, options);
 
 // COMPARISON AND FILTERING
 let sortcol = 'title';
@@ -159,17 +145,7 @@ function comparer (a, b) {
   return (x === y ? 0 : (x > y ? 1 : -1));
 }
 
-// these are the filters that are defined by the client in runtime with input elements
-// they don't need to be defined here
 let columnFilters = {};
-
-// NOTE: Idea for optimization, if necesary.
-//       Add a filtered propertie to each data row if is filtered.
-//       Check here; if(!item.filtered), to process only unfiltered items.
-//       A clear filter function is needed, and it needs to be fired when the
-//       filtering is invalidated too. For example, using backspace to erase a letter
-//       in the filter, or selecting letters and replacing them with another letter
-//       Basically, when the new filter doesn't contain the previous filter inside
 function filter (item) {
   return Object.keys(columnFilters).every(col => columnFilterFunctions[col](item[col], columnFilters[col]));
 }
@@ -191,7 +167,7 @@ window.grid.onHeaderRowCellRendered.subscribe(function (e, args) {
   }
 });
 
-// for certain columns (like rubro and marca) i allow filtering with a double click
+// for certain columns i allow filtering with a double click
 // we need to update the columnFilter object, and reflect that filter in the view, in the input element
 // get div containing selected cell, to obtain value from DOM
 // can't get it from data array, because we don't have the index in the dataset
