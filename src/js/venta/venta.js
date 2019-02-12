@@ -2,6 +2,7 @@ import * as databaseRead from '../database/getData';
 import {Input, InputText} from '../components/inputs';
 import {errorShakeEffect} from '../components/effects';
 import {condicionesPago, descuentoMax} from '../constants/bussinessConstants';
+import options from './gridOptions';
 import './jquery-global.js';
 import './jquery-ui-1.11.3.min.js';
 import './jquery.event.drag-2.3.0';
@@ -131,6 +132,34 @@ class Venta extends Component {
     }
   }
 
+  /*
+async function selectClient (nro) {
+  let cliente = await databaseRead.getClienteById(nro);
+  state.factura.cliente = cliente;
+  document.querySelector('#venta-cliente').value = state.factura.cliente.NOMBRE;
+}
+
+function addPago () {
+  // TODO: add pagos
+  // TODO: VALIDATIONS
+}
+
+function processSeña () {
+  // TODO: process seña stuff
+}
+
+function articuloSearchFunctionality () {
+  // TODO: handle the selection and search of articulos
+}
+
+function postVentaStuff () {
+  // TODO: VALIDATIONS
+  // TODO: make confirmation stage
+  // TODO: make post to api
+  // TODO: inform user
+}
+  */
+
   render () {
     return (
       <div>
@@ -172,16 +201,6 @@ ReactDOM.render(<Venta />, document.getElementById('app'));
 window.dataView = {}; // FIXME: TOO HACKY
 window.grid = {}; // FIXME: TOO HACKY
 window.data = []; // FIXME: TOO HACKY
-
-let options = {
-  enableCellNavigation: true,
-  multiSelect: false,
-  topPanelHeight: 30,
-  rowHeight: 30,
-  editable: true,
-  autoEdit: true,
-  explicitInitialization: true
-};
 
 // TODO: read column preferences from a configuration file, persist this preferences
 // COLUMNS DEFINITIONS
@@ -279,17 +298,6 @@ async function addVentaItem (codigo) {
   return true;
 }
 
-async function selectClient (nro) {
-  let cliente = await databaseRead.getClienteById(nro);
-  state.factura.cliente = cliente;
-  document.querySelector('#venta-cliente').value = state.factura.cliente.NOMBRE;
-}
-
-function addPago () {
-  // TODO: add pagos
-  // TODO: VALIDATIONS
-}
-
 function updateArticulo (articulo, descuento = 0, condicion = condicionesPago.TARJETA) {
   const tipoPrecio = condicion === condicionesPago.EFECTIVO ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
 
@@ -313,20 +321,4 @@ function updateAllPrices (descuento, condicion = condicionesPago.TARJETA) {
   });
   grid.invalidateAllRows();
   grid.render();
-}
-
-function processSeña () {
-  // TODO: process seña stuff
-}
-
-function articuloSearchFunctionality () {
-  // TODO: handle the selection and search of articulos
-}
-
-function postVentaStuff () {
-  // TODO: VALIDATIONS
-  // TODO: make confirmation stage
-  // TODO: make post to api
-  // TODO: inform user
-
 }
