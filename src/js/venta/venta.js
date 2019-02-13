@@ -4,9 +4,9 @@ import {Input, InputText} from '../components/inputs';
 import {errorShakeEffect} from '../components/effects';
 import {condicionesPago, descuentoMax} from '../constants/bussinessConstants';
 import options from './gridOptions';
-import './jquery-global.js';
-import './jquery-ui-1.11.3.min.js';
-import './jquery.event.drag-2.3.0';
+import '../vendor/jquery-global.js';
+import '../vendor/jquery-ui-1.11.3.min.js';
+import '../vendor/jquery.event.drag-2.3.0';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 require('slickgrid/slick.core.js');
@@ -15,8 +15,8 @@ require('slickgrid/slick.formatters.js');
 require('slickgrid/slick.editors.js');
 require('slickgrid/plugins/slick.rowselectionmodel.js');
 require('slickgrid/slick.dataview.js');
-let audioError = require('./error.wav');
-let audioOk = require('./ok.wav');
+let audioError = require('../../resources/audio/error.wav');
+let audioOk = require('../../resources/audio/ok.wav');
 
 class Venta extends Component {
   constructor (props) {

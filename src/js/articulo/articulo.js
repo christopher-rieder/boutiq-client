@@ -1,6 +1,6 @@
-import './jquery-global.js';
-import './jquery-ui-1.11.3.min.js';
-import './jquery.event.drag-2.3.0';
+import '../vendor/jquery-global.js';
+import '../vendor/jquery-ui-1.11.3.min.js';
+import '../vendor/jquery.event.drag-2.3.0';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import columnFilterFunctions from './columnFilterFunctions';
