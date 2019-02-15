@@ -77,6 +77,11 @@ class Venta extends Component {
   async onSubmit (event) {
     event.preventDefault();
     // TODO: POST DATA TO API AFTER CONFIRMATION AND VALIDATION
+    // TODO: VALIDATIONS
+    // TODO: make confirmation stage
+    // TODO: inform user
+    // TODO: CALL SUBMISSIONS
+
     let descuento = parseFloat(this.state.descuento) || 0;
 
     let factura = {
@@ -89,19 +94,12 @@ class Venta extends Component {
     };
 
     const facturaId = await databaseWrite.postFactura(factura);
-    console.log('response__in__venta', facturaId);
-
-    let itemFactura = [];
 
     window.dataSet.forEach(({id, CANTIDAD, PRECIO_UNITARIO, DESCUENTO}) => {
       let item = {CANTIDAD, PRECIO_UNITARIO, DESCUENTO};
       item.ARTICULO_ID = id;
       item.FACTURA_ID = facturaId;
       item.DESCUENTO = DESCUENTO || 0;
-      itemFactura.push(item);
-    });
-
-    itemFactura.forEach(item => {
       databaseWrite.postItemFactura(item);
     });
 
@@ -141,9 +139,7 @@ class Venta extends Component {
 
   /*
 async function selectClient (nro) {
-  let cliente = await databaseRead.getClienteById(nro);
-  state.factura.cliente = cliente;
-  document.querySelector('#venta-cliente').value = state.factura.cliente.NOMBRE;
+  // TODO: SELECT A DIFFERENT CLIENT
 }
 
 function addPago () {
@@ -157,13 +153,6 @@ function processSeña () {
 
 function articuloSearchFunctionality () {
   // TODO: handle the selection and search of articulos
-}
-
-function postVentaStuff () {
-  // TODO: VALIDATIONS
-  // TODO: make confirmation stage
-  // TODO: make post to api
-  // TODO: inform user
 }
   */
 
@@ -285,8 +274,6 @@ window.grid.onCellChange.subscribe(function (event, activeCell) {
 window.grid.init();
 // initialize the model after all the events have been hooked up
 window.$('#gridContainer').resizable();
-
-// TODO: separate fetching data from intializing the grid
 
 async function addVentaItem (codigo) {
   let articulo = window.dataSet.find(e => e.CODIGO === codigo);
