@@ -1,4 +1,5 @@
 import * as databaseRead from '../database/getData';
+import * as databaseWrite from '../database/writeData';
 import {format as dateFormat} from 'date-fns';
 import {Input, InputText} from '../components/inputs';
 import {errorShakeEffect} from '../components/effects';
@@ -76,6 +77,35 @@ class Venta extends Component {
   async onSubmit (event) {
     event.preventDefault();
     // TODO: POST DATA TO API AFTER CONFIRMATION AND VALIDATION
+    let descuento = parseFloat(this.state.descuento) || 0;
+
+    let factura = {
+      NUMERO_FACTURA: this.state.currentNroFactura,
+      FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
+      DESCUENTO: descuento,
+      CLIENTE_ID: this.state.cliente.id,
+      TURNO_ID: 0, // TODO: MAKE TURNO
+      ANULADA: 0 // FIXME: SQLITE BOOLEANS... NOT EXISTENT
+    };
+
+    const facturaId = await databaseWrite.postFactura(factura);
+    console.log('response__in__venta', facturaId);
+
+    let itemFactura = [];
+
+    window.dataSet.forEach(({id, CANTIDAD, PRECIO_UNITARIO, DESCUENTO}) => {
+      let item = {CANTIDAD, PRECIO_UNITARIO, DESCUENTO};
+      item.ARTICULO_ID = id;
+      item.FACTURA_ID = facturaId;
+      item.DESCUENTO = DESCUENTO || 0;
+      itemFactura.push(item);
+    });
+
+    itemFactura.forEach(item => {
+      databaseWrite.postItemFactura(item);
+    });
+
+    // TODO: AFTER FINISHING REFRESH CURRENT NUMERO FACTURA, REFRESH INTERFACE
   }
 
   componentDidMount () {
