@@ -9,6 +9,11 @@
   height: 400px;
 }
 
+td {
+  padding: 8px;
+  margin: 8px;
+}
+
 .venta__label {
   text-transform: capitalize;
 }

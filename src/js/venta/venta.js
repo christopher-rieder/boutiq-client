@@ -4,18 +4,8 @@ import {format as dateFormat} from 'date-fns';
 import {Input, InputText} from '../components/inputs';
 import {errorShakeEffect} from '../components/effects';
 import {condicionesPago, descuentoMax} from '../constants/bussinessConstants';
-import options from './gridOptions';
-import '../vendor/jquery-global.js';
-import '../vendor/jquery-ui-1.11.3.min.js';
-import '../vendor/jquery.event.drag-2.3.0';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-require('slickgrid/slick.core.js');
-require('slickgrid/slick.grid.js');
-require('slickgrid/slick.formatters.js');
-require('slickgrid/slick.editors.js');
-require('slickgrid/plugins/slick.rowselectionmodel.js');
-require('slickgrid/slick.dataview.js');
 let audioError = require('../../resources/audio/error.wav');
 let audioOk = require('../../resources/audio/ok.wav');
 
@@ -23,6 +13,7 @@ class Venta extends Component {
   constructor (props) {
     super(props);
     this.state = {
+      dataset: [],
       currentNroFactura: 0,
       cliente: {},
       vendedor: {},
@@ -42,6 +33,8 @@ class Venta extends Component {
     this.onSubmit = this.onSubmit.bind(this);
     this.addItem = this.addItem.bind(this);
     this.handleCondicionPago = this.handleCondicionPago.bind(this);
+    this.updateArticulo = this.updateArticulo.bind(this);
+    this.addVentaItem = this.addVentaItem.bind(this);
   }
 
   handleObservaciones (event) { this.setState({ observaciones: event.target.value }); }
@@ -59,11 +52,11 @@ class Venta extends Component {
           errorShakeEffect(this.descuentoInput.current);
           // Toast(descuentoMax es el limite maximo);
         }
-        updateAllPrices(descuento, this.state.condicionPago);
+        this.updateAllPrices(descuento, this.state.condicionPago);
         return {descuento};
       } else {
         errorShakeEffect(this.descuentoInput.current);
-        updateAllPrices(prevState.descuento, this.state.condicionPago);
+        this.updateAllPrices(prevState.descuento, this.state.condicionPago);
         return prevState;
       }
     });
@@ -71,7 +64,7 @@ class Venta extends Component {
 
   handleCondicionPago (event) {
     this.setState({condicionPago: event.target.value});
-    updateAllPrices(this.state.descuento, event.target.value);
+    this.updateAllPrices(this.state.descuento, event.target.value);
   }
 
   async onSubmit (event) {
@@ -95,7 +88,7 @@ class Venta extends Component {
 
     const facturaId = await databaseWrite.postFactura(factura);
 
-    window.dataSet.forEach(({id, CANTIDAD, PRECIO_UNITARIO, DESCUENTO}) => {
+    this.state.dataset.forEach(({id, CANTIDAD, PRECIO_UNITARIO, DESCUENTO}) => {
       let item = {CANTIDAD, PRECIO_UNITARIO, DESCUENTO};
       item.ARTICULO_ID = id;
       item.FACTURA_ID = facturaId;
@@ -103,7 +96,7 @@ class Venta extends Component {
       databaseWrite.postItemFactura(item);
     });
 
-    const monto = window.dataSet.reduce((monto, item) => monto + item.PRECIO_UNITARIO * item.CANTIDAD, 0);
+    const monto = this.state.dataset.reduce((monto, item) => monto + item.PRECIO_UNITARIO * item.CANTIDAD, 0);
 
     if (this.state.condicionPago === 'EFECTIVO') {
       const pago = {
@@ -136,10 +129,10 @@ class Venta extends Component {
     databaseRead.getVendedorById(1).then((vendedor) => this.setState({vendedor})); // FIXME: DA WARNING EN REACT. PORQUE?
     // TODO: get turno
     this.codigoInput.current.focus();
-    setTimeout(e => addVentaItem('ZH2932030828'), 100);
-    setTimeout(e => addVentaItem('5985561826014'), 200);
-    setTimeout(e => addVentaItem('4883803077006'), 300);
-    setTimeout(e => addVentaItem('4883803077006'), 1000);
+    setTimeout(e => this.addVentaItem('ZH2932030828'), 100);
+    setTimeout(e => this.addVentaItem('5985561826014'), 200);
+    setTimeout(e => this.addVentaItem('4883803077006'), 300);
+    setTimeout(e => this.addVentaItem('4883803077006'), 3000);
   }
 
   getDate () {
@@ -147,7 +140,7 @@ class Venta extends Component {
   }
 
   async addItem (event) { // ZH2932030828
-    let boolAdded = await addVentaItem(this.state.codigo);
+    let boolAdded = await this.addVentaItem(this.state.codigo);
     this.setState({codigo: ''});
     this.codigoInput.current.focus();
     if (boolAdded) {
@@ -159,6 +152,46 @@ class Venta extends Component {
       var aud2 = new window.Audio(audioError);
       aud2.play();
     }
+  }
+
+  async addVentaItem (codigo) {
+    let articulo = this.state.dataset.find(e => e.CODIGO === codigo);
+
+    if (articulo) {
+      articulo.CANTIDAD += 1;
+    } else {
+      if (!codigo) return false;
+      articulo = await databaseRead.getArticuloByCodigo(codigo);
+      if (!articulo) return false;
+      articulo.CANTIDAD = 1;
+      let dataset = [...this.state.dataset, articulo];
+      this.setState({dataset});
+    }
+
+    this.updateArticulo(articulo, this.state.descuento, this.state.condicionPago);
+    this.setState({});
+    return true;
+  }
+
+  updateArticulo (articulo, descuento = 0, condicion = 'EFECTIVO') {
+    const tipoPrecio = condicion === 'EFECTIVO' ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
+
+    articulo.PRECIO_UNITARIO = articulo[tipoPrecio] * (100 - descuento) / 100;
+    if (articulo.DESCUENTO) { // descuento individual del item
+      articulo.PRECIO_UNITARIO *= (100 - articulo.DESCUENTO) / 100;
+    }
+    articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
+  }
+
+  updateAllPrices (descuento, condicion = 'EFECTIVO') {
+    const tipoPrecio = condicion === 'EFECTIVO' ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
+    this.state.dataset.forEach(articulo => {
+      articulo.PRECIO_UNITARIO = articulo[tipoPrecio] * (100 - descuento) / 100;
+      if (articulo.DESCUENTO) { // descuento individual del item
+        articulo.PRECIO_UNITARIO = articulo.PRECIO_UNITARIO * articulo.DESCUENTO;
+      }
+      articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
+    });
   }
 
   /*
@@ -179,6 +212,21 @@ function articuloSearchFunctionality () {
   // TODO: handle the selection and search of articulos
 }
   */
+
+  getVentaTable () {
+    return this.state.dataset.map(row => {
+      return (
+        <tr key={row.id}>
+          <td>{row.CANTIDAD}</td>
+          <td>{row.CODIGO}</td>
+          <td>{row.DESCRIPCION}</td>
+          <td>{row.PRECIO_UNITARIO}</td>
+          <td>{row.PRECIO_TOTAL}</td>
+          <td>{row.DESCUENTO}</td>
+        </tr>
+      );
+    });
+  }
 
   render () {
     return (
@@ -204,7 +252,21 @@ function articuloSearchFunctionality () {
           <div className='panel'>
             <Input context='venta' tipo='observaciones' value={this.state.observaciones} onChange={this.handleObservaciones} />
           </div>
-          <div id='myGrid' />
+          <table id='table'>
+            <thead>
+              <tr>
+                <th>Cantidad</th>
+                <th>Codigo</th>
+                <th>Descripcion</th>
+                <th>Precio Unitario</th>
+                <th>Precio Total</th>
+                <th>Descuento</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.getVentaTable()}
+            </tbody>
+          </table>
           <div className='panel'>
             <Input context='venta' disabled tipo='vendedor' value={this.state.vendedor.NOMBRE} />
             <Input context='venta' disabled tipo='turno' value={this.state.turno} />
@@ -218,128 +280,11 @@ function articuloSearchFunctionality () {
 
 ReactDOM.render(<Venta ref={(ventaApp) => { window.ventaApp = ventaApp; }} />, document.getElementById('app'));
 
-// GRID STUFF
-// VARIABLE DEFINITIONS FOR SLICKGRID TABLE
-window.dataView = {}; // FIXME: TOO HACKY
-window.grid = {}; // FIXME: TOO HACKY
-window.dataSet = []; // FIXME: TOO HACKY
+// id: 'CANTIDAD',
+// id: 'CODIGO',
+// id: 'DESCRIPCION',
+// id: 'PRECIO_UNITARIO',
+// id: 'PRECIO_TOTAL',
+// id: 'DESCUENTO',
 
-// TODO: read column preferences from a configuration file, persist this preferences
-// COLUMNS DEFINITIONS
-let columns = [
-  {
-    id: 'CANTIDAD',
-    name: 'cantidad',
-    field: 'CANTIDAD',
-    minWidth: 60,
-    editor: window.Slick.Editors.Text,
-    cssClass: 'cell-title'
-  },
-  {
-    id: 'CODIGO',
-    name: 'codigo',
-    field: 'CODIGO',
-    minWidth: 120,
-    cssClass: 'cell-title'
-  },
-  {
-    id: 'DESCRIPCION',
-    name: 'Descripcion',
-    field: 'DESCRIPCION',
-    minWidth: 300,
-    cssClass: 'cell-title'
-  },
-  {
-    id: 'PRECIO_UNITARIO',
-    name: '$ Unit',
-    field: 'PRECIO_UNITARIO',
-    minWidth: 80,
-    editor: window.Slick.Editors.Text,
-    cssClass: 'cell-title'
-  },
-  {
-    id: 'PRECIO_TOTAL',
-    name: '$ Total',
-    field: 'PRECIO_TOTAL',
-    minWidth: 80,
-    cssClass: 'cell-title'
-  },
-  {
-    id: 'DESCUENTO',
-    name: 'Descuento',
-    field: 'DESCUENTO',
-    minWidth: 80,
-    editor: window.Slick.Editors.Text,
-    cssClass: 'cell-title'
-  }
-];
-
-window.dataView = new window.Slick.Data.DataView();
-window.grid = new window.Slick.Grid('#myGrid', window.dataView, columns, options);
-window.grid.setSelectionModel(new window.Slick.RowSelectionModel());
-
-// wire up model events to drive the grid
-// !! both dataView.onRowCountChanged and dataView.onRowsChanged MUST be wired to correctly update the grid
-// see Issue#91
-window.dataView.onRowCountChanged.subscribe(function (e, args) {
-  window.grid.updateRowCount();
-  window.grid.render();
-});
-
-window.dataView.onRowsChanged.subscribe(function (e, args) {
-  window.grid.invalidateRows(args.rows);
-  window.grid.render();
-});
-
-window.grid.onCellChange.subscribe(function (event, activeCell) {
-  updateArticulo(activeCell.item, window.ventaApp.state.descuento, window.ventaApp.state.condicionPago);
-});
-
-window.grid.init();
-// initialize the model after all the events have been hooked up
-window.$('#gridContainer').resizable();
-
-async function addVentaItem (codigo) {
-  let articulo = window.dataSet.find(e => e.CODIGO === codigo);
-
-  if (articulo) {
-    articulo.CANTIDAD += 1;
-  } else {
-    if (!codigo) return false;
-    articulo = await databaseRead.getArticuloByCodigo(codigo);
-    if (!articulo) return false;
-    articulo.CANTIDAD = 1;
-    window.dataSet.push(articulo);
-    window.dataView.beginUpdate();
-    window.dataView.setItems(window.dataSet);
-    window.dataView.endUpdate();
-  }
-
-  updateArticulo(articulo, window.ventaApp.state.descuento, window.ventaApp.state.condicionPago);
-  return true;
-}
-
-function updateArticulo (articulo, descuento = 0, condicion = 'EFECTIVO') {
-  const tipoPrecio = condicion === 'EFECTIVO' ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
-
-  articulo.PRECIO_UNITARIO = articulo[tipoPrecio] * (100 - descuento) / 100;
-  if (articulo.DESCUENTO) { // descuento individual del item
-    articulo.PRECIO_UNITARIO *= (100 - articulo.DESCUENTO) / 100;
-  }
-  articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
-  window.grid.invalidateRow(window.dataView.getIdxById(articulo.id));
-  window.grid.render();
-}
-
-function updateAllPrices (descuento, condicion = 'EFECTIVO') {
-  const tipoPrecio = condicion === 'EFECTIVO' ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
-  window.dataSet.forEach(articulo => {
-    articulo.PRECIO_UNITARIO = articulo[tipoPrecio] * (100 - descuento) / 100;
-    if (articulo.DESCUENTO) { // descuento individual del item
-      articulo.PRECIO_UNITARIO = articulo.PRECIO_UNITARIO * articulo.DESCUENTO;
-    }
-    articulo.PRECIO_TOTAL = articulo.PRECIO_UNITARIO * articulo.CANTIDAD;
-  });
-  window.grid.invalidateAllRows();
-  window.grid.render();
-}
+// updateArticulo(activeCell.item, window.ventaApp.state.descuento, window.ventaApp.state.condicionPago);
