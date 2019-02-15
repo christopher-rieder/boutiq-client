@@ -7,11 +7,22 @@ function postFactura (factura) {
     },
     body: JSON.stringify(factura)
   }).then(res => res.json())
-    .then(res => res.facturaId);
+    .then(res => res.lastId);
 }
 
 async function postItemFactura (item) {
-  window.fetch('http://192.168.0.2:3000/api/itemFactura', {
+  return window.fetch('http://192.168.0.2:3000/api/itemFactura', {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(item)
+  }).then(res => res.json());
+}
+
+async function postObjectToAPI (item, endpoint) {
+  return window.fetch('http://192.168.0.2:3000/api/' + endpoint, {
     method: 'post',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -19,10 +30,11 @@ async function postItemFactura (item) {
     },
     body: JSON.stringify(item)
   }).then(res => res.json())
-    .then(res => console.log(res));
+    .then(res => res.lastId);
 }
 
 export {
   postFactura,
+  postObjectToAPI,
   postItemFactura
 };

@@ -29,7 +29,7 @@ class Venta extends Component {
       turno: {},
       observaciones: '',
       codigo: '',
-      condicionPago: condicionesPago.TARJETA,
+      condicionPago: 'EFECTIVO',
       descuento: ''
     };
 
@@ -102,6 +102,30 @@ class Venta extends Component {
       item.DESCUENTO = DESCUENTO || 0;
       databaseWrite.postItemFactura(item);
     });
+
+    const monto = window.dataSet.reduce((monto, item) => monto + item.PRECIO_UNITARIO * item.CANTIDAD, 0);
+
+    if (this.state.condicionPago === 'EFECTIVO') {
+      const pago = {
+        FACTURA_ID: facturaId,
+        MONTO: monto,
+        TIPO_PAGO_ID: condicionesPago[this.state.condicionPago],
+        ESTADO: 'PAGADO'
+      };
+      const pagoId = await databaseWrite.postObjectToAPI(pago, 'pago');
+      console.log(pagoId);
+    } else {
+      const pago = {
+        FACTURA_ID: facturaId,
+        MONTO: monto,
+        TIPO_PAGO_ID: condicionesPago[this.state.condicionPago],
+        ESTADO: 'PENDIENTE'
+      };
+      const pagoId = await databaseWrite.postObjectToAPI(pago, 'pago');
+      console.log(pagoId);
+    }
+
+    // TODO: actualizacion de STOCK luego de que toda la transaccion fue exitosa.
 
     // TODO: AFTER FINISHING REFRESH CURRENT NUMERO FACTURA, REFRESH INTERFACE
   }
@@ -281,6 +305,7 @@ async function addVentaItem (codigo) {
   if (articulo) {
     articulo.CANTIDAD += 1;
   } else {
+    if (!codigo) return false;
     articulo = await databaseRead.getArticuloByCodigo(codigo);
     if (!articulo) return false;
     articulo.CANTIDAD = 1;
@@ -294,8 +319,8 @@ async function addVentaItem (codigo) {
   return true;
 }
 
-function updateArticulo (articulo, descuento = 0, condicion = condicionesPago.TARJETA) {
-  const tipoPrecio = condicion === condicionesPago.EFECTIVO ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
+function updateArticulo (articulo, descuento = 0, condicion = 'EFECTIVO') {
+  const tipoPrecio = condicion === 'EFECTIVO' ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
 
   articulo.PRECIO_UNITARIO = articulo[tipoPrecio] * (100 - descuento) / 100;
   if (articulo.DESCUENTO) { // descuento individual del item
@@ -306,8 +331,8 @@ function updateArticulo (articulo, descuento = 0, condicion = condicionesPago.TA
   window.grid.render();
 }
 
-function updateAllPrices (descuento, condicion = condicionesPago.TARJETA) {
-  const tipoPrecio = condicion === condicionesPago.EFECTIVO ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
+function updateAllPrices (descuento, condicion = 'EFECTIVO') {
+  const tipoPrecio = condicion === 'EFECTIVO' ? 'PRECIO_CONTADO' : 'PRECIO_LISTA';
   window.dataSet.forEach(articulo => {
     articulo.PRECIO_UNITARIO = articulo[tipoPrecio] * (100 - descuento) / 100;
     if (articulo.DESCUENTO) { // descuento individual del item
