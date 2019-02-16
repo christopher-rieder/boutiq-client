@@ -105,7 +105,6 @@ export default class Factura {
       });
 
       articulo.updatePrice();
-      this.updateTotal();
     }
   }
 
@@ -116,7 +115,7 @@ export default class Factura {
   }
 
   updateTotal () {
-    document.querySelector('#table-footer-total').textContent = this.precioTotal;
+    document.querySelector('#table-footer-total').textContent = (this.precioTotal).toFixed(2);
   }
 }
 
@@ -132,16 +131,17 @@ class ItemFactura {
     this._marca = articulo.MARCA;
     this._cantidad = 1;
     this._descuentoIndividual = articulo.PROMO_BOOL ? articulo.DESCUENTO_PROMO : 0;
-    this._precioUnitario = Math.round(articulo.PRECIO_CONTADO * (1 - articulo.DESCUENTO_PROMO / 100));
+    this._precioUnitario = articulo.PRECIO_CONTADO * (1 - articulo.DESCUENTO_PROMO / 100);
     this._parent = parent;
   }
 
-  updatePrice () {
-    const tipoPrecio = this._parent.condicionDePago === 'EFECTIVO' ? '_precioContado' : '_precioLista';
-    this._precioUnitario = Math.round(this[tipoPrecio] * (1 - this._parent.descuento / 100) * (1 - this._descuentoIndividual / 100));
-    document.querySelector('#artPrecioUnitario' + this.id).value = this._precioUnitario;
-    document.querySelector('#artPrecioTotal' + this.id).textContent = this.precioTotal;
-    document.querySelector('#artPrecioBase' + this.id).textContent = this[tipoPrecio];
+  updatePrice (customPrice) {
+    if (!customPrice) {
+      this._precioUnitario = this.precioBase * (1 - this._parent.descuento / 100) * (1 - this._descuentoIndividual / 100);
+    }
+    document.querySelector('#artPrecioUnitario' + this.id).value = parseFloat(this.precioUnitario).toFixed(2);
+    document.querySelector('#artPrecioTotal' + this.id).textContent = (this.precioTotal).toFixed(2);
+    document.querySelector('#artPrecioBase' + this.id).textContent = (this.precioBase).toFixed(2);
     this._parent.updateTotal();
   }
 
@@ -160,25 +160,19 @@ class ItemFactura {
   set cantidad (value) {
     this._cantidad = parseInt(value) >= 0 ? parseInt(value) : 0;
     document.querySelector('#artCantidad' + this.id).value = this._cantidad;
-    document.querySelector('#artPrecioTotal' + this.id).textContent = this.precioTotal;
-    this._parent.updateTotal();
+    this.updatePrice();
   }
 
   set precioUnitario (value) {
-    this._precioUnitario = parseInt(value) >= 0 ? parseInt(value) : 0;
-    this._descuentoIndividual = 0;
-    document.querySelector('#artDescuentoIndividual' + this.id).value = 0;
-    document.querySelector('#artPrecioUnitario' + this.id).value = this._precioUnitario;
-    document.querySelector('#artPrecioTotal' + this.id).textContent = this.precioTotal;
-    this._parent.updateTotal();
+    this._precioUnitario = parseFloat(value) >= 0 ? parseFloat(value).toFixed(2) : 0;
+    this._descuentoIndividual = 100 - (this._precioUnitario / this.precioBase * (1 - this._parent.descuento / 100)) * 100;
+    document.querySelector('#artDescuentoIndividual' + this.id).value = this._descuentoIndividual.toFixed(2);
+    this.updatePrice(true);
   }
 
   set descuentoIndividual (value) {
-    this._descuentoIndividual = (value);
+    this._descuentoIndividual = value;
     this.updatePrice();
-    document.querySelector('#artPrecioUnitario' + this.id).value = this._precioUnitario;
-    document.querySelector('#artPrecioTotal' + this.id).textContent = this.precioTotal;
-    this._parent.updateTotal();
   }
 
   toServerJsonAPI () {
