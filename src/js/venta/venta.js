@@ -5,7 +5,7 @@ import {format as dateFormat} from 'date-fns';
 import {errorShakeEffect} from '../components/effects';
 import {condicionesPago, descuentoMax} from '../constants/bussinessConstants';
 import Factura from './Factura';
-import {facturaDOM, condicionPagoDOM, descuentoDOM, codigoDOM, fechaDOM} from '../utilities/selectors';
+import {facturaDOM, condicionPagoDOM, descuentoDOM, codigoDOM, fechaDOM, tbodyDOM} from '../utilities/selectors';
 
 // import React, { Component } from 'react';
 // import ReactDOM from 'react-dom';
@@ -15,13 +15,7 @@ let audioOk = require('../../resources/audio/ok.wav');
 initialLoad();
 
 async function initialLoad () {
-  fechaDOM.value = dateFormat(new Date(), 'MM/dd/yyyy');
-  const numeroFactura = await databaseRead.getNewNumeroFactura();
-  const cliente = await databaseRead.getClienteById(1);
-  const vendedor = await databaseRead.getVendedorById(1);
-
-  window.factura = new Factura(numeroFactura, cliente, vendedor);
-
+  await newFactura();
   Object.keys(condicionesPago).forEach(condicion => {
     var option = document.createElement('option');
     option.value = condicion;
@@ -30,12 +24,34 @@ async function initialLoad () {
   });
 }
 
+async function newFactura () {
+  if (window.factura) {
+    window.factura.removeFromDOM();
+  }
+  fechaDOM.value = dateFormat(new Date(), 'MM/dd/yyyy');
+  const numeroFactura = await databaseRead.getNewNumeroFactura();
+  const cliente = await databaseRead.getClienteById(1);
+  const vendedor = await databaseRead.getVendedorById(1);
+  const turno = await databaseRead.getTurnoActual();
+
+  window.factura = new Factura(numeroFactura, cliente, vendedor, turno);
+}
+
+// FIXME: THIS IS FOR TESINTG PURPOSES ONLY
 document.addEventListener('dblclick', event => {
   if (event.shiftKey) {
     setTimeout(e => addVentaItem('ZH2932030828'), 500);
     setTimeout(e => addVentaItem('5985561826014'), 600);
     setTimeout(e => addVentaItem('4883803077006'), 700);
     setTimeout(e => addVentaItem('4883803077006'), 2000);
+  }
+});
+document.addEventListener('keypress', event => {
+  if (event.code === 'KeyA' && event.ctrlKey && event.shiftKey) {
+    onSubmit(event);
+  }
+  if (event.code === 'Enter' && event.ctrlKey) {
+    codigoDOM.focus();
   }
 });
 
@@ -96,19 +112,20 @@ async function onSubmit (event) {
   // TODO: CALL SUBMISSIONS
 
   let facturaJson = window.factura.toServerJsonAPI();
-  Object.freeze(window.factura);
   const facturaId = await databaseWrite.postFactura(facturaJson);
   window.factura.itemsFactura.forEach(item => {
+    console.log(item.toServerJsonAPI());
     databaseWrite.postItemFactura(item.toServerJsonAPI());
   });
 
-  const monto = window.factura.montoTotal;
+  const precioTotal = window.factura.precioTotal;
+  const condicionDePago = window.factura.condicionDePago;
 
-  if (this.state.condicionPago === 'EFECTIVO') {
+  if (condicionDePago === 'EFECTIVO') {
     const pago = {
       FACTURA_ID: facturaId,
-      MONTO: monto,
-      TIPO_PAGO_ID: condicionesPago[this.state.condicionPago],
+      MONTO: precioTotal,
+      TIPO_PAGO_ID: condicionesPago[condicionDePago],
       ESTADO: 'PAGADO'
     };
     const pagoId = await databaseWrite.postObjectToAPI(pago, 'pago');
@@ -116,17 +133,14 @@ async function onSubmit (event) {
   } else {
     const pago = {
       FACTURA_ID: facturaId,
-      MONTO: monto,
-      TIPO_PAGO_ID: condicionesPago[this.state.condicionPago],
+      MONTO: precioTotal,
+      TIPO_PAGO_ID: condicionesPago[condicionDePago],
       ESTADO: 'PENDIENTE'
     };
     const pagoId = await databaseWrite.postObjectToAPI(pago, 'pago');
     console.log(pagoId);
   }
-
-  // TODO: actualizacion de STOCK luego de que toda la transaccion fue exitosa.
-
-  // TODO: AFTER FINISHING REFRESH CURRENT NUMERO FACTURA, REFRESH INTERFACE
+  newFactura();
 }
 
 //   componentDidMount () {

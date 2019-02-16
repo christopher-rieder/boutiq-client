@@ -10,7 +10,7 @@ export default class Factura {
 
     this.cliente = cliente;
     this.vendedor = vendedor;
-    this._fecha = null;
+    this._fecha = new Date();
     this._descuento = 0;
     this._turno = turno;
     this._anulada = false;
@@ -63,7 +63,7 @@ export default class Factura {
     this._fecha = new Date(); // SEND WITH UPDATED DATE_TIME
     return {
       NUMERO_FACTURA: this.numeroFactura,
-      FECHA_HORA: this.fechaStr, // UNIX EPOCH TIME
+      FECHA_HORA: this._fecha.getTime(), // UNIX EPOCH TIME
       DESCUENTO: this.descuento,
       CLIENTE_ID: this.cliente.id,
       TURNO_ID: this.turno.id, // TODO: MAKE TURNO
@@ -83,6 +83,7 @@ export default class Factura {
         <td class='table-cell-cantidad'><input type='number' id=${'artCantidad' + articulo.id} value=${articulo.cantidad} min=0 /></td>
         <td class='table-cell-codigo'>${articulo.codigo}</td>
         <td class='table-cell-descripcion'>${articulo.descripcion}</td>
+        <td class='table-cell-stock ${articulo.stock < 0 ? 'low-stock' : ''}'>${articulo.stock}</td>
         <td class='table-cell-precioBase' id=${'artPrecioBase' + articulo.id}>${articulo.precioBase}</td>
         <td class='table-cell-precioUnitario'><input type='number' id=${'artPrecioUnitario' + articulo.id} value=${articulo.precioUnitario} min=0 /></td>
         <td class='table-cell-precioTotal' id=${'artPrecioTotal' + articulo.id}>${articulo.precioTotal}</td>
@@ -117,6 +118,15 @@ export default class Factura {
   updateTotal () {
     document.querySelector('#table-footer-total').textContent = (this.precioTotal).toFixed(2);
   }
+
+  removeFromDOM () {
+    tbodyDOM.innerHTML = '';
+    document.querySelector('#table-footer-total').textContent = '';
+    clienteDOM.value = '';
+    vendedorDOM.value = '';
+    descuentoDOM.value = '';
+    turnoDOM.value = '';
+  }
 }
 
 class ItemFactura {
@@ -146,6 +156,7 @@ class ItemFactura {
   }
 
   get id () { return this._id; }
+  get stock () { return this._stock; }
   get cantidad () { return this._cantidad; }
   get codigo () { return this._codigo; }
   get descripcion () { return this._descripcion; }
@@ -176,5 +187,12 @@ class ItemFactura {
   }
 
   toServerJsonAPI () {
+    return {
+      FACTURA_ID: this._parent.numeroFactura,
+      CANTIDAD: this.cantidad,
+      PRECIO_UNITARIO: this.precioUnitario,
+      DESCUENTO: this.descuentoIndividual,
+      ARTICULO_ID: this.id
+    };
   }
 }

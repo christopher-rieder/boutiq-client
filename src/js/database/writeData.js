@@ -1,5 +1,8 @@
+// const URL = 'http://181.167.238.144:3000';
+const URL = 'http://127.0.0.1:3000';
+
 function postFactura (factura) {
-  return window.fetch('http://192.168.0.2:3000/api/factura', {
+  return window.fetch(`${URL}/api/factura`, {
     method: 'post',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -11,7 +14,7 @@ function postFactura (factura) {
 }
 
 async function postItemFactura (item) {
-  return window.fetch('http://192.168.0.2:3000/api/itemFactura', {
+  return window.fetch(`${URL}/api/itemFactura`, {
     method: 'post',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -22,7 +25,7 @@ async function postItemFactura (item) {
 }
 
 async function postObjectToAPI (item, endpoint) {
-  return window.fetch('http://192.168.0.2:3000/api/' + endpoint, {
+  return window.fetch(`${URL}/api/` + endpoint, {
     method: 'post',
     headers: {
       'Accept': 'application/json, text/plain, */*',
