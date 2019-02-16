@@ -5,7 +5,7 @@ import {format as dateFormat} from 'date-fns';
 import {errorShakeEffect} from '../components/effects';
 import {condicionesPago, descuentoMax} from '../constants/bussinessConstants';
 import Factura from './Factura';
-import {condicionPagoDOM, descuentoDOM} from '../utilities/selectors';
+import {condicionPagoDOM, descuentoDOM, codigoDOM} from '../utilities/selectors';
 
 // import React, { Component } from 'react';
 // import ReactDOM from 'react-dom';
@@ -27,6 +27,11 @@ async function initialLoad () {
     option.innerHTML = condicion;
     condicionPagoDOM.appendChild(option);
   });
+
+  setTimeout(e => addVentaItem('ZH2932030828'), 500);
+  setTimeout(e => addVentaItem('5985561826014'), 600);
+  setTimeout(e => addVentaItem('4883803077006'), 700);
+  setTimeout(e => addVentaItem('4883803077006'), 2000);
 }
 
 // REGISTER LISTENERS
@@ -58,6 +63,23 @@ descuentoDOM.addEventListener('input', event => {
 
 condicionPagoDOM.addEventListener('change', event => {
   window.factura.condicionDePago = event.target.value;
+});
+
+codigoDOM.addEventListener('search', async (event) => {
+  const added = await addVentaItem(event.target.value);
+  if (added) {
+    // positive feedback
+    // TODO: TOAST?
+    var aud = new window.Audio(audioOk);
+    aud.play();
+  } else {
+    // negative feedback
+    errorShakeEffect(event.target);
+    var aud2 = new window.Audio(audioError);
+    aud2.play();
+  }
+  event.target.value = '';
+  event.target.focus();
 });
 
 async function onSubmit (event) {
@@ -105,30 +127,18 @@ async function onSubmit (event) {
 //   componentDidMount () {
 //     // TODO: get turno
 //     this.codigoInput.current.focus();
-//     setTimeout(e => this.addVentaItem('ZH2932030828'), 100);
-//     setTimeout(e => this.addVentaItem('5985561826014'), 200);
-//     setTimeout(e => this.addVentaItem('4883803077006'), 300);
-//     setTimeout(e => this.addVentaItem('4883803077006'), 3000);
 //   }
 
-async function addItem (event) { // ZH2932030828
-  let codigo = codigoDOM.value;
+async function addVentaItem (codigo) { // ZH2932030828
   if (!codigo) return false;
   let articuloData = await databaseRead.getArticuloByCodigo(codigo);
   // if found in database, add, there can be no error after this;
   // else display error, codigo not found or database error.
-  if (articuloData) {
-    // TODO: USER POSITIVE FEEDBACK. TOAST?
+  if (articuloData !== undefined) {
     window.factura.addItem(articuloData);
-    var aud = new window.Audio(audioOk);
-    aud.play();
-  } else {
-    errorShakeEffect(this.codigoInput.current);
-    var aud2 = new window.Audio(audioError);
-    aud2.play();
   }
 
-  codigoDOM.focus();
+  return articuloData !== undefined;
 }
 
 // async function selectClient (nro) {

@@ -6,8 +6,12 @@ const vendedorDOM = document.querySelector('#venta-vendedor');
 const turnoDOM = document.querySelector('#venta-turno');
 const fechaDOM = document.querySelector('#venta-fecha');
 const condicionPagoDOM = document.querySelector('#venta-condicion-de-pago');
+const codigoDOM = document.querySelector('#venta-codigo');
+const tbodyDOM = document.querySelector('#tbody');
 
 export {
+  codigoDOM,
+  tbodyDOM,
   facturaDOM,
   clienteDOM,
   descuentoDOM,

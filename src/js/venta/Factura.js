@@ -1,5 +1,6 @@
 import {format as dateFormat} from 'date-fns';
-import {facturaDOM, clienteDOM, vendedorDOM, descuentoDOM, turnoDOM} from '../utilities/selectors';
+import {facturaDOM, clienteDOM, vendedorDOM, descuentoDOM, turnoDOM, tbodyDOM} from '../utilities/selectors';
+import {descuentoMax} from '../constants/bussinessConstants';
 
 export default class Factura {
   constructor (numeroFactura, cliente, vendedor, turno) {
@@ -71,22 +72,43 @@ export default class Factura {
   }
 
   async addItem (articuloData) {
-    const articulo = this.itemsFactura.find(item => item.id === articuloData.id);
+    let articulo = this.itemsFactura.find(item => item.id === articuloData.id);
     if (articulo) {
       articulo.cantidad += 1;
     } else { // add new articulo
-      const articulo = new ItemFactura(articuloData);
+      articulo = new ItemFactura(articuloData);
       this.itemsFactura.push(articulo);
-    }
+      const markup = `
+      <tr id=${'art' + articulo.id}>
+        <td><input type='number' id=${'artCantidad' + articulo.id} value=${articulo.cantidad} min=0 /></td>
+        <td>${articulo.codigo}</td>
+        <td>${articulo.descripcion}</td>
+        <td><input type='number' id=${'artPrecioUnitario' + articulo.id} value=${articulo.precioUnitario} min=0 /></td>
+        <td id=${'artPrecioTotal' + articulo.id}>${articulo.precioTotal}</td>
+        <td><input type='number' id=${'artDescuentoIndividual' + articulo.id} value=${articulo.descuentoIndividual} min=0 max=${descuentoMax} /></td>
+      </tr>`;
 
-    // TODO: MAKE DOM NODES. PASS IN CONSTRUCTOR?
+      tbodyDOM.insertAdjacentHTML('beforeend', markup);
+
+      document.querySelector('#artCantidad' + articulo.id).addEventListener('input', event => {
+        articulo.cantidad = event.target.value;
+        if (parseInt(event.target.value) === 0) {
+          this.deleteItem(articulo.id);
+        }
+      });
+      document.querySelector('#artPrecioUnitario' + articulo.id).addEventListener('input', event => {
+        articulo.precioUnitario = event.target.value;
+      });
+      document.querySelector('#artDescuentoIndividual' + articulo.id).addEventListener('input', event => {
+        articulo.descuentoIndividual = event.target.value;
+      });
+    }
   }
 
   deleteItem (id) {
-    const articulo = this.itemsFactura.find(item => item.id === id);
-    this.itemsFactura = this.itemsFactura.filter(item => item.id === id);
-
-    // TODO: DESTROY DOM NODES.
+    this.itemsFactura = this.itemsFactura.filter(item => item.id !== id);
+    tbodyDOM.children['art' + id].remove();
+    this.fullViewUpdate();
   }
 }
 
@@ -102,15 +124,47 @@ class ItemFactura {
     this._marca = articulo.MARCA;
     this._cantidad = 1;
     this._descuentoIndividual = articulo.PROMO_BOOL ? articulo.DESCUENTO_PROMO : 0;
+    this.updatePrice();
   }
 
   updatePrice (descuento = 0, condicionDePago = 'EFECTIVO') {
-    const tipoPrecio = condicionDePago === 'EFECTIVO' ? 'precioContado' : 'precioLista';
-    this._precioUnitario = this[tipoPrecio] * (1 - descuento / 100) * 100 * (1 - this.descuentoIndividual / 100) * 100;
+    const tipoPrecio = condicionDePago === 'EFECTIVO' ? '_precioContado' : '_precioLista';
+    this._precioUnitario = Math.round(this[tipoPrecio] * (1 - descuento / 100) * (1 - this._descuentoIndividual / 100));
   }
 
-  get montoTotal () {
-    return this._precioUnitario * this._cantidad;
+  get id () { return this._id; }
+  get cantidad () { return this._cantidad; }
+  get codigo () { return this._codigo; }
+  get descripcion () { return this._descripcion; }
+  get precioUnitario () { return this._precioUnitario; }
+  get descuentoIndividual () { return this._descuentoIndividual; }
+  get precioTotal () { return this._precioUnitario * this._cantidad; }
+
+  set cantidad (value) {
+    this._cantidad = parseInt(value) >= 0 ? parseInt(value) : 0;
+    document.querySelector('#artCantidad' + this.id).value = this._cantidad;
+    document.querySelector('#artPrecioTotal' + this.id).textContent = this.precioTotal;
+  }
+
+  set precioUnitario (value) {
+    this._precioUnitario = parseInt(value) >= 0 ? parseInt(value) : 0;
+    document.querySelector('#artPrecioUnitario' + this.id).value = this._precioUnitario;
+    document.querySelector('#artPrecioTotal' + this.id).textContent = this.precioTotal;
+  }
+
+  set descuentoIndividual (value) {
+    console.log(value);
+    // if (parseFloat(value) > descuentoMax) {
+    //   value = descuentoMax;
+    // }
+    // if (parseFloat(value) < 0 || isNaN(parseFloat(value))) {
+    //   value = 0;
+    // }
+    this._descuentoIndividual = (value);
+    this.updatePrice();
+    // document.querySelector('#artDescuentoIndividual' + this.id).value = value;
+    document.querySelector('#artPrecioUnitario' + this.id).value = this._precioUnitario;
+    document.querySelector('#artPrecioTotal' + this.id).textContent = this.precioTotal;
   }
 
   toServerJsonAPI () {
