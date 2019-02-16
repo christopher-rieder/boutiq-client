@@ -1,0 +1,23 @@
+body {
+  font-family: sans-serif;
+}
+
+label {
+  margin-right: 1rem;
+  text-transform: capitalize;
+}
+
+input {
+  padding: 4px;
+  margin: 8px;
+}
+
+.main-grid {
+  padding: 8px;
+  margin: 8px;
+  width: 500px;
+
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  align-items: center;
+}

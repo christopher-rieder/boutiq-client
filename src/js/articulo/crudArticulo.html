@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>CRUD ARTICULOS</title>
+  <link rel="stylesheet" href="crudArticulo.css">
+</head>
+
+<body>
+  <header>
+    <h1 class="crud-articulo__heading">
+      CRUD ARTICULOS
+    </h1>
+  </header>
+  <main>
+    <div class="main-grid">
+      <label for="crud-articulo__id">id</label>
+      <input disabled type="text" id="crud-articulo__id" placeholder="id">
+      <label for="crud-articulo__codigo">codigo</label>
+      <input type="text" id="crud-articulo__codigo" placeholder="codigo">
+      <label for="crud-articulo__descripcion">descripcion</label>
+      <input type="text" id="crud-articulo__descripcion" placeholder="descripcion">
+      <label for="crud-articulo__precio-lista">precio lista</label>
+      <input type="number" id="crud-articulo__precio-lista" placeholder="precio lista">
+      <label for="crud-articulo__precio-contado">precio contado</label>
+      <input type="number" id="crud-articulo__precio-contado" placeholder="precio contado">
+      <label for="crud-articulo__precio-costo">precio costo</label>
+      <input type="number" id="crud-articulo__precio-costo" placeholder="precio costo">
+      <label for="crud-articulo__stock">stock</label>
+      <input type="number" id="crud-articulo__stock" placeholder="stock">
+      <label for="crud-articulo__rubro">rubro</label>
+      <select id="crud-articulo__rubro" placeholder=""></select>
+      <label for="crud-articulo__marca">marca</label>
+      <select id="crud-articulo__marca" placeholder=""></select>
+      <label for="crud-articulo__promo">promo</label>
+      <input type="checkbox" id="crud-articulo__promo">
+      <label for="crud-articulo__descuento">descuento</label>
+      <input type="number" id="crud-articulo__descuento" placeholder="descuento">
+    </div>
+    <div>
+      <button class="recargar">Recargar de base</button>
+      <button class="guardar">Guardar</button>
+    </div>
+  </main>
+</body>
+<script src="crudArticulo.js"></script>
+
+</html>
