@@ -6,18 +6,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-  <link rel="stylesheet" href="../../vendor/slickgrid/slick.grid.css" type="text/css" />
-  <link rel="stylesheet" href="../../vendor/slickgrid/slick.grid.css" type="text/css" />
-  <link rel="stylesheet" href="../../vendor/slickgrid/controls/slick.pager.css" type="text/css" />
-  <link rel="stylesheet" href="../../vendor/slickgrid/css/smoothness/jquery-ui-1.11.3.custom.css" type="text/css" />
-  <link rel="stylesheet" href="../../vendor/slickgrid/examples.css" type="text/css" />
-  <link rel="stylesheet" href="../../vendor/slickgrid/controls/slick.columnpicker.css" type="text/css" />
   <link rel="stylesheet" href="venta.css" />
   <title>Venta</title>
 </head>
 
 <body>
-  <div id="app"></div>
+  <div>
+    <form onSubmit={this.onSubmit} class='venta' id='venta'>
+      <div class='panel'>
+        <div>
+          <label class=venta__label htmlFor=venta-factura>Factura</label>
+          <input type='text' disabled name=venta-factura id=venta-factura />
+        </div>
+        <div>
+          <label class=venta__label htmlFor=venta-cliente>Cliente</label>
+          <input type='text' disabled name=venta-cliente id=venta-cliente />
+        </div>
+      </div>
+      <div class='panel'>
+        <div>
+          <label htmlFor='venta-condicion-de-pago'>Condicion de pago</label>
+          <select name='venta-condicion-de-pago' id='venta-condicion-de-pago'>
+          </select>
+        </div>
+        <div>
+          <label class=venta__label htmlFor=venta-descuento>Descuento</label>
+          <input type='text' autoComplete='off' name=venta-descuento id=venta-descuento value=0 />
+        </div>
+      </div>
+      <div class='panel'>
+        <InputText context='venta' tipo='codigo' value={this.state.codigo} onChange={this.handleCodigo} ref={this.codigoInput} />
+        <button class='codigo-search' onClick={this.addItem}>BUTTON</button>
+      </div>
+      <div class='panel'>
+        <div>
+          <label class=venta__label htmlFor=venta-observaciones>Observaciones</label>
+          <input type='text' name=venta-observaciones id=venta-observaciones />
+        </div>
+      </div>
+      <table id='table'>
+        <thead>
+          <tr>
+            <th>Cantidad</th>
+            <th>Codigo</th>
+            <th>Descripcion</th>
+            <th>Precio Unitario</th>
+            <th>Precio Total</th>
+            <th>Descuento</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>&horbar;</td>
+            <td>&horbar;</td>
+            <td>&horbar;</td>
+            <td>&horbar;</td>
+            <td>&horbar;</td>
+            <td>&horbar;</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class='panel'>
+        <div>
+          <label class=venta__label htmlFor=venta-vendedor>Vendedor</label>
+          <input type='text' disabled name=venta-vendedor id=venta-vendedor />
+        </div>
+        <div>
+          <label class=venta__label htmlFor=venta-turno>Turno</label>
+          <input type='text' disabled name=venta-turno id=venta-turno />
+        </div>
+        <div>
+          <label class=venta__label htmlFor=venta-fecha>Fecha</label>
+          <input type='text' disabled name=venta-fecha id=venta-fecha />
+        </div>
+      </div>
+    </form>
+  </div>
 </body>
 <script src="venta.js"></script>
 
