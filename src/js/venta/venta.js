@@ -5,7 +5,7 @@ import {format as dateFormat} from 'date-fns';
 import {errorShakeEffect} from '../components/effects';
 import {condicionesPago, descuentoMax} from '../constants/bussinessConstants';
 import Factura from './Factura';
-import {condicionPagoDOM, descuentoDOM, codigoDOM} from '../utilities/selectors';
+import {facturaDOM, condicionPagoDOM, descuentoDOM, codigoDOM, fechaDOM} from '../utilities/selectors';
 
 // import React, { Component } from 'react';
 // import ReactDOM from 'react-dom';
@@ -15,6 +15,7 @@ let audioOk = require('../../resources/audio/ok.wav');
 initialLoad();
 
 async function initialLoad () {
+  fechaDOM.value = dateFormat(new Date(), 'MM/dd/yyyy');
   const numeroFactura = await databaseRead.getNewNumeroFactura();
   const cliente = await databaseRead.getClienteById(1);
   const vendedor = await databaseRead.getVendedorById(1);
@@ -27,12 +28,16 @@ async function initialLoad () {
     option.innerHTML = condicion;
     condicionPagoDOM.appendChild(option);
   });
-
-  setTimeout(e => addVentaItem('ZH2932030828'), 500);
-  setTimeout(e => addVentaItem('5985561826014'), 600);
-  setTimeout(e => addVentaItem('4883803077006'), 700);
-  setTimeout(e => addVentaItem('4883803077006'), 2000);
 }
+
+document.addEventListener('dblclick', event => {
+  if (event.shiftKey) {
+    setTimeout(e => addVentaItem('ZH2932030828'), 500);
+    setTimeout(e => addVentaItem('5985561826014'), 600);
+    setTimeout(e => addVentaItem('4883803077006'), 700);
+    setTimeout(e => addVentaItem('4883803077006'), 2000);
+  }
+});
 
 // REGISTER LISTENERS
 
