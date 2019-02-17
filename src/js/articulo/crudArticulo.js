@@ -17,13 +17,14 @@ const selectorsDOM = {
 
 window.addEventListener('load', async event => {
   loadTables();
-  const url = new URL(document.URL);
-  const searchParams = new URLSearchParams(url.search);
-  const cod = searchParams.get('codigo');
-  let articulo = await databaseRead.getArticuloByCodigo(cod);
-  if (articulo) {
-    loadData(articulo);
-  }
+  // TODO: GET DATA TO START EDITING AN ARTICULO WITH THE ID OR CODIGO PASSED THROUGH PARAMETER
+  // const url = new URL(document.URL);
+  // const searchParams = new URLSearchParams(url.search);
+  // const cod = searchParams.get('codigo');
+  // let articulo = await databaseRead.getArticuloByCodigo(cod);
+  // if (articulo) {
+  //   loadData(articulo);
+  // }
 });
 
 document.querySelector('#search-codigo').addEventListener('search', async event => {
@@ -76,7 +77,7 @@ async function loadTables () {
 function setListeners (articulo, supportTables) {
   // MAIN LISTENER
   // IT DEPENDS OF CORRECTLY NAMING THE IDS OF HTML ELEMENTS
-  window.addEventListener('input', event => {
+  function mainListener (event) {
     const property = event.target.id.replace('crud-articulo__', '');
     if (event.target.type === 'checkbox') {
       articulo[property] = !!(event.target.checked);
@@ -90,11 +91,13 @@ function setListeners (articulo, supportTables) {
     if (event.target.nodeName === 'INPUT') {
       articulo[property] = event.target.value;
     }
-  });
+  }
+  window.removeEventListener('input', mainListener);
+  window.addEventListener('input', mainListener);
 
   document.querySelector('.btn-guardar').addEventListener('click', event => {
     console.log(articulo);
-    // databaseWrite.putObjectToAPI(articulo, 'articulo');
+    databaseWrite.putObjectToAPI(articulo, 'articulo');
     window.location.reload(true);
   });
 }

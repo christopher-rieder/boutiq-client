@@ -15,32 +15,32 @@ async function getAllArticulos () {
 
 async function getArticuloByCodigo (codigo) {
   const res = await axios(`${URL}/api/articulo/codigo/${codigo}`);
-  return res.data[0];
+  return res.data;
 }
 
 async function getArticuloById (id) {
   const res = await axios(`${URL}/api/articulo/id/${id}`);
-  return res.data[0];
+  return res.data;
 }
 
 async function getClienteById (id) {
   const res = await axios(`${URL}/api/cliente/${id}`);
-  return res.data[0];
+  return res.data;
 }
 
 async function getVendedorById (id) {
   const res = await axios(`${URL}/api/vendedor/${id}`);
-  return res.data[0];
+  return res.data;
 }
 
 async function getNewNumeroFactura () {
   let lastNumeroFactura = await axios(`${URL}/api/factura/last`);
-  return lastNumeroFactura.data + 1;
+  return lastNumeroFactura.data.lastId + 1;
 }
 
 async function getTurnoActual () {
   let turnoActual = await axios(`${URL}/api/turno/actual`);
-  return turnoActual.data[0];
+  return turnoActual.data;
 }
 
 export {
