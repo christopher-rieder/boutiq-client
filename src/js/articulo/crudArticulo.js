@@ -1,36 +1,48 @@
 import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
-import Articulo from './articulo';
 
-window.articulo = {};
-window.marcas = {};
-window.rubros = {};
 const selectorsDOM = {};
 
 async function loadData () {
-  let articuloData = await databaseRead.getArticuloById(68);
-  window.articulo = new Articulo(articuloData, window.rubros, window.marcas);
+  let articulo = await databaseRead.getArticuloById(68);
 
-  Object.keys(window.articulo).forEach(prop => {
+  // SET INPUTS WITH THE DATA LOADED FROM THE DATABASE
+  // AND ADD LISTENERS TO REFLECT THE STATE OF THE VIEW IN THE DATA
+  Object.keys(articulo).forEach(prop => {
     selectorsDOM[prop] = document.querySelector('#crud-articulo__' + prop);
     if (selectorsDOM[prop].tagName === 'INPUT' && selectorsDOM[prop].type !== 'checkbox') {
-      selectorsDOM[prop].value = window.articulo[prop];
+      selectorsDOM[prop].value = articulo[prop];
       selectorsDOM[prop].addEventListener('input', event => {
-        window.articulo[prop] = event.target.value;
+        articulo[prop] = event.target.value;
+      });
+    }
+    if (selectorsDOM[prop].tagName === 'INPUT' && selectorsDOM[prop].type === 'checkbox') {
+      selectorsDOM[prop].checked = !!(articulo[prop]);
+      selectorsDOM[prop].addEventListener('change', event => {
+        articulo[prop] = !!(event.target.checked);
       });
     }
   });
 
-  selectorsDOM.promo.checked = !!(window.articulo.promo);
-  selectorsDOM.promo.addEventListener('change', event => {
-    window.articulo.promo = !!(event.target.checked);
+  const marcas = await loadMarcas(articulo);
+  const rubros = await loadRubros(articulo);
+
+  window.addEventListener('dblclick', event => {
+    if (event.ctrlKey && event.shiftKey) {
+      putArticulo();
+    }
   });
 
-  const marcas = await loadMarcas();
-  const rubros = await loadRubros();
+  window.addEventListener('input', event => {
+    console.log('Event Captured From window', event);
+  });
+
+  async function putArticulo () {
+    databaseWrite.putObjectToAPI(articulo, 'articulo');
+  }
 }
 
-async function loadMarcas () {
+async function loadMarcas (articulo) {
   let marcas = await databaseRead.getTable('marca');
   var indexMarca = 0;
   marcas.forEach((marca, i) => {
@@ -38,23 +50,23 @@ async function loadMarcas () {
     option.dataset.id = marca.id;
     option.value = marca.NOMBRE;
     option.innerHTML = marca.NOMBRE;
-    if (marca.id === window.articulo.marca) {
+    if (marca.id === articulo.MARCA_ID) {
       indexMarca = i;
-      window.articulo.marca = marca;
+      articulo.MARCA_ID = marca.id;
     }
-    selectorsDOM.marca.appendChild(option);
+    selectorsDOM.MARCA_ID.appendChild(option);
   });
 
-  selectorsDOM.marca.selectedIndex = indexMarca;
-  selectorsDOM.marca.addEventListener('change', event => {
-    const id = document.querySelector('#crud-articulo__marca').selectedOptions[0].dataset.id;
-    window.articulo.marca = marcas.filter(marca => marca.id === parseInt(id))[0];
+  selectorsDOM.MARCA_ID.selectedIndex = indexMarca;
+  selectorsDOM.MARCA_ID.addEventListener('change', event => {
+    const id = document.querySelector('#crud-articulo__MARCA_ID').selectedOptions[0].dataset.id;
+    articulo.MARCA_ID = marcas.filter(marca => marca.id === parseInt(id))[0].id;
   });
 
   return marcas;
 }
 
-async function loadRubros () {
+async function loadRubros (articulo) {
   let rubros = await databaseRead.getTable('rubro');
   var indexRubro = 0;
 
@@ -63,45 +75,20 @@ async function loadRubros () {
     option.dataset.id = rubro.id;
     option.value = rubro.NOMBRE;
     option.innerHTML = rubro.NOMBRE;
-    if (rubro.id === window.articulo.rubro) {
+    if (rubro.id === articulo.RUBRO_ID) {
       indexRubro = i;
-      window.articulo.rubro = rubro;
+      articulo.RUBRO_ID = rubro.id;
     }
-    selectorsDOM.rubro.appendChild(option);
+    selectorsDOM.RUBRO_ID.appendChild(option);
   });
 
-  selectorsDOM.rubro.selectedIndex = indexRubro;
-  selectorsDOM.rubro.addEventListener('change', event => {
-    const id = document.querySelector('#crud-articulo__rubro').selectedOptions[0].dataset.id;
-    window.articulo.rubro = rubros.filter(rubro => rubro.id === parseInt(id))[0];
+  selectorsDOM.RUBRO_ID.selectedIndex = indexRubro;
+  selectorsDOM.RUBRO_ID.addEventListener('change', event => {
+    const id = document.querySelector('#crud-articulo__RUBRO_ID').selectedOptions[0].dataset.id;
+    articulo.RUBRO_ID = rubros.filter(rubro => rubro.id === parseInt(id))[0].id;
   });
 
   return rubros;
 }
 
 loadData();
-
-window.addEventListener('dblclick', event => {
-  if (event.ctrlKey && event.shiftKey) {
-    putArticulo();
-  }
-});
-
-async function putArticulo () {
-  const articuloData = {};
-
-  articuloData.id = window.articulo.id;
-  articuloData.CODIGO = window.articulo.codigo;
-  articuloData.DESCRIPCION = window.articulo.descripcion;
-  articuloData.PRECIO_LISTA = window.articulo.precioLista;
-  articuloData.PRECIO_CONTADO = window.articulo.precioContado;
-  articuloData.PRECIO_COSTO = window.articulo.precioCosto;
-  articuloData.STOCK = window.articulo.stock;
-  articuloData.RUBRO_ID = window.articulo.rubro.id;
-  articuloData.MARCA_ID = window.articulo.marca.id;
-  articuloData.PROMO_BOOL = window.articulo.promo ? 1 : 0;
-  articuloData.DESCUENTO_PROMO = window.articulo.descuento;
-
-  databaseWrite.putObjectToAPI(articuloData, 'articulo');
-  console.log(articuloData);
-}
