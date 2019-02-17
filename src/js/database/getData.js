@@ -3,16 +3,23 @@ import axios from 'axios';
 // const URL = 'http://181.167.238.144:3000';
 const URL = 'http://127.0.0.1:3000';
 
+async function getTable (table) {
+  const res = await axios(`${URL}/api/rawTables/${table}`);
+  return res.data;
+}
+
 async function getAllArticulos () {
   const res = await axios(`${URL}/api/rawTables/full_articulos`);
-  res.data[422].PROMO_BOOL = true; // FIXME: REMOVE, FOR TESTING PURPOSES.
-  res.data[12].PROMO_BOOL = true; // FIXME: REMOVE, FOR TESTING PURPOSES.
-  res.data[234].PROMO_BOOL = true; // FIXME: REMOVE, FOR TESTING PURPOSES.
   return res.data;
 }
 
 async function getArticuloByCodigo (codigo) {
-  const res = await axios(`${URL}/api/articulo/${codigo}`);
+  const res = await axios(`${URL}/api/articulo/codigo/${codigo}`);
+  return res.data[0];
+}
+
+async function getArticuloById (id) {
+  const res = await axios(`${URL}/api/articulo/id/${id}`);
   return res.data[0];
 }
 
@@ -37,9 +44,11 @@ async function getTurnoActual () {
 }
 
 export {
+  getTable,
   getAllArticulos,
   getTurnoActual,
   getArticuloByCodigo,
+  getArticuloById,
   getClienteById,
   getVendedorById,
   getNewNumeroFactura

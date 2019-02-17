@@ -36,8 +36,22 @@ async function postObjectToAPI (item, endpoint) {
     .then(res => res.lastId);
 }
 
+async function putObjectToAPI (item, endpoint) {
+  console.log(`${URL}/api/` + endpoint);
+  return window.fetch(`${URL}/api/` + endpoint, {
+    method: 'put',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(item)
+  }).then(res => res.json())
+    .then(res => res.lastId);
+}
+
 export {
   postFactura,
   postObjectToAPI,
+  putObjectToAPI,
   postItemFactura
 };
