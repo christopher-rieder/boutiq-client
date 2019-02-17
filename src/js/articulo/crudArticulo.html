@@ -14,14 +14,16 @@
     <h1 class="crud-articulo__heading">
       CRUD ARTICULOS
     </h1>
+    <label for="crud-articulo__codigo">codigo</label>
+    <input type="search" id="search-codigo" placeholder="codigo" autofocus autocomplete="off">
   </header>
   <main>
     <div class="main-grid">
       <label for="crud-articulo__id">id</label>
-      <input disabled type="text" id="crud-articulo__id" placeholder="id">
+      <input disabled type="text" id="crud-articulo__id" value="---------------">
       <div id='idOK'></div>
       <label for="crud-articulo__codigo">codigo</label>
-      <input type="text" id="crud-articulo__CODIGO" placeholder="codigo">
+      <input type="text" id="crud-articulo__CODIGO" placeholder="codigo" autocomplete="off">
       <div id='codigoOK'></div>
       <label for="crud-articulo__descripcion">descripcion</label>
       <input type="text" id="crud-articulo__DESCRIPCION" placeholder="descripcion">
@@ -56,8 +58,7 @@
       <div id='descuentoOK'></div>
     </div>
     <div>
-      <button class="recargar">Recargar de base</button>
-      <button class="guardar">Guardar</button>
+      <button class="btn-guardar">Guardar</button>
     </div>
   </main>
 </body>
