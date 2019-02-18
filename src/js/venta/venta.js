@@ -21,6 +21,7 @@ async function initialLoad () {
     option.innerHTML = tipoPago.NOMBRE;
     condicionPagoDOM.appendChild(option);
   });
+  document.querySelector('html').style = 'visibility: visible;'; // RENDER ONLY AFTER LOADING THE PAGE
 }
 
 async function newFactura () {

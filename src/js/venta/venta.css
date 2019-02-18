@@ -8,6 +8,10 @@ body {
   padding: 24px;
 }
 
+html {
+  visibility: hidden;
+}
+
 .panel {
   display: flex;
   margin-bottom: 2rem;
