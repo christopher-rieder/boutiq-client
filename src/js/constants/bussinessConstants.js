@@ -1,14 +1,12 @@
-const condicionesPago = {
-  'EFECTIVO': 1,
-  'DEBITO': 2,
-  'TARJETA - POSNET 1': 3,
-  'TARJETA - POSNET 2': 4,
-  'CREDITO PROPIO': 5
-};
+import * as databaseRead from '../database/getData';
+
+async function getTiposDePago () {
+  return databaseRead.getTable('TIPO_PAGO');
+}
 
 const descuentoMax = 80; // this would be 80%, or 0.8;
 
 export {
-  condicionesPago,
+  getTiposDePago,
   descuentoMax
 };

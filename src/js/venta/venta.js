@@ -1,25 +1,24 @@
 import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
 import {format as dateFormat} from 'date-fns';
-// import {Input, InputText} from '../components/inputs';
 import {errorShakeEffect} from '../components/effects';
-import {condicionesPago, descuentoMax} from '../constants/bussinessConstants';
+import {getTiposDePago, descuentoMax} from '../constants/bussinessConstants';
 import Factura from './Factura';
-import {facturaDOM, condicionPagoDOM, descuentoDOM, codigoDOM, fechaDOM, tbodyDOM} from '../utilities/selectors';
+import {condicionPagoDOM, descuentoDOM, codigoDOM, fechaDOM} from '../utilities/selectors';
 
-// import React, { Component } from 'react';
-// import ReactDOM from 'react-dom';
 let audioError = require('../../resources/audio/error.wav');
 let audioOk = require('../../resources/audio/ok.wav');
+let tiposPago;
 
 initialLoad();
 
 async function initialLoad () {
+  tiposPago = await getTiposDePago();
   await newFactura();
-  Object.keys(condicionesPago).forEach(condicion => {
+  tiposPago.forEach(tipoPago => {
     var option = document.createElement('option');
-    option.value = condicion;
-    option.innerHTML = condicion;
+    option.value = tipoPago.ID;
+    option.innerHTML = tipoPago.NOMBRE;
     condicionPagoDOM.appendChild(option);
   });
 }
@@ -35,6 +34,9 @@ async function newFactura () {
   const turno = await databaseRead.getTurnoActual();
 
   window.factura = new Factura(numeroFactura, cliente, vendedor, turno);
+  // using global object.
+  // is there a better way without reattaching the DOM nodes
+  // or leaking memory with closures containing previous facturas?
 }
 
 // FIXME: THIS IS FOR TESINTG PURPOSES ONLY
@@ -143,16 +145,12 @@ async function onSubmit (event) {
   newFactura();
 }
 
-//   componentDidMount () {
-//     // TODO: get turno
-//     this.codigoInput.current.focus();
-//   }
-
-async function addVentaItem (codigo) { // ZH2932030828
+async function addVentaItem (codigo) {
   if (!codigo) return false;
   let articuloData = await databaseRead.getArticuloByCodigo(codigo);
   // if found in database, add, there can be no error after this;
   // else display error, codigo not found or database error.
+  // TODO: INFORM USER IN CASE OF ERROR
   if (articuloData !== undefined) {
     window.factura.addItem(articuloData);
   }
