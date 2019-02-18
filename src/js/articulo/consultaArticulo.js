@@ -7,6 +7,20 @@ import columnFilterFunctions from './columnFilterFunctions';
 import options from './gridOptions';
 import {getAllArticulos} from '../database/getData';
 
+document.addEventListener('dblclick', event => {
+  if (/l0 r0/.test(event.target.className)) {
+    window.handle = window.open('http://localhost:1234/?codigo=' + event.target.textContent, '_blank');
+    // TODO: CLOSE AFTER SUBMITTING. HOW???
+    // window.onsubmit = setTimeout(() => { // THIS WORKS
+    //   handle.close();
+    // }, 1000);
+
+    // handle.addEventListener('click', event => {
+    //   handleCloser();
+    // });
+  }
+});
+
 require('slickgrid/slick.core.js');
 require('slickgrid/slick.grid.js');
 require('slickgrid/slick.formatters.js');
@@ -52,6 +66,7 @@ let columns = [
     field: 'CODIGO',
     minWidth: 120,
     cssClass: 'cell-title',
+    editor: window.Slick.Editors.Text,
     sortable: true
   },
   {
@@ -59,6 +74,7 @@ let columns = [
     name: 'Descripcion',
     field: 'DESCRIPCION',
     minWidth: 300,
+    editor: window.Slick.Editors.Text,
     cssClass: 'cell-title',
     sortable: true
   },
