@@ -97,11 +97,18 @@ codigoDOM.addEventListener('search', async (event) => {
   const added = await addVentaItem(event.target.value);
   if (added) {
     // positive feedback
-    // TODO: TOAST?
+    dialogs.success(
+      'PRODUCTO AGREGADO', // Message text
+      {} // Additional options
+    );
     var aud = new window.Audio(audioOk);
     aud.play();
   } else {
     // negative feedback
+    dialogs.error(
+      'CODIGO NO EXISTENTE',
+      {} // Additional options
+    );
     errorShakeEffect(event.target);
     var aud2 = new window.Audio(audioError);
     aud2.play();
@@ -158,6 +165,8 @@ async function addVentaItem (codigo) {
   // TODO: INFORM USER IN CASE OF ERROR
   if (articuloData.id) {
     window.factura.addItem(articuloData);
+  } else {
+
   }
 
   return !!(articuloData.id);

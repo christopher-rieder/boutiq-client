@@ -1,6 +1,7 @@
 import {format as dateFormat} from 'date-fns';
 import {facturaDOM, clienteDOM, vendedorDOM, descuentoDOM, turnoDOM, tbodyDOM} from '../utilities/selectors';
 import {descuentoMax} from '../constants/bussinessConstants';
+import dialogs from '../utilities/dialogs';
 
 export default class Factura {
   constructor (numeroFactura, cliente, vendedor, turno) {
@@ -92,11 +93,27 @@ export default class Factura {
 
       tbodyDOM.insertAdjacentHTML('beforeend', markup);
 
+      const confirmDialog = targetDOM => {
+        dialogs.confirm(
+          confirmed => {
+            if (confirmed) {
+              this.deleteItem(articulo.id);
+            } else {
+              targetDOM.value = 1;
+            }
+          }, // Callback
+          'Quitar articulo de venta?', // Message text
+          'Si', // Confirm text
+          'No', // Cancel text
+          {} // Additional options
+        );
+      };
+
       document.querySelector('#artCantidad' + articulo.id).addEventListener('input', event => {
-        articulo.cantidad = event.target.value;
         if (parseInt(event.target.value) === 0) {
-          this.deleteItem(articulo.id);
+          confirmDialog(event.target);
         }
+        articulo.cantidad = event.target.value;
       });
       document.querySelector('#artPrecioUnitario' + articulo.id).addEventListener('input', event => {
         articulo.precioUnitario = event.target.value;
