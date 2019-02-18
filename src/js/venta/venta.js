@@ -2,6 +2,7 @@ import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
 import {format as dateFormat} from 'date-fns';
 import {errorShakeEffect} from '../components/effects';
+import dialogs from '../utilities/dialogs';
 import {getTiposDePago, descuentoMax} from '../constants/bussinessConstants';
 import Factura from './Factura';
 import {tiposPagoDOM, descuentoDOM, codigoDOM, fechaDOM} from '../utilities/selectors';
@@ -80,7 +81,10 @@ descuentoDOM.addEventListener('input', event => {
   if (parseFloat(event.target.value) > descuentoMax) {
     event.target.value = descuentoMax;
     errorShakeEffect(event.target);
-    // Toast(descuentoMax es el limite maximo);
+    dialogs.error(
+      'EL LIMITE DE DESCUENTO ES ' + parseFloat(event.target.value).toFixed(2), // Message text
+      {} // Additional options
+    );
   }
   window.factura.descuento = event.target.value;
 });
