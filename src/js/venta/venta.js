@@ -4,7 +4,7 @@ import {format as dateFormat} from 'date-fns';
 import {errorShakeEffect} from '../components/effects';
 import {getTiposDePago, descuentoMax} from '../constants/bussinessConstants';
 import Factura from './Factura';
-import {condicionPagoDOM, descuentoDOM, codigoDOM, fechaDOM} from '../utilities/selectors';
+import {tiposPagoDOM, descuentoDOM, codigoDOM, fechaDOM} from '../utilities/selectors';
 
 let audioError = require('../../resources/audio/error.wav');
 let audioOk = require('../../resources/audio/ok.wav');
@@ -17,9 +17,9 @@ async function initialLoad () {
   await newFactura();
   tiposPago.forEach(tipoPago => {
     var option = document.createElement('option');
-    option.value = tipoPago.ID;
+    option.value = tipoPago.id;
     option.innerHTML = tipoPago.NOMBRE;
-    condicionPagoDOM.appendChild(option);
+    tiposPagoDOM.appendChild(option);
   });
   document.querySelector('html').style = 'visibility: visible;'; // RENDER ONLY AFTER LOADING THE PAGE
 }
@@ -85,8 +85,8 @@ descuentoDOM.addEventListener('input', event => {
   window.factura.descuento = event.target.value;
 });
 
-condicionPagoDOM.addEventListener('change', event => {
-  window.factura.condicionDePago = event.target.value;
+tiposPagoDOM.addEventListener('change', event => {
+  window.factura.tipoPago = tiposPago[event.target.value - 1];
 });
 
 codigoDOM.addEventListener('search', async (event) => {
@@ -122,13 +122,13 @@ async function onSubmit (event) {
   });
 
   const precioTotal = window.factura.precioTotal;
-  const condicionDePago = window.factura.condicionDePago;
+  const tipoPagoId = window.factura.tipoPago.id; // FIXME RETURNS A OBJECT
 
-  if (condicionDePago === 'EFECTIVO') {
+  if (tipoPagoId === 1) { // ES EN EFECTIVO, DE CONTADO...
     const pago = {
       FACTURA_ID: facturaId,
       MONTO: precioTotal,
-      TIPO_PAGO_ID: condicionesPago[condicionDePago],
+      TIPO_PAGO_ID: tipoPagoId,
       ESTADO: 'PAGADO'
     };
     const pagoId = await databaseWrite.postObjectToAPI(pago, 'pago');
@@ -137,7 +137,7 @@ async function onSubmit (event) {
     const pago = {
       FACTURA_ID: facturaId,
       MONTO: precioTotal,
-      TIPO_PAGO_ID: condicionesPago[condicionDePago],
+      TIPO_PAGO_ID: tipoPagoId,
       ESTADO: 'PENDIENTE'
     };
     const pagoId = await databaseWrite.postObjectToAPI(pago, 'pago');

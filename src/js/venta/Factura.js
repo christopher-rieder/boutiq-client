@@ -14,7 +14,7 @@ export default class Factura {
     this._descuento = 0;
     this._turno = turno;
     this._anulada = false;
-    this._condicionDePago = 'EFECTIVO';
+    this._tipoPago = {id: 1};
     this.itemsFactura = [];
   }
 
@@ -26,7 +26,7 @@ export default class Factura {
   get turno () { return this._turno; }
   get anulada () { return this._anulada; }
   get anuladaSQLite () { return this._anulada ? 1 : 0; }
-  get condicionDePago () { return this._condicionDePago; }
+  get tipoPago () { return this._tipoPago; }
   get precioTotal () { return this.itemsFactura.reduce((monto, item) => monto + item.precioTotal, 0); }
 
   set cliente (obj) {
@@ -45,8 +45,8 @@ export default class Factura {
     this.itemsFactura.forEach(item => item.updatePrice());
   }
 
-  set condicionDePago (value) {
-    this._condicionDePago = value;
+  set tipoPago (value) {
+    this._tipoPago = value;
     this.itemsFactura.forEach(item => item.updatePrice());
   }
 
@@ -148,6 +148,7 @@ class ItemFactura {
   updatePrice (customPrice) {
     if (!customPrice) {
       this._precioUnitario = this.precioBase * (1 - this._parent.descuento / 100) * (1 - this._descuentoIndividual / 100);
+      this._precioUnitario = parseFloat(this._precioUnitario.toFixed(2));
     }
     document.querySelector('#artPrecioUnitario' + this.id).value = parseFloat(this.precioUnitario).toFixed(2);
     document.querySelector('#artPrecioTotal' + this.id).textContent = (this.precioTotal).toFixed(2);
@@ -164,7 +165,7 @@ class ItemFactura {
   get descuentoIndividual () { return this._descuentoIndividual; }
   get precioTotal () { return this._precioUnitario * this._cantidad; }
   get precioBase () {
-    const tipoPrecio = this._parent.condicionDePago === 'EFECTIVO' ? '_precioContado' : '_precioLista';
+    const tipoPrecio = this._parent.tipoPago.id === 1 ? '_precioContado' : '_precioLista';
     return this[tipoPrecio];
   }
 
