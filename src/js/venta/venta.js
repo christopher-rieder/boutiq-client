@@ -156,11 +156,11 @@ async function addVentaItem (codigo) {
   // if found in database, add, there can be no error after this;
   // else display error, codigo not found or database error.
   // TODO: INFORM USER IN CASE OF ERROR
-  if (articuloData !== undefined) {
+  if (articuloData.id) {
     window.factura.addItem(articuloData);
   }
 
-  return articuloData !== undefined;
+  return !!(articuloData.id);
 }
 
 // async function selectClient (nro) {
