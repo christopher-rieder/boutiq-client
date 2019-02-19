@@ -2,6 +2,8 @@ import {format as dateFormat} from 'date-fns';
 import {facturaDOM, clienteDOM, vendedorDOM, descuentoDOM, turnoDOM, tbodyDOM} from '../utilities/selectors';
 import {descuentoMax} from '../constants/bussinessConstants';
 import dialogs from '../utilities/dialogs';
+import * as d3Format from 'd3-format';
+const money = d3Format.format('($,.2f');
 
 export default class Factura {
   constructor (numeroFactura, cliente, vendedor, turno) {
@@ -133,7 +135,7 @@ export default class Factura {
   }
 
   updateTotal () {
-    document.querySelector('#table-footer-total').textContent = (this.precioTotal).toFixed(2);
+    document.querySelector('#table-footer-total').textContent = money(this.precioTotal);
   }
 
   removeFromDOM () {
@@ -165,11 +167,11 @@ class ItemFactura {
   updatePrice (customPrice) {
     if (!customPrice) {
       this._precioUnitario = this.precioBase * (1 - this._parent.descuento / 100) * (1 - this._descuentoIndividual / 100);
-      this._precioUnitario = parseFloat(this._precioUnitario.toFixed(2));
+      this._precioUnitario = parseFloat(this._precioUnitario);
     }
-    document.querySelector('#artPrecioUnitario' + this.id).value = parseFloat(this.precioUnitario).toFixed(2);
-    document.querySelector('#artPrecioTotal' + this.id).textContent = (this.precioTotal).toFixed(2);
-    document.querySelector('#artPrecioBase' + this.id).textContent = (this.precioBase).toFixed(2);
+    document.querySelector('#artPrecioUnitario' + this.id).value = parseFloat(this.precioUnitario);
+    document.querySelector('#artPrecioTotal' + this.id).textContent = money(this.precioTotal);
+    document.querySelector('#artPrecioBase' + this.id).textContent = money(this.precioBase);
     this._parent.updateTotal();
   }
 
@@ -193,9 +195,9 @@ class ItemFactura {
   }
 
   set precioUnitario (value) {
-    this._precioUnitario = parseFloat(value) >= 0 ? parseFloat(value).toFixed(2) : 0;
+    this._precioUnitario = parseFloat(value) >= 0 ? parseFloat(value) : 0;
     this._descuentoIndividual = 100 - (this._precioUnitario / this.precioBase * (1 - this._parent.descuento / 100)) * 100;
-    document.querySelector('#artDescuentoIndividual' + this.id).value = this._descuentoIndividual.toFixed(2);
+    document.querySelector('#artDescuentoIndividual' + this.id).value = this._descuentoIndividual;
     this.updatePrice(true);
   }
 
