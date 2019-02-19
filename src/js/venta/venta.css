@@ -24,29 +24,29 @@ html {
 }
 
 .table-header-cantidad {
-  width: 100px;
+  width: 2rem;
 }
 
 .table-header-codigo {
-  min-width: 150px;
-  width: 150px;
+  min-width: 12rem;
+  width: 12rem;
   max-width: max-content;
 }
 
 .table-header-descripcion {
-  width: 500px;
+  width: 30rem;
 }
 
 .table-header-stock {
-  width: 100px;
+  width: 3rem;
 }
 
-.table-header-precioBase {
-  width: 100px;
+.table-header-precio-base {
+  width: 6rem;
 }
 
 .table-header-precio-unitario {
-  width: 150px;
+  width: 8rem;
 }
 
 .table-precio-total {
