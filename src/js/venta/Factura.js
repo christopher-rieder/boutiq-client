@@ -3,7 +3,13 @@ import {facturaDOM, clienteDOM, vendedorDOM, descuentoDOM, turnoDOM, tbodyDOM} f
 import {descuentoMax} from '../constants/bussinessConstants';
 import dialogs from '../utilities/dialogs';
 import * as d3Format from 'd3-format';
-const money = d3Format.format('($,.2f');
+import {round} from '../utilities/math';
+const money = d3Format.formatLocale({
+  'decimal': ',',
+  'thousands': '.',
+  'grouping': [3],
+  'currency': ['$', '']
+}).format('($,.2f');
 
 export default class Factura {
   constructor (numeroFactura, cliente, vendedor, turno) {
@@ -171,11 +177,13 @@ class ItemFactura {
   }
 
   updatePrice (customPrice) {
-    if (!customPrice) {
-      this._precioUnitario = this.precioBase * (1 - this._parent.descuento / 100) * (1 - this._descuentoIndividual / 100);
-      this._precioUnitario = parseFloat(this._precioUnitario);
+    if (customPrice) {
+      this._descuentoIndividual = round(100 - (this._precioUnitario / this.precioBase * (1 - this._parent.descuento / 100)) * 100);
+      document.querySelector('#artDescuentoIndividual' + this.id).value = this._descuentoIndividual;
+    } else {
+      this._precioUnitario = round(this.precioBase * (1 - this._parent.descuento / 100) * (1 - this._descuentoIndividual / 100));
     }
-    document.querySelector('#artPrecioUnitario' + this.id).value = parseFloat(this.precioUnitario);
+    document.querySelector('#artPrecioUnitario' + this.id).value = this.precioUnitario;
     document.querySelector('#artPrecioTotal' + this.id).textContent = money(this.precioTotal);
     document.querySelector('#artPrecioBase' + this.id).textContent = money(this.precioBase);
     this._parent.updateTotal();
@@ -207,14 +215,12 @@ class ItemFactura {
   }
 
   set precioUnitario (value) {
-    this._precioUnitario = parseFloat(value) >= 0 ? parseFloat(value) : 0;
-    this._descuentoIndividual = 100 - (this._precioUnitario / this.precioBase * (1 - this._parent.descuento / 100)) * 100;
-    document.querySelector('#artDescuentoIndividual' + this.id).value = this._descuentoIndividual;
+    this._precioUnitario = parseFloat(value) >= 0 ? value : 0;
     this.updatePrice(true);
   }
 
   set descuentoIndividual (value) {
-    this._descuentoIndividual = value;
+    this._descuentoIndividual = parseFloat(value) >= 0 ? value : 0;
     this.updatePrice();
   }
 
