@@ -115,6 +115,12 @@ export default class Factura {
         if (parseInt(event.target.value) === 0) {
           confirmDialog(event.target);
         }
+        if (parseInt(event.target.value) > articulo.stock) {
+          event.target.classList.add('RED-TEXT');
+        }
+        if (parseInt(event.target.value) <= articulo.stock) {
+          event.target.classList.remove('RED-TEXT');
+        }
         articulo.cantidad = event.target.value;
       });
       document.querySelector('#artPrecioUnitario' + articulo.id).addEventListener('input', event => {
@@ -191,6 +197,12 @@ class ItemFactura {
   set cantidad (value) {
     this._cantidad = parseInt(value) >= 0 ? parseInt(value) : 0;
     document.querySelector('#artCantidad' + this.id).value = this._cantidad;
+    if (parseInt(value) > this.stock) {
+      document.querySelector('#artCantidad' + this.id).classList.add('RED-TEXT');
+    }
+    if (parseInt(value) <= this.stock) {
+      document.querySelector('#artCantidad' + this.id).classList.remove('RED-TEXT');
+    }
     this.updatePrice();
   }
 

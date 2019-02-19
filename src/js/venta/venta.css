@@ -23,18 +23,40 @@ html {
   color: red;
 }
 
-.table-header-cantidad,
-.table-header-descuentos,
-.table-precio-unitario,
-.table-precio-total {}
+.table-header-cantidad {
+  width: 100px;
+}
 
 .table-header-codigo {
   min-width: 150px;
+  width: 150px;
+  max-width: max-content;
 }
 
 .table-header-descripcion {
-  min-width: 500px;
+  width: 500px;
 }
+
+.table-header-stock {
+  width: 100px;
+}
+
+.table-header-precioBase {
+  width: 100px;
+}
+
+.table-header-precio-unitario {
+  width: 150px;
+}
+
+.table-precio-total {
+  width: 100px;
+}
+
+.table-header-descuentos {
+  width: 100px;
+}
+
 
 table {
   border-collapse: collapse;
@@ -42,7 +64,7 @@ table {
 }
 
 td {
-  text-align: left;
+  text-align: center;
   border-left: 1px solid silver;
 }
 
@@ -58,16 +80,28 @@ td {
 .table-cell-cantidad input,
 .table-cell-precioUnitario input,
 .table-cell-descuentoIndividual input {
-  width: 100%;
+  padding-left: 25%;
+  width: 75%;
   height: 32px;
   border: none;
-  background-color: #eee;
+  background-color: palegreen;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .table-cell-precioTotal {
   font-size: 1.2rem;
-  font-weight: 600;
   background-color: greenyellow;
+}
+
+.table-cell-precioTotal::first-letter {
+  font-weight: 600;
+  margin-right: 2px;
+}
+
+.table-cell-precioBase {
+  color: #666;
+  font-size: 0.8rem;
 }
 
 .table-cell-codigo,
@@ -86,7 +120,7 @@ tr:nth-child(even) {
 th {
   padding: 8px;
   margin: 8px;
-  text-align: left;
+  text-align: center;
 }
 
 th {
@@ -101,6 +135,12 @@ th {
 .error-shake {
   animation: shake 0.2s ease-out;
   outline: red 1px solid;
+}
+
+.RED-TEXT {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: orangered;
 }
 
 @keyframes shake {
