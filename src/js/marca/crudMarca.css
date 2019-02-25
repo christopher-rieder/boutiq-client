@@ -1,0 +1,36 @@
+* {
+  font-family: sans-serif;
+}
+
+/* Style the search box */
+.sidebar {
+  width: 25%;
+}
+
+.crud-search {
+  width: 100%;
+  font-size: 18px;
+  padding: 11px;
+  border: 1px solid #ddd;
+}
+
+/* Style the navigation menu */
+.crud-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Style the navigation links */
+.crud-list li {
+  background-color: #f6f6f6;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  display: block;
+}
+
+.crud-list li a:hover {
+  background-color: #eee;
+}

@@ -15,21 +15,36 @@ const Input = ({context, tipo, value, disabled, onChange}) => {
   );
 };
 
-const InputText = React.forwardRef((props, ref) => (
+const InputText = ({context, col, value, onChange}) => (
   <div>
-    <label className={props.context + '__label'} htmlFor={props.context + '-' + props.tipo}>{props.tipo}</label>
-    <input type='text'
-      disabled={props.disabled}
+    <label
+      className={context + '__label'}
+      htmlFor={context + '-' + col}
+    >{col}</label>
+    <input
+      type='text'
       autoComplete='off'
-      name={props.context + '-' + props.tipo}
-      id={props.context + '-' + props.tipo}
-      value={props.value}
-      onChange={props.onChange}
-      ref={ref} />
+      name={context + '-' + col}
+      id={context + '-' + col}
+      value={value}
+      onChange={onChange}
+    />
   </div>
-));
+);
+
+const InputSearch = (props) => (
+  <div>
+    <input
+      type='search'
+      className='search'
+      placeholder='Search..'
+      {...props}
+    />
+  </div>
+);
 
 export {
   Input,
+  InputSearch,
   InputText
 };
