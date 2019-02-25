@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // const URL = 'http://181.167.238.144:3000';
-const URL = 'http://127.0.0.1:3000';
+const URL = 'http://192.168.0.2:3000';
 
 async function getTable (table) {
   const res = await axios(`${URL}/api/rawTables/${table}`);
