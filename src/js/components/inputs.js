@@ -37,18 +37,13 @@ function InputText ({context, col, value, onChange, onKeyPress, disabled}) {
 }
 
 function InputSearch (props) {
-  const [search, setSearch] = props.state;
-
   return (
-    <div>
-      <input
-        type='search'
-        className='search'
-        placeholder='Search..'
-        value={search}
-        onChange={event => setSearch(event.target.value)}
-      />
-    </div>
+    <input
+      type='search'
+      className='search'
+      placeholder='Search..'
+      {...props}
+    />
   );
 }
 
