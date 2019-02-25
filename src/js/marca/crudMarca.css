@@ -2,6 +2,10 @@
   font-family: sans-serif;
 }
 
+.main-container {
+  display: flex;
+}
+
 /* Style the search box */
 .sidebar {
   width: 25%;
@@ -14,6 +18,15 @@
   border: 1px solid #ddd;
 }
 
+.crud-main {
+  position: relative;
+}
+
+.crud-inputs {
+  position: fixed;
+  overflow: hidden;
+}
+
 /* Style the navigation menu */
 .crud-list {
   list-style-type: none;
@@ -22,15 +35,20 @@
 }
 
 /* Style the navigation links */
-.crud-list li {
+.crud-list-item {
   background-color: #f6f6f6;
   padding: 12px;
   text-decoration: none;
   font-size: 18px;
   color: black;
   display: block;
+  transition: all .4s;
 }
 
-.crud-list li a:hover {
-  background-color: #eee;
+.crud-list li:hover {
+  background-color: #fea;
+}
+
+.crud-list-item-highlight {
+  background-color: greenyellow;
 }

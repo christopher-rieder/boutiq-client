@@ -1,57 +1,59 @@
 import * as databaseRead from '../database/getData';
-import React, { Component } from 'react';
+import * as databaseWrite from '../database/writeData';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import {InputText, InputSearch} from '../components/inputs';
 
-class App extends Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      search: '',
-      marcas: [],
-      currentMarcaId: 1,
-      currentMarca: {},
-      formNombre: ''
-    };
+function App () {
+  const [search, setSearch] = useState('');
+  const [marcas, setMarcas] = useState([]);
+  const [marca, setMarca] = useState({});
+  // const [marcaId, setMarcaId] = useState(0);
+  // const [marcaNombre, setMarcaNombre] = useState('');
 
-    this.formNombreHandler = this.formNombreHandler.bind(this);
-    this.searchHandler = this.searchHandler.bind(this);
-  }
-
-  formNombreHandler (event) {
-    this.setState({ formNombre: event.target.value });
-  }
-
-  searchHandler (event) {
-    this.setState({search: event.target.value});
-  }
-
-  async componentDidMount () {
+  useEffect(() => { // LOAD TABLE MARCA
     databaseRead.getTable('marca')
-      .then(marcas => this.setState({marcas}))
-      .catch(err => console.log('TODO: SHOW ERROR IN UI' + err));
-  }
+      .then(res => setMarcas(res));
+  }, []);
 
-  render () {
-    return (
-      <div>
-        <div className='sidebar'>
-          <InputSearch value={this.state.search} onChange={this.searchHandler} />
-          <ul id='listaMarcas' className='crud-list'>
-            {this.state.marcas.map(marca => <li key={marca.id}>{marca.NOMBRE}</li>)}
-          </ul>
-        </div>
-        <div className='crud-main'>
-          <form action='POST' className='crud-form' id='crud-form'>
-            <InputText context='crud-marca' col='nombre' value={this.state.formNombre} onChange={this.formNombreHandler} />
-          </form>
+  const submitDataEventListener = event => {
+    if (event.which === 13) {
+      const index = marcas.findIndex(e => e.id === marca.id);
+      setMarcas([...marcas.slice(0, index), marca, ...marcas.slice(index + 1)]);
+      databaseWrite.postObjectToAPI(marca, 'marca');
+      document.querySelector('#crud-id-' + marca.id).classList.add('crud-list-item-highlight');
+      setTimeout(() => document.querySelector('#crud-id-' + marca.id).classList.remove('crud-list-item-highlight'), 1000);
+    }
+  };
+
+  const liClickHandler = event => {
+    const index = event.target.dataset.index;
+    if (index) {
+      setMarca(marcas[index]);
+    }
+  };
+
+  return (
+    <div className='main-container'>
+      <div className='sidebar'>
+        <InputSearch state={[search, setSearch]} />
+        <ul id='listaMarcas' className='crud-list' onClick={liClickHandler} >
+          {marcas.map((marca, index) => <li className='crud-list-item' id={'crud-id-' + marca.id} data-index={index} key={marca.id}>{marca.NOMBRE}</li>)}
+        </ul>
+      </div>
+      <div className='crud-main'>
+        <div className='crud-inputs'>
+          <InputText disabled context='crud-marca' col='id' value={marca.id} />
+          <InputText context='crud-marca' col='NOMBRE' value={marca.NOMBRE} onChange={event => setMarca({...marca, NOMBRE: event.target.value})} onKeyPress={submitDataEventListener} />
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
+
+// state={[marca, event => setMarca(marca => ({id: marca.id, NOMBRE: event.target.value}))]}
 
 // let marcas = [];
 

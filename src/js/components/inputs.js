@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const Input = ({context, tipo, value, disabled, onChange}) => {
   return (
@@ -15,33 +15,42 @@ const Input = ({context, tipo, value, disabled, onChange}) => {
   );
 };
 
-const InputText = ({context, col, value, onChange}) => (
-  <div>
-    <label
-      className={context + '__label'}
-      htmlFor={context + '-' + col}
-    >{col}</label>
-    <input
-      type='text'
-      autoComplete='off'
-      name={context + '-' + col}
-      id={context + '-' + col}
-      value={value}
-      onChange={onChange}
-    />
-  </div>
-);
+function InputText ({context, col, value, onChange, onKeyPress, disabled}) {
+  return (
+    <div>
+      <label
+        className={context + '__label'}
+        htmlFor={context + '-' + col}
+      >{col}</label>
+      <input
+        disabled={disabled}
+        type='text'
+        autoComplete='off'
+        name={context + '-' + col}
+        id={context + '-' + col}
+        value={value}
+        onKeyPress={onKeyPress}
+        onChange={onChange}
+      />
+    </div>
+  );
+}
 
-const InputSearch = (props) => (
-  <div>
-    <input
-      type='search'
-      className='search'
-      placeholder='Search..'
-      {...props}
-    />
-  </div>
-);
+function InputSearch (props) {
+  const [search, setSearch] = props.state;
+
+  return (
+    <div>
+      <input
+        type='search'
+        className='search'
+        placeholder='Search..'
+        value={search}
+        onChange={event => setSearch(event.target.value)}
+      />
+    </div>
+  );
+}
 
 export {
   Input,
