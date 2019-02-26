@@ -1,46 +1,36 @@
-import axios from 'axios';
-
 // const URL = 'http://181.167.238.144:3000';
 const URL = 'http://192.168.0.2:3000';
 
 async function getTable (table) {
-  const res = await axios(`${URL}/api/rawTables/${table}`);
-  return res.data;
+  return fetch(`${URL}/api/rawTables/${table}`).then(res => res.json());
 }
 
 async function getAllArticulos () {
-  const res = await axios(`${URL}/api/rawTables/full_articulos`);
-  return res.data;
+  return fetch(`${URL}/api/rawTables/full_articulos`).then(res => res.json());
 }
 
 async function getArticuloByCodigo (codigo) {
-  const res = await axios(`${URL}/api/articulo/codigo/${codigo}`);
-  return res.data;
+  return fetch(`${URL}/api/articulo/codigo/${codigo}`).then(res => res.json());
 }
 
 async function getArticuloById (id) {
-  const res = await axios(`${URL}/api/articulo/id/${id}`);
-  return res.data;
+  return fetch(`${URL}/api/articulo/id/${id}`).then(res => res.json());
 }
 
 async function getClienteById (id) {
-  const res = await axios(`${URL}/api/cliente/${id}`);
-  return res.data;
+  return fetch(`${URL}/api/cliente/${id}`).then(res => res.json());
 }
 
 async function getVendedorById (id) {
-  const res = await axios(`${URL}/api/vendedor/${id}`);
-  return res.data;
+  return fetch(`${URL}/api/vendedor/${id}`).then(res => res.json());
 }
 
-async function getNewNumeroFactura () {
-  let lastNumeroFactura = await axios(`${URL}/api/factura/last`);
-  return lastNumeroFactura.data.lastId + 1;
+async function getLastNumeroFactura () {
+  return fetch(`${URL}/api/factura/last`).then(res => res.json());
 }
 
 async function getTurnoActual () {
-  let turnoActual = await axios(`${URL}/api/turno/actual`);
-  return turnoActual.data;
+  return fetch(`${URL}/api/turno/actual`).then(res => res.json());
 }
 
 export {
@@ -51,5 +41,5 @@ export {
   getArticuloById,
   getClienteById,
   getVendedorById,
-  getNewNumeroFactura
+  getLastNumeroFactura
 };
