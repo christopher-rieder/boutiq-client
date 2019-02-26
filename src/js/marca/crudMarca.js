@@ -2,59 +2,64 @@ import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import {InputText, InputSearch} from '../components/inputs';
+import {InputSearch, InputFactory} from '../components/inputs';
 import filterFunctions from '../utilities/filterFunctions';
 
 const textFilter = filterFunctions.wordFiltering(true);
+const table = 'marca';
+const cols = ['id', 'NOMBRE'];
+const coltypes = ['id', 'text'];
+const filterCol = cols[1];
 
 function App () {
   const [search, setSearch] = useState('');
-  const [marcas, setMarcas] = useState([]);
-  const [marca, setMarca] = useState({});
+  const [objList, setObjList] = useState([]);
+  const [obj, setObj] = useState({});
 
-  useEffect(() => { // LOAD TABLE MARCA
-    databaseRead.getTable('marca')
-      .then(res => setMarcas(res));
+  useEffect(() => { // LOAD TABLE
+    databaseRead.getTable(table)
+      .then(res => setObjList(res));
   }, []);
 
   const submitHandler = event => {
-    if (event.which === 13) {
-      const index = marcas.findIndex(e => e.id === marca.id);
-      setMarcas([...marcas.slice(0, index), marca, ...marcas.slice(index + 1)]);
-      databaseWrite.postObjectToAPI(marca, 'marca');
-      document.querySelector('#crud-id-' + marca.id).classList.add('crud-list-item-highlight');
-      setTimeout(() => document.querySelector('#crud-id-' + marca.id).classList.remove('crud-list-item-highlight'), 1000);
-    }
+    const index = objList.findIndex(e => e.id === obj.id);
+    setObjList([...objList.slice(0, index), obj, ...objList.slice(index + 1)]);
+    console.log(obj);
+    databaseWrite.postObjectToAPI(obj, table);
+    document.querySelector('#crud-id-' + obj.id).classList.add('crud-list-item-highlight');
+    setTimeout(() => document.querySelector('#crud-id-' + obj.id).classList.remove('crud-list-item-highlight'), 1000);
   };
-
   const liClickHandler = event => {
     const id = parseInt(event.target.dataset.id);
     if (id) {
-      setMarca(marcas.find(marca => marca.id === id));
+      setObj(objList.find(element => element.id === id));
     }
   };
 
-  const list = () => marcas
-    .filter(marca => textFilter(marca.NOMBRE, search))
-    .map(marca => (
+  const list = () => objList
+    .filter(element => textFilter(element[filterCol], search))
+    .map(element => (
       <li className='crud-list-item'
-        id={'crud-id-' + marca.id}
-        data-id={marca.id}
-        key={marca.id}>{marca.NOMBRE}</li>)
+        id={'crud-id-' + element.id}
+        data-id={element.id}
+        key={element.id}>{element[filterCol]}</li>)
     );
+
+  const inputs = () => cols
+    .map((col, i) => InputFactory(col, coltypes[i], table, obj[col], event => setObj({...obj, [col]: event.target.value})));
 
   return (
     <div className='main-container'>
       <div className='sidebar'>
         <InputSearch value={search} onChange={event => setSearch(event.target.value)} />
-        <ul id='listaMarcas' className='crud-list' onClick={liClickHandler} >
+        <ul id={'lista' + table} className='crud-list' onClick={liClickHandler} >
           {list()}
         </ul>
       </div>
       <div className='crud-main'>
         <div className='crud-inputs'>
-          <InputText disabled context='crud-marca' col='id' value={marca.id} />
-          <InputText context='crud-marca' col='NOMBRE' value={marca.NOMBRE} onChange={event => setMarca({...marca, NOMBRE: event.target.value})} onKeyPress={submitHandler} />
+          {inputs()}
+          <button onClick={submitHandler}>BOTON</button>
         </div>
       </div>
     </div>
