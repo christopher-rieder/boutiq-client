@@ -40,7 +40,7 @@ function InputSearch (props) {
   return (
     <input
       type='search'
-      className='search'
+      className='crud-search'
       placeholder='Search..'
       {...props}
     />
@@ -50,29 +50,40 @@ function InputSearch (props) {
 function InputFactory (col, type, table, value, onChange) {
   switch (type) {
     case 'id':
-      return (<div key={col}><label className={table + '__label'} htmlFor={table + '-' + col} >{col}</label>
-        <input value={value} onChange={onChange} readOnly required name={col} type='text' id={'crud-' + table + '-' + col} /></div>
+      return (
+        <div className='crud-input-container'>
+          <fieldset className='crud-input-fieldset' key={col}>
+            <legend className='crud-input-legend' htmlFor={table + '-' + col} >{col}</legend>
+          </fieldset>
+          <input value={value} className='crud-input-item' onChange={onChange} readOnly required name={col} type='text' id={'crud-' + table + '-' + col} />
+        </div>
       );
     case 'text':
-      return (<div key={col}><label className={table + '__label'} htmlFor={table + '-' + col} >{col}</label>
-        <input value={value} onChange={onChange} required name={col} type='text' id={'crud-' + table + '-' + col} placeholder={col} autoComplete='off' /></div>
+      return (
+        <div className='crud-input-container'>
+          <fieldset className='crud-input-fieldset' key={col}>
+            <legend className='crud-input-legend' htmlFor={table + '-' + col} >{col}</legend>
+          </fieldset>
+          <input value={value} className='crud-input-item' onChange={onChange} required name={col} type='text' id={'crud-' + table + '-' + col} placeholder={col} autoComplete='off' />
+        </div>
       );
     case 'integer':
       return (<div key={col}><label className={table + '__label'} htmlFor={table + '-' + col} >{col}</label>
-        <input value={value} onChange={onChange} required name={col} type='number' id={'crud-' + table + '-' + col} placeholder={col} /></div>
+        <input value={value} className='crud-input-item' onChange={onChange} required name={col} type='number' id={'crud-' + table + '-' + col} placeholder={col} /></div>
       );
     case 'float':
       return (<div key={col}><label className={table + '__label'} htmlFor={table + '-' + col} >{col}</label>
-        <input value={value} onChange={onChange} required name={col} type='number' id={'crud-' + table + '-' + col} placeholder={col} /></div>
+        <input value={value} className='crud-input-item' onChange={onChange} required name={col} type='number' id={'crud-' + table + '-' + col} placeholder={col} /></div>
       );
     case 'boolean':
       return (<div key={col}><label className={table + '__label'} htmlFor={table + '-' + col} >{col}</label>
-        <input value={value} onChange={onChange} name={col} type='checkbox' id={'crud-' + table + '-' + col} /></div>
+        <input value={value} className='crud-input-item' onChange={onChange} name={col} type='checkbox' id={'crud-' + table + '-' + col} /></div>
       );
-    case 'select':
-      return (<div key={col}><label className={table + '__label'} htmlFor={table + '-' + col} >{col}</label>
-        <select required name={col} id={'crud-' + table + '-' + col} /></div>
-      );
+    default: return '';
+    // case 'select':
+    //   return (<div key={col}><label className={table + '__label'} htmlFor={table + '-' + col} >{col}</label>
+    //     <select required name={col} id={'crud-' + table + '-' + col} /></div>
+    //   );
   }
 }
 

@@ -6,20 +6,29 @@ import {InputSearch, InputFactory} from '../components/inputs';
 import filterFunctions from '../utilities/filterFunctions';
 
 const textFilter = filterFunctions.wordFiltering(true);
-const table = 'marca';
-const cols = ['id', 'NOMBRE'];
+const cols = {
+  marca: ['id', 'NOMBRE'],
+  rubro: ['id', 'NOMBRE'],
+  proveedor: ['id', 'NOMBRE'],
+  tipo_pago: ['id', 'NOMBRE'],
+  vendedor: ['id', 'NOMBRE']
+};
 const coltypes = ['id', 'text'];
-const filterCol = cols[1];
 
 function App () {
   const [search, setSearch] = useState('');
   const [objList, setObjList] = useState([]);
   const [obj, setObj] = useState({});
+  const [table, setTable] = useState('marca');
+  const filterCol = 'NOMBRE';
 
   useEffect(() => { // LOAD TABLE
+    console.log(table);
+
     databaseRead.getTable(table)
-      .then(res => setObjList(res));
-  }, []);
+      .then(res => setObjList(res))
+      .catch(err => alert(err));
+  }, [table]);
 
   const submitHandler = event => {
     const index = objList.findIndex(e => e.id === obj.id);
@@ -45,12 +54,19 @@ function App () {
         key={element.id}>{element[filterCol]}</li>)
     );
 
-  const inputs = () => cols
+  const inputs = () => cols[table]
     .map((col, i) => InputFactory(col, coltypes[i], table, obj[col], event => setObj({...obj, [col]: event.target.value})));
 
   return (
     <div className='main-container'>
       <div className='sidebar'>
+        <select onChange={event => setTable(event.target.value)}>
+          <option>marca</option>
+          <option>rubro</option>
+          <option>proveedor</option>
+          <option>tipo_pago</option>
+          <option>vendedor</option>
+        </select>
         <InputSearch value={search} onChange={event => setSearch(event.target.value)} />
         <ul id={'lista' + table} className='crud-list' onClick={liClickHandler} >
           {list()}
