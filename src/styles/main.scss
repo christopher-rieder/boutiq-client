@@ -1,0 +1,141 @@
+$primary-color: #3e1;
+
+body {
+  font-family: sans-serif;
+}
+
+.header {}
+
+.header__menu {}
+
+.navigation {
+  list-style: none;
+  display: flex;
+}
+
+
+.navigation__btn {
+  cursor: pointer;
+  padding: 1rem;
+  background-color: white;
+  border: none;
+  outline: none;
+}
+
+.navigation__btn:hover {
+  background-color: aqua;
+}
+
+.navigation__crud-tables {
+  position: absolute;
+  display: none;
+  z-index: 1;
+}
+
+.navigation__item:hover .navigation__crud-tables {
+  display: flex;
+  flex-direction: column;
+  box-shadow: 1rem 1rem 3rem #00000020;
+}
+
+/* CRUD SECTION */
+.crud-container {
+  display: grid;
+  grid-template-columns: minmax(max-content, 20vw) 1fr;
+  grid-template-rows: 2rem 1fr;
+}
+
+/* Style the search box */
+.crud-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+}
+
+.crud-table-select {
+  flex: 0 0 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.crud-search {
+  flex: 0 0 3rem;
+  font-size: 18px;
+  padding: 11px;
+  border: 1px solid #ddd;
+}
+
+/* Style the navigation menu */
+.crud-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Style the navigation links */
+  &-item {
+    background-color: #f6f6f6;
+    padding: 12px;
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+    display: block;
+    transition: all .4s;
+  }
+  
+  & li:hover {
+    background-color: #fea;
+  }
+  
+  &-item-highlight {
+    background-color: greenyellow;
+  }
+}
+
+
+.crud-main {
+  padding: 0rem 1rem;
+}
+
+.crud-input{
+  &-container {
+    position: relative;
+    width: 300px;
+    cursor: text;
+    margin: 1rem 0rem;
+  }
+  &-legend {
+    color: #678
+  }
+  
+  &-item {
+    padding: 1rem;
+    border: 0;
+    display: block;
+    box-sizing: content-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  &-item:focus {
+    outline: 0;
+  }
+  
+  &-fieldset {
+    top: -9px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    transition: padding-left 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms, border-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms, border-width 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 4px;
+    pointer-events: none;
+  }
+}
+

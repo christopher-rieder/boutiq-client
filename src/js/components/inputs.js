@@ -51,8 +51,8 @@ function InputFactory (col, type, table, value, onChange) {
   switch (type) {
     case 'id':
       return (
-        <div className='crud-input-container'>
-          <fieldset className='crud-input-fieldset' key={col}>
+        <div className='crud-input-container' key={col}>
+          <fieldset className='crud-input-fieldset' >
             <legend className='crud-input-legend' htmlFor={table + '-' + col} >{col}</legend>
           </fieldset>
           <input value={value} className='crud-input-item' onChange={onChange} readOnly required name={col} type='text' id={'crud-' + table + '-' + col} />
@@ -60,8 +60,8 @@ function InputFactory (col, type, table, value, onChange) {
       );
     case 'text':
       return (
-        <div className='crud-input-container'>
-          <fieldset className='crud-input-fieldset' key={col}>
+        <div className='crud-input-container' key={col}>
+          <fieldset className='crud-input-fieldset' >
             <legend className='crud-input-legend' htmlFor={table + '-' + col} >{col}</legend>
           </fieldset>
           <input value={value} className='crud-input-item' onChange={onChange} required name={col} type='text' id={'crud-' + table + '-' + col} placeholder={col} autoComplete='off' />

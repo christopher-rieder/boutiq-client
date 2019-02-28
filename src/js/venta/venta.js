@@ -30,7 +30,8 @@ async function newFactura () {
     window.factura.removeFromDOM();
   }
   fechaDOM.value = dateFormat(new Date(), 'MM/dd/yyyy');
-  const numeroFactura = await databaseRead.getNewNumeroFactura();
+  const lastNumeroFactura = await databaseRead.getLastNumeroFactura();
+  const numeroFactura = lastNumeroFactura.lastId + 1;
   const cliente = await databaseRead.getClienteById(1);
   const vendedor = await databaseRead.getVendedorById(1);
   const turno = await databaseRead.getTurnoActual();

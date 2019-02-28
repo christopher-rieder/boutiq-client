@@ -1,4 +1,5 @@
 import PromptBoxes from 'prompt-boxes';
+import '../../vendor/prompt-boxes/prompt-boxes.min.css';
 
 export default new PromptBoxes({
   attrPrefix: 'pb',

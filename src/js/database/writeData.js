@@ -24,8 +24,8 @@ async function postItemFactura (item) {
   }).then(res => res.json());
 }
 
-async function postObjectToAPI (item, endpoint) {
-  return window.fetch(`${URL}/api/` + endpoint, {
+async function postCrudObjectToAPI (item, table) {
+  return window.fetch(`${URL}/api/crud/` + table, {
     method: 'post',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -51,7 +51,7 @@ async function putObjectToAPI (item, endpoint) {
 
 export {
   postFactura,
-  postObjectToAPI,
+  postCrudObjectToAPI,
   putObjectToAPI,
   postItemFactura
 };

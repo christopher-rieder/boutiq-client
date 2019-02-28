@@ -2,12 +2,12 @@
   font-family: sans-serif;
 }
 
-.main-container {
+.crud-container {
   display: flex;
 }
 
 /* Style the search box */
-.sidebar {
+.crud-sidebar {
   width: 25%;
 }
 
@@ -31,7 +31,7 @@
 .crud-inputs {
   position: fixed;
   overflow: hidden;
-  padding: 2rem;
+  padding: 0rem 1rem;
 }
 
 .crud-input-legend {
