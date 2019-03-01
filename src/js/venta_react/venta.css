@@ -1,0 +1,170 @@
+* {
+  box-sizing: content-box;
+  margin: 0;
+  font-family: sans-serif;
+}
+
+body {
+  padding: 24px;
+}
+
+html {
+  visibility: hidden;
+}
+
+.panel {
+  display: flex;
+  margin-bottom: 2rem;
+}
+
+.low-stock {
+  font-weight: 600;
+  background-color: #FCC;
+  color: red;
+}
+
+.table-header-cantidad {
+  width: 5rem;
+}
+
+.table-header-codigo {
+  min-width: 12rem;
+  width: 12rem;
+  max-width: max-content;
+}
+
+.table-header-descripcion {
+  width: 30rem;
+}
+
+.table-header-stock {
+  width: 3rem;
+}
+
+.table-header-precio-base {
+  width: 6rem;
+}
+
+.table-header-precio-unitario {
+  width: 8rem;
+}
+
+.table-precio-total {
+  width: 100px;
+}
+
+.table-header-descuentos {
+  width: 100px;
+}
+
+
+table {
+  border-collapse: collapse;
+  margin-bottom: 36px;
+}
+
+td {
+  text-align: center;
+  border-left: 1px solid silver;
+}
+
+.table-cell-cantidad,
+.table-cell-precioUnitario,
+.table-cell-descuentoIndividual {
+  padding: 0px;
+  margin: 0px;
+  background-color: #eee;
+  border: 1px solid #bbb;
+}
+
+.table-cell-cantidad input,
+.table-cell-precioUnitario input,
+.table-cell-descuentoIndividual input {
+  padding-left: 25%;
+  width: 75%;
+  height: 32px;
+  border: none;
+  background-color: palegreen;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.table-cell-precioTotal {
+  font-size: 1.2rem;
+  background-color: greenyellow;
+}
+
+.table-cell-precioTotal::first-letter {
+  font-weight: 600;
+  margin-right: 2px;
+}
+
+.table-cell-precioBase {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.table-cell-codigo,
+.table-cell-descripcion,
+.table-cell-precioBase,
+.table-cell-precioTotal {
+  padding: 8px;
+  margin: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #ffedde;
+}
+
+
+th {
+  padding: 8px;
+  margin: 8px;
+  text-align: center;
+}
+
+th {
+  border-bottom: 1px solid silver;
+  border-left: 1px solid silver;
+}
+
+.venta__label {
+  text-transform: capitalize;
+}
+
+.error-shake {
+  animation: shake 0.2s ease-out;
+  outline: red 1px solid;
+}
+
+.RED-TEXT {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: orangered;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(4px);
+  }
+
+  20% {
+    transform: translateX(-4px);
+  }
+
+  40% {
+    transform: translateX(4px);
+  }
+
+  60% {
+    transform: translateX(-4px);
+  }
+
+  80% {
+    transform: translateX(-4px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
