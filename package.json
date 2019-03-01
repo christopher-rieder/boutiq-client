@@ -26,8 +26,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack --mode development",
-    "build": "webpack --mode production",
+    "dev-venta": "parcel src\\js\\venta\\venta.html -p 1235",
+    "dev": "parcel src\\index.html",
+    "build": "parcel build src\\index.html",
     "start": "webpack-dev-server --mode development --open"
   },
   "author": "Christopher Rieder",

@@ -81,3 +81,4 @@ typings/
 .vscode/settings.json
 dist/*
 testing/*
+src/js/venta_react/*
