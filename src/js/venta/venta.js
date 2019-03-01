@@ -3,7 +3,7 @@ import * as databaseWrite from '../database/writeData';
 import {format as dateFormat} from 'date-fns';
 import {errorShakeEffect} from '../components/effects';
 import dialogs from '../utilities/dialogs';
-import {getTiposDePago, descuentoMax} from '../constants/bussinessConstants';
+import {descuentoMax} from '../constants/bussinessConstants';
 import Factura from './Factura';
 import {tiposPagoDOM, descuentoDOM, codigoDOM, fechaDOM} from '../utilities/selectors';
 
@@ -14,7 +14,7 @@ let tiposPago;
 initialLoad();
 
 async function initialLoad () {
-  tiposPago = await getTiposDePago();
+  tiposPago = await databaseRead.getTable('TIPO_PAGO');
   await newFactura();
   tiposPago.forEach(tipoPago => {
     var option = document.createElement('option');
