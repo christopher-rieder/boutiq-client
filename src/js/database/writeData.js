@@ -24,6 +24,17 @@ async function postItemFactura (item) {
   }).then(res => res.json());
 }
 
+async function postPago (item) {
+  return window.fetch(`${URL}/api/pago`, {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(item)
+  }).then(res => res.json());
+}
+
 async function postCrudObjectToAPI (item, table) {
   return window.fetch(`${URL}/api/crud/` + table, {
     method: 'post',
@@ -51,6 +62,7 @@ async function putObjectToAPI (item, endpoint) {
 
 export {
   postFactura,
+  postPago,
   postCrudObjectToAPI,
   putObjectToAPI,
   postItemFactura

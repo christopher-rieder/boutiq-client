@@ -8,10 +8,6 @@ body {
   padding: 24px;
 }
 
-html {
-  visibility: hidden;
-}
-
 .panel {
   display: flex;
   margin-bottom: 2rem;
@@ -130,6 +126,10 @@ th {
 
 .venta__label {
   text-transform: capitalize;
+}
+
+.main_input-rename {
+  padding: 4px;
 }
 
 .error-shake {
