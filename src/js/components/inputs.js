@@ -1,16 +1,10 @@
 import React, { useState } from 'react';
 
-const Input = ({context, tipo, value, disabled, onChange}) => {
+const InputTextField = (props) => {
   return (
     <div>
-      <label className={context + '__label'} htmlFor={context + '-' + tipo}>{tipo}</label>
-      <input
-        type='text'
-        disabled={disabled}
-        name={context + '-' + tipo}
-        id={context + '-' + tipo}
-        value={value}
-        onChange={onChange} />
+      <label className='label' htmlFor='venta-factura'>{props.name}</label>
+      <input className='main_input-rename' type='text' {...props} />
     </div>
   );
 };
@@ -88,7 +82,7 @@ function InputFactory (col, type, table, value, onChange) {
 }
 
 export {
-  Input,
+  InputTextField,
   InputSearch,
   InputFactory,
   InputText

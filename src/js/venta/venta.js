@@ -11,7 +11,10 @@ import { validFloats } from '../utilities/commonHandlers';
 import dialogs from '../utilities/dialogs';
 import { money } from '../utilities/format';
 import { round } from '../utilities/math';
+import { InputTextField } from '../components/inputs';
 import ItemVenta from './ItemVenta';
+import Modal from '../components/modal';
+import Crud from '../crud/crud';
 import './venta.css';
 
 function Venta () {
@@ -25,6 +28,7 @@ function Venta () {
   const [items, setItems] = useState([]);
   const [codigo, setCodigo] = useState('');
   const [observaciones, setObservaciones] = useState('');
+  const [displayModal, setDisplayModal] = useState(false);
 
   useEffect(() => {
     databaseRead.getTable('TIPO_PAGO')
@@ -96,50 +100,56 @@ function Venta () {
     setCodigo('');
   };
 
-  const postFacturaToAPI = async (event) => {
+  const handleSubmit = event => {
     event.preventDefault();
-    // TODO: POST DATA TO API AFTER CONFIRMATION AND VALIDATION
     // TODO: VALIDATIONS
-    // TODO: make confirmation stage
-    // TODO: inform user
-    // TODO: CALL SUBMISSIONS
+    dialogs.confirm(
+      confirmed => {
+        if (confirmed) {
+          postFacturaToAPI();
+        } else {
+          // do nothing
+        }
+      }, // Callback
+      'Confirmar venta?', // Message text
+      'CONFIRMAR', // Confirm text
+      'VOLVER', // Cancel text
+      {} // Additional options
+    );
+  };
 
-    const facturaId = await databaseWrite.postFactura({
-      NUMERO_FACTURA: numeroFactura,
-      FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
-      DESCUENTO: descuento,
-      CLIENTE_ID: cliente.id,
-      TURNO_ID: turno.id // TODO: MAKE TURNO
-    });
-
-    items.forEach(item => {
-      databaseWrite.postItemFactura({
-        FACTURA_ID: facturaId,
-        CANTIDAD: item.CANTIDAD,
-        PRECIO_UNITARIO: item.PRECIO_UNITARIO,
-        DESCUENTO: item.DESCUENTO,
-        ARTICULO_ID: item.id
+  const postFacturaToAPI = async () => {
+    try {
+      const facturaId = await databaseWrite.postFactura({
+        NUMERO_FACTURA: numeroFactura,
+        FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
+        DESCUENTO: descuento,
+        CLIENTE_ID: cliente.id,
+        TURNO_ID: turno.id // TODO: MAKE TURNO
       });
-    });
 
-    const precioTotal = getTotal();
-    const tipoPagoId = tipoPago.id; // FIXME RETURNS A OBJECT
+      items.forEach(item => {
+        databaseWrite.postItemFactura({
+          FACTURA_ID: facturaId,
+          CANTIDAD: item.CANTIDAD,
+          PRECIO_UNITARIO: item.PRECIO_UNITARIO,
+          DESCUENTO: item.DESCUENTO,
+          ARTICULO_ID: item.id
+        });
+      });
 
-    if (tipoPagoId === 1) { // ES EN EFECTIVO, DE CONTADO...
       databaseWrite.postPago({
         FACTURA_ID: facturaId,
-        MONTO: precioTotal,
-        TIPO_PAGO_ID: tipoPagoId,
-        ESTADO: 'PAGADO'
+        MONTO: getTotal(),
+        TIPO_PAGO_ID: tipoPago.id,
+        ESTADO: tipoPago.id === 1 ? 'PAGADO' : 'PENDIENTE'
       });
-    } else {
-      databaseWrite.postPago({
-        FACTURA_ID: facturaId,
-        MONTO: precioTotal,
-        TIPO_PAGO_ID: tipoPagoId,
-        ESTADO: 'PENDIENTE'
-      });
+
+      dialogs.success(`FACTURA ${numeroFactura} REALIZADA!!!`);
+    } catch (err) {
+      dialogs.error(`ERROR! ${err}`);
     }
+
     setNumeroFactura(numeroFactura + 1);
   };
 
@@ -162,15 +172,15 @@ function Venta () {
 
   return (
     <React.Fragment>
+      {
+        displayModal && <Modal displayModal={displayModal} setDisplayModal={setDisplayModal}>
+          <Crud crudTable='marca' />
+        </Modal>
+      }
+
       <div className='panel'>
-        <div>
-          <label className='venta__label' htmlFor='venta-factura'>Factura</label>
-          <input className='main_input-rename' type='text' readOnly name='venta-factura' id='venta-factura' value={numeroFactura} />
-        </div>
-        <div>
-          <label className='venta__label' htmlFor='venta-cliente'>Cliente</label>
-          <input className='main_input-rename' type='text' readOnly name='venta-cliente' id='venta-cliente' value={cliente.NOMBRE} />
-        </div>
+        <InputTextField name='Factura' value={numeroFactura} readOnly />
+        <InputTextField name='Cliente' value={cliente.NOMBRE} readOnly />
       </div>
       <div className='panel'>
         <div>
@@ -179,23 +189,15 @@ function Venta () {
             {tiposPago.map(e => <option key={e.id} value={e.NOMBRE}>{e.NOMBRE}</option>)}
           </select>
         </div>
-        <div>
-          <label className='venta__label' htmlFor='venta-descuento'>Descuento</label>
-          <input className='main_input-rename' type='text' autoComplete='off' name='venta-descuento' id='venta-descuento' value={descuento} onKeyPress={validFloats} onChange={handleDescuento} />
-        </div>
+        <InputTextField name='Descuento' value={descuento} autoComplete='off' onKeyPress={validFloats} onChange={handleDescuento} />
       </div>
       <div className='panel'>
-        <div>
-          <label className='venta__label' htmlFor='venta-codigo'>ZH2932030828</label>
-          <input className='main_input-rename' type='search' autoFocus autoComplete='off' name='venta-codigo' id='venta-codigo' value={codigo} onKeyPress={addVentaItem} onChange={event => setCodigo(event.target.value)} />
-        </div>
-        <button className='codigo-search' onClick={postFacturaToAPI}>BUTTON</button>
+        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addVentaItem} onChange={event => setCodigo(event.target.value)} />
+        <button className='codigo-search' onClick={handleSubmit}>BUTTON</button>
+        <button className='codigo-search' onClick={() => setDisplayModal(true)}>MODAL</button>
       </div>
       <div className='panel'>
-        <div>
-          <label className='venta__label' htmlFor='venta-observaciones'>Observaciones</label>
-          <input className='main_input-rename' type='text' name='venta-observaciones' id='venta-observaciones' value={observaciones} onChange={event => setObservaciones(event.target.value)} />
-        </div>
+        <InputTextField name='Observaciones' value={observaciones} onChange={event => setObservaciones(event.target.value)} />
       </div>
       <table id='table'>
         <thead>
@@ -230,18 +232,9 @@ function Venta () {
         </tfoot>
       </table>
       <div className='panel'>
-        <div>
-          <label className='venta__label' htmlFor='venta-vendedor'>Vendedor</label>
-          <input className='main_input-rename' type='text' disabled readOnly name='venta-vendedor' id='venta-vendedor' value={vendedor.NOMBRE} />
-        </div>
-        <div>
-          <label className='venta__label' htmlFor='venta-turno'>Turno</label>
-          <input className='main_input-rename' type='text' disabled readOnly name='venta-turno' id='venta-turno' value={turno.id} />
-        </div>
-        <div>
-          <label className='venta__label' htmlFor='venta-fecha'>Fecha</label>
-          <input className='main_input-rename' type='text' disabled name='venta-fecha' id='venta-fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
-        </div>
+        <InputTextField readOnly name='Vendedor' value={vendedor.NOMBRE} />
+        <InputTextField readOnly name='Turno' value={turno.id} />
+        <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
     </React.Fragment>
   );
