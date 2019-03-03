@@ -18,7 +18,7 @@ export default function FacturaView ({obj, setObj}) {
             N° de Factura: {obj.NUMERO_FACTURA}
           </p>
           <p className='factura__datos__fecha'>
-            Fecha: {dateFormat(new Date(obj.FECHA_HORA), 'dd/MM/yyyy | hh:mm:ss')}
+            Fecha: {dateFormat(new Date(obj.FECHA_HORA), 'dd/MM/yyyy | HH:mm:ss')}
           </p>
           <p className='factura__datos__cliente'>
             Cliente: {obj.CLIENTE.NOMBRE}

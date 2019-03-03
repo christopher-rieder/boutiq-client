@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import dialogs from '../utilities/dialogs';
+import {getTable} from '../database/getData';
 
 const InputTextField = (props) => {
   return (
@@ -8,6 +10,59 @@ const InputTextField = (props) => {
     </div>
   );
 };
+
+function useFormInputFloat (initialValue, maxValue) {
+  const [value, setValue] = useState(initialValue);
+
+  // allow for numbers unfinished ending in zeros or dots
+  function onChange (event) {
+    if (!/\d+[.0]+$/.test(event.target.value)) {
+      event.target.value = parseFloat(event.target.value) || '0';
+    }
+    if (parseFloat(event.target.value) > maxValue) {
+      event.target.value = maxValue;
+      event.target.classList.add('error-shake');
+      setTimeout(e => event.target.classList.remove('error-shake'), 500);
+      dialogs.error(
+        'EL LIMITE ES ' + parseFloat(event.target.value).toFixed(2)
+      );
+    }
+    setValue(event.target.value);
+  }
+
+  function onKeyPress (event) {
+    if (event.key.length <= 1) {
+      if (!/[0-9.]/.test(event.key) ||
+            !/^\d*\.{0,1}\d*$/.test(event.target.value + event.key)) {
+        event.preventDefault();
+        event.target.classList.add('error-shake');
+        setTimeout(e => event.target.classList.remove('error-shake'), 500);
+        return false;
+      }
+    }
+  }
+
+  return {
+    value,
+    setValue,
+    onChange,
+    onKeyPress
+  };
+}
+
+function useFormInput (initialValue) {
+  const [value, setValue] = useState(initialValue);
+
+  function onChange (e) {
+    setValue(e.target.value);
+  }
+
+  return {
+    value,
+    setValue,
+    onChange
+  };
+}
 
 function InputText ({context, col, value, onChange, onKeyPress, disabled}) {
   return (
@@ -81,7 +136,39 @@ function InputFactory (col, type, table, value, onChange) {
   }
 }
 
+/**
+ *
+ * @param {*} param0
+ */
+function InputSelect ({table, name, accessor, value, setValue}) {
+  const [data, setData] = useState([{}]);
+
+  useEffect(() => {
+    getTable(table)
+      .then(res => {
+        setData(res);
+        setValue(res[0]);
+      });
+  }, []);
+
+  function onChange (e) {
+    setValue(data.find(obj => obj[accessor] === e.target.value));
+  }
+
+  return (
+    <div>
+      <label htmlFor='venta-tipos-de-pago'>{name}</label>
+      <select className='main_input-rename' name='venta-tipos-de-pago' id='venta-tipos-de-pago' value={value[accessor]} onChange={onChange}>
+        {data.map(e => <option key={e.id} value={e[accessor]}>{e[accessor]}</option>)}
+      </select>
+    </div>
+  );
+}
+
 export {
+  useFormInput,
+  useFormInputFloat,
+  InputSelect,
   InputTextField,
   InputSearch,
   InputFactory,

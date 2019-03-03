@@ -2,43 +2,26 @@ import { format as dateFormat } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
-import { errorShakeEffect } from '../components/effects';
-import { InputTextField } from '../components/inputs';
+import { InputTextField, InputSelect, useFormInput, useFormInputFloat } from '../components/inputs';
 import Modal from '../components/modal';
 import { descuentoMax } from '../constants/bussinessConstants';
 import Consulta from '../crud/consulta';
 import ConsultaArticulo from '../crud/consultaArticulo';
 import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
-import { validFloats } from '../utilities/commonHandlers';
 import dialogs from '../utilities/dialogs';
 import { money } from '../utilities/format';
 import { round } from '../utilities/math';
 import ItemVenta from './ItemVenta';
 import './venta.css';
 
-function useFormInput (initialValue) {
-  const [value, setValue] = useState(initialValue);
-
-  function onChange (e) {
-    setValue(e.target.value);
-  }
-
-  return {
-    value,
-    setValue,
-    onChange
-  };
-}
-
 export default function Venta (props) {
+  const descuento = useFormInputFloat(0, descuentoMax);
   const [numeroFactura, setNumeroFactura] = useState(0);
   const [cliente, setCliente] = useState({id: 0, NOMBRE: ''});
   const [vendedor, setVendedor] = useState({id: 0, NOMBRE: ''});
-  const [descuento, setDescuento] = useState(0);
   const [turno, setTurno] = useState({id: 0});
   const [tipoPago, setTipoPago] = useState({id: 1, NOMBRE: 'EFECTIVO'});
-  const [tiposPago, setTiposPago] = useState([{id: 0, NOMBRE: ''}]);
   const [items, setItems] = useState([]);
   const [codigo, setCodigo] = useState('');
   const observaciones = useFormInput('');
@@ -46,45 +29,21 @@ export default function Venta (props) {
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
   useEffect(() => {
-    databaseRead.getTable('TIPO_PAGO')
-      .then(res => {
-        setTiposPago(res);
-        setTipoPago(res[0]);
-      });
-  }, []);
-
-  useEffect(() => {
     databaseRead.getLastNumeroFactura().then(res => setNumeroFactura(res.lastId + 1));
     databaseRead.getClienteById(1).then(res => setCliente(res));
     databaseRead.getVendedorById(1).then(res => setVendedor(res));
     databaseRead.getTurnoActual().then(res => setTurno(res));
-    setDescuento(0);
+    descuento.setValue(0);
     setItems([]);
     observaciones.setValue('');
   }, [numeroFactura]);
 
   const getTotal = () => items.reduce((total, articulo) => {
     const precioBase = articulo[tipoPago.id === 1 ? 'PRECIO_CONTADO' : 'PRECIO_LISTA'];
-    const precioUnitario = articulo.PRECIO_CUSTOM || round(precioBase * (1 - descuento / 100) * (1 - articulo.DESCUENTO / 100));
+    const precioUnitario = articulo.PRECIO_CUSTOM || round(precioBase * (1 - descuento.value / 100) * (1 - articulo.DESCUENTO / 100));
     const precioTotal = precioUnitario * articulo.CANTIDAD;
     return total + precioTotal;
   }, 0);
-
-  // allow for numbers unfinished ending in zeros or dots
-  const handleDescuento = event => {
-    if (!/\d+[.0]+$/.test(event.target.value)) {
-      event.target.value = parseFloat(event.target.value) || '0';
-    }
-    if (parseFloat(event.target.value) > descuentoMax) {
-      event.target.value = descuentoMax;
-      errorShakeEffect(event.target);
-      dialogs.error(
-        'EL LIMITE DE DESCUENTO ES ' + parseFloat(event.target.value).toFixed(2), // Message text
-        {} // Additional options
-      );
-    }
-    setDescuento(event.target.value);
-  };
 
   const addVentaHandler = (event) => {
     if (!codigo) return false;
@@ -143,7 +102,7 @@ export default function Venta (props) {
       const facturaId = await databaseWrite.postFactura({
         NUMERO_FACTURA: numeroFactura,
         FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
-        DESCUENTO: descuento,
+        DESCUENTO: descuento.value,
         OBSERVACIONES: observaciones.value,
         CLIENTE_ID: cliente.id,
         TURNO_ID: turno.id // TODO: MAKE TURNO
@@ -217,13 +176,8 @@ export default function Venta (props) {
         <InputTextField name='Cliente' value={cliente.NOMBRE} readOnly onClick={clienteModal} />
       </div>
       <div className='panel'>
-        <div>
-          <label htmlFor='venta-tipos-de-pago'>Tipo de Pago</label>
-          <select className='main_input-rename' name='venta-tipos-de-pago' id='venta-tipos-de-pago' value={tipoPago.NOMBRE} onChange={event => setTipoPago(tiposPago.find(tipo => tipo.NOMBRE === event.target.value))}>
-            {tiposPago.map(e => <option key={e.id} value={e.NOMBRE}>{e.NOMBRE}</option>)}
-          </select>
-        </div>
-        <InputTextField name='Descuento' value={descuento} autoComplete='off' onKeyPress={validFloats} onChange={handleDescuento} />
+        <InputSelect table='TIPO_PAGO' name='Tipos de pago' accessor='NOMBRE' value={tipoPago} setValue={setTipoPago} />
+        <InputTextField name='Descuento' {...descuento} autoComplete='off' />
       </div>
       <div className='panel'>
         <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addVentaHandler} onChange={event => setCodigo(event.target.value)} />
@@ -253,7 +207,7 @@ export default function Venta (props) {
             setItems={setItems}
             articulo={item}
             tipoPago={tipoPago}
-            descuento={descuento} />)}
+            descuento={descuento.value} />)}
         </tbody>
         <tfoot>
           <tr>
