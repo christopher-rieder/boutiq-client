@@ -22,12 +22,7 @@ export default function Crud (props) {
   const [search, setSearch] = useState('');
   const [objList, setObjList] = useState([]);
   const [obj, setObj] = useState({});
-  const {
-    crudTable: [crudTable, setCrudTable]
-  } = {
-    crudTable: useState('rubro'),
-    ...(props.crudTable || {})
-  };
+  const crudTable = props.table;
 
   const filterCol = 'NOMBRE';
 
@@ -85,15 +80,6 @@ export default function Crud (props) {
   return (
     <div className='crud-container'>
       <div className='crud-sidebar'>
-        {!props.crudTable &&
-        <select className='crud-table-select' onChange={event => setCrudTable(event.target.value)} value={crudTable}>
-          <option>marca</option>
-          <option>rubro</option>
-          <option>proveedor</option>
-          <option>tipo_pago</option>
-          <option>vendedor</option>
-          <option>cliente</option>
-        </select>}
         <InputSearch value={search} onChange={event => setSearch(event.target.value)} />
         <ul className='crud-list' onClick={liClickHandler} >
           {list()}

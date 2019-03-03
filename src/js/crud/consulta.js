@@ -27,8 +27,8 @@ export default function Consulta (props) {
   function getTdProps (state, rowInfo, column, instance) {
     return {
       onClick: (e, handleOriginal) => {
-        props.handleSelection(rowInfo.original);
-        props.setDisplayModal(false);
+        if (rowInfo && props.handleSelection) props.handleSelection(rowInfo.original);
+        if (props.setDisplayModal) props.setDisplayModal(false);
         if (handleOriginal) handleOriginal();
       }
     };

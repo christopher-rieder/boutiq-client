@@ -100,16 +100,20 @@ export default function ConsultaArticulo (props) {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    getAllArticulos().then(res => {
-      setData(res);
-    });
+    if (props.articuloData) {
+      setData(props.articuloData);
+    } else {
+      getAllArticulos().then(res => {
+        setData(res);
+      });
+    }
   }, []);
 
   function getTdProps (state, rowInfo, column, instance) {
     return {
       onClick: (e, handleOriginal) => {
-        props.handleSelection(rowInfo.original);
-        props.setDisplayModal(false);
+        if (rowInfo && props.handleSelection) props.handleSelection(rowInfo.original);
+        if (props.setDisplayModal) props.setDisplayModal(false);
         if (handleOriginal) handleOriginal();
       }
     };

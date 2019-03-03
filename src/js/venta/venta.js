@@ -18,7 +18,7 @@ import ConsultaArticulo from '../crud/consultaArticulo';
 import Consulta from '../crud/consulta';
 import './venta.css';
 
-function Venta () {
+export default function Venta (props) {
   const [numeroFactura, setNumeroFactura] = useState(0);
   const [cliente, setCliente] = useState({id: 0, NOMBRE: ''});
   const [vendedor, setVendedor] = useState({id: 0, NOMBRE: ''});
@@ -178,6 +178,7 @@ function Venta () {
   const articuloModal = () => {
     setModalContent(
       <ConsultaArticulo
+        articuloData={props.articuloData}
         handleSelection={addVentaItem}
         setDisplayModal={setDisplayModal} />
     );
@@ -264,5 +265,3 @@ function Venta () {
     </React.Fragment>
   );
 }
-
-ReactDOM.render(<Venta />, document.getElementById('root'));
