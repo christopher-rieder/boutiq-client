@@ -159,10 +159,6 @@ export default function Venta (props) {
     setNumeroFactura(numeroFactura + 1);
   };
 
-  // // async function selectClient (nro) {
-  // //   // TODO: SELECT A DIFFERENT CLIENT
-  // // }
-
   // // function addPago () {
   // //   // TODO: add pagos
   // //   // TODO: VALIDATIONS

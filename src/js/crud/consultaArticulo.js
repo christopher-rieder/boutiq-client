@@ -3,34 +3,7 @@ import React, { useEffect, useState } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import { getAllArticulos } from '../database/getData';
-
-function numFilter (filter, row) {
-  let escapedFilter = filter.value.match(/[\d\-+\s]*/g).join('');
-  let filterNumber = escapedFilter.toString().match(/\d*/g).join('');
-
-  // this tests for '300'
-  if (/^\d+$/.test(escapedFilter)) {
-    return parseInt(row[filter.id]) === parseInt(filterNumber);
-  }
-  // this tests for '+300' or '300+'
-  if (/^\+/.test(escapedFilter) || /\+$/.test(escapedFilter)) {
-    return parseInt(row[filter.id]) >= parseInt(filterNumber);
-  }
-
-  // this tests for '-300' or '300-'
-  if (/^-/.test(escapedFilter) || /-$/.test(escapedFilter)) {
-    return parseInt(row[filter.id]) <= parseInt(filterNumber);
-  }
-
-  // this tests for '300-500' or '300 500'
-  if (/^\d+[\s-]\d+$/.test(escapedFilter)) {
-    let regex = /\d+/g;
-    let filterMin = Math.min(...escapedFilter.match(regex));
-    let filterMax = Math.max(...escapedFilter.match(regex));
-    return parseInt(row[filter.id]) <= parseInt(filterMax) && parseInt(row[filter.id]) >= parseInt(filterMin);
-  }
-  return true;
-}
+import {numberRangeFiltering} from '../utilities/filterFunctions';
 
 const columns = [
   {
@@ -70,28 +43,28 @@ const columns = [
     Header: 'LISTA',
     id: 'PRECIO_LISTA',
     accessor: 'PRECIO_LISTA',
-    filterMethod: numFilter,
+    filterMethod: numberRangeFiltering,
     width: 60
   },
   {
     Header: 'CONTADO',
     id: 'PRECIO_CONTADO',
     accessor: 'PRECIO_CONTADO',
-    filterMethod: numFilter,
+    filterMethod: numberRangeFiltering,
     width: 100
   },
   {
     Header: 'STOCK',
     id: 'STOCK',
     accessor: 'STOCK',
-    filterMethod: numFilter,
+    filterMethod: numberRangeFiltering,
     width: 75
   },
   {
     Header: 'PROMO',
     id: 'DESCUENTO_PROMO',
     accessor: e => e.PROMO_BOOL ? e.DESCUENTO_PROMO + '%' : '',
-    filterMethod: numFilter,
+    filterMethod: numberRangeFiltering,
     width: 120
   }
 ];

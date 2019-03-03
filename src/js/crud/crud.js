@@ -4,10 +4,9 @@ import { InputFactory, InputSearch } from '../components/inputs';
 import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
 import dialogs from '../utilities/dialogs';
-import filterFunctions from '../utilities/filterFunctions';
+import {wordFiltering} from '../utilities/filterFunctions';
 dialogs.options.toasts.max = 3;
 
-const textFilter = filterFunctions.wordFiltering(true);
 const cols = {
   marca: ['id', 'NOMBRE'],
   rubro: ['id', 'NOMBRE'],
@@ -65,7 +64,7 @@ export default function Crud (props) {
   };
 
   const list = () => objList
-    .filter(element => textFilter(element[filterCol], search))
+    .filter(element => wordFiltering(element[filterCol], search))
     .map(element => (
       <li className='crud-list-item'
         id={'crud-id-' + element.id}
