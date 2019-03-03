@@ -39,7 +39,7 @@ export default function Consulta (props) {
       data={data}
       filterable
       columns={columns}
-      defaultPageSize={25}
+      defaultPageSize={20}
       className='-striped -highlight'
       getTdProps={getTdProps}
     />

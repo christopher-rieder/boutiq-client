@@ -126,7 +126,7 @@ export default function ConsultaArticulo (props) {
       defaultFilterMethod={(filter, row) =>
         String(row[filter.id]) === filter.value}
       columns={columns}
-      defaultPageSize={25}
+      defaultPageSize={20}
       className='-striped -highlight'
       getTdProps={getTdProps}
     />
