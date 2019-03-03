@@ -14,7 +14,8 @@ import { round } from '../utilities/math';
 import { InputTextField } from '../components/inputs';
 import ItemVenta from './ItemVenta';
 import Modal from '../components/modal';
-import Crud from '../crud/crud';
+import ConsultaArticulo from '../crud/consultaArticulo';
+import Consulta from '../crud/consulta';
 import './venta.css';
 
 function Venta () {
@@ -29,6 +30,7 @@ function Venta () {
   const [codigo, setCodigo] = useState('');
   const [observaciones, setObservaciones] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
+  const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
   useEffect(() => {
     databaseRead.getTable('TIPO_PAGO')
@@ -71,17 +73,24 @@ function Venta () {
     setDescuento(event.target.value);
   };
 
-  const addVentaItem = (event) => {
+  const addVentaHandler = (event) => {
     if (!codigo) return false;
     if (event.which !== 13) return false;
-    let articulo = items.find(item => item.CODIGO === codigo);
+    addVentaItem();
+  };
+
+  const addVentaItem = (data) => {
+    console.log(data);
+
+    const articulo = items.find(item => item.CODIGO === data.CODIGO);
+    console.log('articulo', articulo);
     if (articulo) {
       setItems(items.map(item => item.CODIGO === codigo ? {...item, CANTIDAD: item.CANTIDAD + 1} : item));
-      dialogs.success('AGREGADO!!!');
+      dialogs.success('AGREGADO!!!  +1');
       var aud = new window.Audio(audioOk);
       aud.play();
     } else { // add new articulo
-      databaseRead.getArticuloByCodigo(codigo)
+      databaseRead.getArticuloByCodigo(data.CODIGO || codigo)
         .then(res => {
           if (res.length === 0) {
             dialogs.error('CODIGO NO EXISTENTE');
@@ -166,21 +175,37 @@ function Venta () {
   // //   // TODO: process seña stuff
   // // }
 
-  // // function articuloSearchFunctionality () {
-  // //   // TODO: handle the selection and search of articulos
-  // // }
+  const articuloModal = () => {
+    setModalContent(
+      <ConsultaArticulo
+        handleSelection={addVentaItem}
+        setDisplayModal={setDisplayModal} />
+    );
+    setDisplayModal(true);
+  };
+
+  const clienteModal = () => {
+    setModalContent(
+      <Consulta
+        table='cliente'
+        columnsWidths={[40, 400, 120, 120, 120]}
+        setDisplayModal={setDisplayModal}
+        handleSelection={obj => setCliente(obj)} />
+    );
+    setDisplayModal(true);
+  };
 
   return (
     <React.Fragment>
       {
         displayModal && <Modal displayModal={displayModal} setDisplayModal={setDisplayModal}>
-          <Crud crudTable='marca' />
+          {modalContent}
         </Modal>
       }
 
       <div className='panel'>
         <InputTextField name='Factura' value={numeroFactura} readOnly />
-        <InputTextField name='Cliente' value={cliente.NOMBRE} readOnly />
+        <InputTextField name='Cliente' value={cliente.NOMBRE} readOnly onClick={clienteModal} />
       </div>
       <div className='panel'>
         <div>
@@ -192,9 +217,9 @@ function Venta () {
         <InputTextField name='Descuento' value={descuento} autoComplete='off' onKeyPress={validFloats} onChange={handleDescuento} />
       </div>
       <div className='panel'>
-        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addVentaItem} onChange={event => setCodigo(event.target.value)} />
+        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addVentaHandler} onChange={event => setCodigo(event.target.value)} />
         <button className='codigo-search' onClick={handleSubmit}>BUTTON</button>
-        <button className='codigo-search' onClick={() => setDisplayModal(true)}>MODAL</button>
+        <button className='codigo-search' onClick={articuloModal}>MODAL</button>
       </div>
       <div className='panel'>
         <InputTextField name='Observaciones' value={observaciones} onChange={event => setObservaciones(event.target.value)} />

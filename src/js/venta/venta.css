@@ -19,6 +19,13 @@ body {
   color: red;
 }
 
+.rt-td:hover {
+  width: initial;
+  min-width: max-content;
+  background-color: #FDA;
+  z-index: 1000;
+}
+
 .table-header-cantidad {
   width: 5rem;
 }
