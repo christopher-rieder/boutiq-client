@@ -1,22 +1,10 @@
-// import * as databaseRead from '../database/getData';
-// const app = document.querySelector('#root');
-
-// databaseRead.getAllFacturas()
-//   .then(res => {
-//     res.forEach(e => {
-//       app.insertAdjacentHTML('beforeend', `<p>${JSON.stringify(e)}</p>`);
-//     });
-//   });
-
-import React, {useState, useEffect} from 'react';
+import { format as dateFormat } from 'date-fns';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { List } from 'react-virtualized';
-import 'react-virtualized/styles.css';
+import 'react-virtualized/styles.css'; // FIXME: don't use virtualized for now
 import * as databaseRead from '../database/getData';
-import {format as dateFormat} from 'date-fns';
 import FacturaView from './FacturaView';
-
-// get fechaStr () { return dateFormat(this._fecha, 'MM/dd/yyyy'); }
 
 function Consultas () {
   const [objList, setObjList] = useState([]);

@@ -1,8 +1,8 @@
+import matchSorter from 'match-sorter';
 import React, { useEffect, useState } from 'react';
-import {getAllArticulos} from '../database/getData';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-import matchSorter from 'match-sorter';
+import { getAllArticulos } from '../database/getData';
 
 function numFilter (filter, row) {
   let escapedFilter = filter.value.match(/[\d\-+\s]*/g).join('');

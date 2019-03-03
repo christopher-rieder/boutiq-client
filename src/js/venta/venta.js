@@ -1,21 +1,20 @@
 import { format as dateFormat } from 'date-fns';
 import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
 import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
 import { errorShakeEffect } from '../components/effects';
+import { InputTextField } from '../components/inputs';
+import Modal from '../components/modal';
 import { descuentoMax } from '../constants/bussinessConstants';
+import Consulta from '../crud/consulta';
+import ConsultaArticulo from '../crud/consultaArticulo';
 import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
 import { validFloats } from '../utilities/commonHandlers';
 import dialogs from '../utilities/dialogs';
 import { money } from '../utilities/format';
 import { round } from '../utilities/math';
-import { InputTextField } from '../components/inputs';
 import ItemVenta from './ItemVenta';
-import Modal from '../components/modal';
-import ConsultaArticulo from '../crud/consultaArticulo';
-import Consulta from '../crud/consulta';
 import './venta.css';
 
 export default function Venta (props) {
@@ -80,20 +79,18 @@ export default function Venta (props) {
   };
 
   const addVentaItem = (data) => {
-    console.log(data);
-
     const articulo = items.find(item => item.CODIGO === data.CODIGO);
-    console.log('articulo', articulo);
     if (articulo) {
       setItems(items.map(item => item.CODIGO === codigo ? {...item, CANTIDAD: item.CANTIDAD + 1} : item));
       dialogs.success('AGREGADO!!!  +1');
       var aud = new window.Audio(audioOk);
       aud.play();
     } else { // add new articulo
-      databaseRead.getArticuloByCodigo(data.CODIGO || codigo)
+      databaseRead.getArticuloByCodigo(data ? data.CODIGO : codigo)
         .then(res => {
           if (res.length === 0) {
             dialogs.error('CODIGO NO EXISTENTE');
+            
             var aud2 = new window.Audio(audioError);
             aud2.play();
           } else {

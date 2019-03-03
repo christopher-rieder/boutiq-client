@@ -1,8 +1,8 @@
+import matchSorter from 'match-sorter';
 import React, { useEffect, useState } from 'react';
-import {getTable} from '../database/getData';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-import matchSorter from 'match-sorter';
+import { getTable } from '../database/getData';
 
 export default function Consulta (props) {
   const [data, setData] = useState([]);

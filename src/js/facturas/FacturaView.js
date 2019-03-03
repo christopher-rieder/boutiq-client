@@ -1,5 +1,5 @@
+import { format as dateFormat } from 'date-fns';
 import React from 'react';
-import {format as dateFormat} from 'date-fns';
 
 export default function FacturaView ({obj, setObj}) {
   console.log(obj);

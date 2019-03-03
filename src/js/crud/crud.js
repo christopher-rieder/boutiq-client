@@ -1,10 +1,10 @@
+import React, { useEffect, useState } from 'react';
+import '../../styles/main.scss';
+import { InputFactory, InputSearch } from '../components/inputs';
 import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
-import React, { useState, useEffect } from 'react';
-import {InputSearch, InputFactory} from '../components/inputs';
-import filterFunctions from '../utilities/filterFunctions';
 import dialogs from '../utilities/dialogs';
-import '../../styles/main.scss';
+import filterFunctions from '../utilities/filterFunctions';
 dialogs.options.toasts.max = 3;
 
 const textFilter = filterFunctions.wordFiltering(true);

@@ -1,16 +1,11 @@
-import {round} from '../utilities/math';
-import * as d3Format from 'd3-format';
-import {descuentoMax} from '../constants/bussinessConstants';
 import React from 'react';
-
-const money = d3Format.formatLocale({
-  'decimal': ',',
-  'thousands': '.',
-  'grouping': [3],
-  'currency': ['$', '']
-}).format('($,.2f');
+import { descuentoMax } from '../constants/bussinessConstants';
+import { money } from '../utilities/format';
+import { round } from '../utilities/math';
 
 export default function ItemVenta ({articulo, tipoPago, descuento, items, setItems}) {
+  // TODO: a bit hacky; the Venta class has to observe the changes in PRECIO_UNITARIO
+  // but it can only be calculated here in a simple way. so, the Venta state needs observers to every ItemVenta
   articulo.PRECIO_BASE = articulo[tipoPago.id === 1 ? 'PRECIO_CONTADO' : 'PRECIO_LISTA'];
   articulo.PRECIO_UNITARIO = articulo.PRECIO_CUSTOM || round(articulo.PRECIO_BASE * (1 - descuento / 100) * (1 - articulo.DESCUENTO / 100));
 
@@ -38,7 +33,7 @@ export default function ItemVenta ({articulo, tipoPago, descuento, items, setIte
       <td className='table-cell-cantidad'><input type='number' value={articulo.CANTIDAD} min='0' onChange={cantidadHandler} /></td>
       <td className='table-cell-codigo'>{articulo.CODIGO}</td>
       <td className='table-cell-descripcion'>{articulo.DESCRIPCION}</td>
-      <td className={'table-cell-stock ' + articulo.STOCK < 0 ? 'low-stock' : ''}>{articulo.STOCK}</td>
+      <td className='table-cell-stock'>{articulo.STOCK}</td>
       <td className='table-cell-precioBase'>{money(articulo.PRECIO_BASE)}</td>
       <td className='table-cell-precioUnitario'><input type='number' value={articulo.PRECIO_UNITARIO} min='0' onChange={precioHandler} /></td>
       <td className='table-cell-precioTotal'>{money(articulo.PRECIO_UNITARIO * articulo.CANTIDAD)}</td>
