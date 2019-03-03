@@ -29,6 +29,9 @@ export default function FacturaView ({obj, setObj}) {
           <p className='factura__datos__descuento'>
             Descuento: {obj.DESCUENTO}
           </p>
+          <p className='factura__datos__observaciones'>
+            Observaciones: {obj.OBSERVACIONES}
+          </p>
         </section>
         <section className='factura__items'>
           <table className='factura__tabla'>
@@ -36,10 +39,10 @@ export default function FacturaView ({obj, setObj}) {
               <tr>
                 <th>CODIGO</th>
                 <th>DESCRIPCION</th>
-                <th>CANTIDAD</th>
-                <th>PRECIO_UNITARIO</th>
-                <th>PRECIO_TOTAL</th>
-                <th>DESCUENTO_ITEM</th>
+                <th>CANT</th>
+                <th>PRECIO</th>
+                <th>TOTAL</th>
+                <th>DESC</th>
               </tr>
             </thead>
             <tbody>

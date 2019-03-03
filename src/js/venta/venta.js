@@ -17,6 +17,20 @@ import { round } from '../utilities/math';
 import ItemVenta from './ItemVenta';
 import './venta.css';
 
+function useFormInput (initialValue) {
+  const [value, setValue] = useState(initialValue);
+
+  function onChange (e) {
+    setValue(e.target.value);
+  }
+
+  return {
+    value,
+    setValue,
+    onChange
+  };
+}
+
 export default function Venta (props) {
   const [numeroFactura, setNumeroFactura] = useState(0);
   const [cliente, setCliente] = useState({id: 0, NOMBRE: ''});
@@ -27,7 +41,7 @@ export default function Venta (props) {
   const [tiposPago, setTiposPago] = useState([{id: 0, NOMBRE: ''}]);
   const [items, setItems] = useState([]);
   const [codigo, setCodigo] = useState('');
-  const [observaciones, setObservaciones] = useState('');
+  const observaciones = useFormInput('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
@@ -46,7 +60,7 @@ export default function Venta (props) {
     databaseRead.getTurnoActual().then(res => setTurno(res));
     setDescuento(0);
     setItems([]);
-    setObservaciones('');
+    observaciones.setValue('');
   }, [numeroFactura]);
 
   const getTotal = () => items.reduce((total, articulo) => {
@@ -130,6 +144,7 @@ export default function Venta (props) {
         NUMERO_FACTURA: numeroFactura,
         FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
         DESCUENTO: descuento,
+        OBSERVACIONES: observaciones.value,
         CLIENTE_ID: cliente.id,
         TURNO_ID: turno.id // TODO: MAKE TURNO
       });
@@ -216,7 +231,7 @@ export default function Venta (props) {
         <button className='codigo-search' onClick={articuloModal}>MODAL</button>
       </div>
       <div className='panel'>
-        <InputTextField name='Observaciones' value={observaciones} onChange={event => setObservaciones(event.target.value)} />
+        <InputTextField name='Observaciones' {...observaciones} />
       </div>
       <table id='table'>
         <thead>

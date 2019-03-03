@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import matchSorter from 'match-sorter';
 import '../../styles/main.scss';
 import { InputFactory, InputSearch } from '../components/inputs';
 import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
 import dialogs from '../utilities/dialogs';
-import {wordFiltering} from '../utilities/filterFunctions';
 dialogs.options.toasts.max = 3;
 
 const cols = {
@@ -63,8 +63,7 @@ export default function Crud (props) {
     }
   };
 
-  const list = () => objList
-    .filter(element => wordFiltering(element[filterCol], search))
+  const list = () => matchSorter(objList, search, {keys: ['NOMBRE']})
     .map(element => (
       <li className='crud-list-item'
         id={'crud-id-' + element.id}

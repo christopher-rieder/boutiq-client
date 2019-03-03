@@ -4,6 +4,7 @@ import {getAllArticulos} from './database/getData';
 import Crud from './crud/crud';
 import Venta from './venta/venta';
 import ConsultaArticulo from './crud/consultaArticulo';
+import ConsultaFactura from './facturas/ConsultaFactura';
 import '../styles/main.scss';
 
 function App () {
@@ -51,7 +52,7 @@ function App () {
               <button className='navigation__btn' onClick={() => setMainElement(<ConsultaArticulo articuloData={articuloData} handleSelection={(articulo) => console.log(articulo)} />)}>ARTICULO</button>
             </li>
             <li className='navigation__item'>
-              <button className='navigation__btn'>FACTURA</button>
+              <button className='navigation__btn' onClick={() => setMainElement(<ConsultaFactura />)}>FACTURA</button>
             </li>
             <li className='navigation__item'>
               <button className='navigation__btn'>CRUDARTICULO</button>
