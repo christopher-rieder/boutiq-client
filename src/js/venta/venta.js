@@ -79,18 +79,18 @@ export default function Venta (props) {
   };
 
   const addVentaItem = (data) => {
-    const articulo = items.find(item => item.CODIGO === data.CODIGO);
+    const cod = data ? data.CODIGO : codigo;
+    const articulo = items.find(item => item.CODIGO === cod);
     if (articulo) {
       setItems(items.map(item => item.CODIGO === codigo ? {...item, CANTIDAD: item.CANTIDAD + 1} : item));
       dialogs.success('AGREGADO!!!  +1');
       var aud = new window.Audio(audioOk);
       aud.play();
     } else { // add new articulo
-      databaseRead.getArticuloByCodigo(data ? data.CODIGO : codigo)
+      databaseRead.getArticuloByCodigo(cod)
         .then(res => {
           if (res.length === 0) {
             dialogs.error('CODIGO NO EXISTENTE');
-            
             var aud2 = new window.Audio(audioError);
             aud2.play();
           } else {
