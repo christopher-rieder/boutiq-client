@@ -2,6 +2,7 @@ import React from 'react';
 import { descuentoMax } from '../constants/bussinessConstants';
 import { money } from '../utilities/format';
 import { round } from '../utilities/math';
+import dialogs from '../utilities/dialogs';
 
 export default function ItemVenta ({articulo, tipoPago, descuento, items, setItems}) {
   // TODO: a bit hacky; the Venta class has to observe the changes in PRECIO_UNITARIO
@@ -10,7 +11,16 @@ export default function ItemVenta ({articulo, tipoPago, descuento, items, setIte
   articulo.PRECIO_UNITARIO = articulo.PRECIO_CUSTOM || round(articulo.PRECIO_BASE * (1 - descuento / 100) * (1 - articulo.DESCUENTO / 100));
 
   const cantidadHandler = event => {
-    const newCantidad = isNaN(parseInt(event.target.value)) ? 1 : parseInt(event.target.value);
+    const value = event.target.value;
+    if (parseInt(value) === 0) { // remove item
+      dialogs.confirm(
+        confirmed => confirmed && setItems(items.filter(e => e.CODIGO !== articulo.CODIGO)),
+        'Eliminar Item?', // Message text
+        'CONFIRMAR', // Confirm text
+        'VOLVER' // Cancel text
+      );
+    }
+    let newCantidad = isNaN(parseInt(value)) ? 1 : value > 0 ? parseInt(value) : 1;
     setItems(items.map(item => item.CODIGO === articulo.CODIGO ? {...item, CANTIDAD: newCantidad} : item));
   };
 
