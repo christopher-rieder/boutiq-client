@@ -4,7 +4,7 @@ import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
 import { InputTextField, InputSelect, useFormInput, useFormInputFloat } from '../components/inputs';
 import Modal from '../components/modal';
-import { descuentoMax } from '../constants/bussinessConstants';
+import { DESCUENTO_MAX, ESTADOS_DE_PAGO, TIPOS_DE_PAGO } from '../constants/bussinessConstants';
 import Consulta from '../crud/consulta';
 import ConsultaArticulo from '../crud/consultaArticulo';
 import * as databaseRead from '../database/getData';
@@ -17,7 +17,7 @@ import AgregarPago from './AgregarPago';
 import './venta.css';
 
 export default function Venta (props) {
-  const descuento = useFormInputFloat(0, descuentoMax);
+  const descuento = useFormInputFloat(0, DESCUENTO_MAX);
   const [numeroFactura, setNumeroFactura] = useState(0);
   const [cliente, setCliente] = useState({id: 0, NOMBRE: ''});
   const [vendedor, setVendedor] = useState({id: 0, NOMBRE: ''});
@@ -129,7 +129,7 @@ export default function Venta (props) {
           FACTURA_ID: facturaId,
           MONTO: getTotal(),
           TIPO_PAGO_ID: tipoPago.id,
-          ESTADO: tipoPago.id === 1 ? 'PAGADO' : 'PENDIENTE'
+          ESTADO_ID: tipoPago.id === TIPOS_DE_PAGO.EFECTIVO ? ESTADOS_DE_PAGO.PAGADO : ESTADOS_DE_PAGO.PENDIENTE
         });
       } else {
         pagos.forEach(pago => {
@@ -137,7 +137,7 @@ export default function Venta (props) {
             FACTURA_ID: facturaId,
             MONTO: pago.MONTO,
             TIPO_PAGO_ID: pago.TIPO_PAGO.id,
-            ESTADO: pago.ESTADO
+            ESTADO: pago.ESTADO.id
           });
         });
       }
