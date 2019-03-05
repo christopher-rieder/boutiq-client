@@ -5,8 +5,8 @@ import 'react-table/react-table.css';
 import { getTable } from '../database/getData';
 
 export default function Consulta (props) {
-  const [data, setData] = useState([]);
-  const [columns, setColumns] = useState([]);
+  const [data, setData] = useState([{id: 1}]);
+  const [columns, setColumns] = useState([{}]);
 
   useEffect(() => {
     getTable(props.table).then(res => {

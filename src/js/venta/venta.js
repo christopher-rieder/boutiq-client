@@ -13,6 +13,7 @@ import dialogs from '../utilities/dialogs';
 import { money } from '../utilities/format';
 import { round } from '../utilities/math';
 import ItemVenta from './ItemVenta';
+import AgregarPago from './AgregarPago';
 import './venta.css';
 
 export default function Venta (props) {
@@ -22,6 +23,7 @@ export default function Venta (props) {
   const [vendedor, setVendedor] = useState({id: 0, NOMBRE: ''});
   const [turno, setTurno] = useState({id: 0});
   const [tipoPago, setTipoPago] = useState({id: 1, NOMBRE: 'EFECTIVO'});
+  const [pagos, setPagos] = useState([]);
   const [items, setItems] = useState([]);
   const [codigo, setCodigo] = useState('');
   const observaciones = useFormInput('');
@@ -81,6 +83,10 @@ export default function Venta (props) {
 
   const handleSubmit = event => {
     event.preventDefault();
+    if (items.length === 0) {
+      dialogs.error('Factura vacia; no agregada');
+      return;
+    }
     // TODO: VALIDATIONS
     dialogs.confirm(
       confirmed => {
@@ -118,12 +124,23 @@ export default function Venta (props) {
         });
       });
 
-      databaseWrite.postPago({
-        FACTURA_ID: facturaId,
-        MONTO: getTotal(),
-        TIPO_PAGO_ID: tipoPago.id,
-        ESTADO: tipoPago.id === 1 ? 'PAGADO' : 'PENDIENTE'
-      });
+      if (pagos.length === 0) {
+        databaseWrite.postPago({
+          FACTURA_ID: facturaId,
+          MONTO: getTotal(),
+          TIPO_PAGO_ID: tipoPago.id,
+          ESTADO: tipoPago.id === 1 ? 'PAGADO' : 'PENDIENTE'
+        });
+      } else {
+        pagos.forEach(pago => {
+          databaseWrite.postPago({
+            FACTURA_ID: facturaId,
+            MONTO: pago.MONTO,
+            TIPO_PAGO_ID: pago.TIPO_PAGO.id,
+            ESTADO: pago.ESTADO
+          });
+        });
+      }
 
       dialogs.success(`FACTURA ${numeroFactura} REALIZADA!!!`);
     } catch (err) {
@@ -133,10 +150,19 @@ export default function Venta (props) {
     setNumeroFactura(numeroFactura + 1);
   };
 
-  // // function addPago () {
-  // //   // TODO: add pagos
-  // //   // TODO: VALIDATIONS
-  // // }
+  function addPago (pago) {
+    setPagos(pagos.concat(pago));
+  }
+
+  function handleAgregarPago () {
+    setModalContent(
+      <AgregarPago
+        handleSelection={addPago}
+        setDisplayModal={setDisplayModal}
+      />
+    );
+    setDisplayModal(true);
+  }
 
   // // function processSeña () {
   // //   // TODO: process seña stuff
@@ -181,8 +207,7 @@ export default function Venta (props) {
       </div>
       <div className='panel'>
         <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addVentaHandler} onChange={event => setCodigo(event.target.value)} />
-        <button className='codigo-search' onClick={handleSubmit}>BUTTON</button>
-        <button className='codigo-search' onClick={articuloModal}>MODAL</button>
+        <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
       </div>
       <div className='panel'>
         <InputTextField name='Observaciones' {...observaciones} />
@@ -223,6 +248,13 @@ export default function Venta (props) {
         <InputTextField readOnly name='Vendedor' value={vendedor.NOMBRE} />
         <InputTextField readOnly name='Turno' value={turno.id} />
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
+      </div>
+      <div className='panel'>
+        <button className='codigo-search' onClick={handleSubmit}>AGREGAR VENTA</button>
+        <button className='codigo-search' onClick={handleAgregarPago}>AGREGAR PAGO</button>
+      </div>
+      <div className='panel'>
+        {pagos.map(pago => <pre>{JSON.stringify(pago, null, 2)}</pre>)}
       </div>
     </React.Fragment>
   );

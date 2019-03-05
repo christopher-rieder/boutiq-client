@@ -20,7 +20,7 @@ const coltypes = ['id', 'text', 'text', 'text', 'text', 'text', 'text'];
 export default function Crud (props) {
   const [search, setSearch] = useState('');
   const [objList, setObjList] = useState([]);
-  const [obj, setObj] = useState({});
+  const [obj, setObj] = useState({id: 1, NOMBRE: 'OBJ'});
   const crudTable = props.table;
 
   const filterCol = 'NOMBRE';
