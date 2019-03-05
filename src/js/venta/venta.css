@@ -150,6 +150,10 @@ th {
   color: orangered;
 }
 
+.venta__pago-item {
+  margin: 0 1rem;
+}
+
 @keyframes shake {
   0% {
     transform: translateX(4px);

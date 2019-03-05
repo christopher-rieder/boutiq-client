@@ -42,12 +42,15 @@ function useFormInputFloat (initialValue, maxValue) {
     }
   }
 
-  return {
+  return [
     value,
     setValue,
-    onChange,
-    onKeyPress
-  };
+    {
+      value,
+      onChange,
+      onKeyPress
+    }
+  ];
 }
 
 function useFormInput (initialValue) {

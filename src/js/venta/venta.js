@@ -2,7 +2,7 @@ import { format as dateFormat } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
-import { InputTextField, InputSelect, useFormInput, useFormInputFloat } from '../components/inputs';
+import { InputTextField, InputSelect, useFormInputFloat } from '../components/inputs';
 import Modal from '../components/modal';
 import { DESCUENTO_MAX, ESTADOS_DE_PAGO, TIPOS_DE_PAGO } from '../constants/bussinessConstants';
 import Consulta from '../crud/consulta';
@@ -14,10 +14,11 @@ import { money } from '../utilities/format';
 import { round } from '../utilities/math';
 import ItemVenta from './ItemVenta';
 import AgregarPago from './AgregarPago';
+import Pago from './Pago';
 import './venta.css';
 
 export default function Venta (props) {
-  const descuento = useFormInputFloat(0, DESCUENTO_MAX);
+  const [descuento, setDescuento, descuentoProps] = useFormInputFloat(0, DESCUENTO_MAX);
   const [numeroFactura, setNumeroFactura] = useState(0);
   const [cliente, setCliente] = useState({id: 0, NOMBRE: ''});
   const [vendedor, setVendedor] = useState({id: 0, NOMBRE: ''});
@@ -26,7 +27,7 @@ export default function Venta (props) {
   const [pagos, setPagos] = useState([]);
   const [items, setItems] = useState([]);
   const [codigo, setCodigo] = useState('');
-  const observaciones = useFormInput('');
+  const [observaciones, setObservaciones] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
@@ -35,14 +36,14 @@ export default function Venta (props) {
     databaseRead.getClienteById(1).then(res => setCliente(res));
     databaseRead.getVendedorById(1).then(res => setVendedor(res));
     databaseRead.getTurnoActual().then(res => setTurno(res));
-    descuento.setValue(0);
+    setDescuento(0);
     setItems([]);
-    observaciones.setValue('');
+    setObservaciones('');
   }, [numeroFactura]);
 
   const getTotal = () => items.reduce((total, articulo) => {
     const precioBase = articulo[tipoPago.id === 1 ? 'PRECIO_CONTADO' : 'PRECIO_LISTA'];
-    const precioUnitario = articulo.PRECIO_CUSTOM || round(precioBase * (1 - descuento.value / 100) * (1 - articulo.DESCUENTO / 100));
+    const precioUnitario = articulo.PRECIO_CUSTOM || round(precioBase * (1 - descuento / 100) * (1 - articulo.DESCUENTO / 100));
     const precioTotal = precioUnitario * articulo.CANTIDAD;
     return total + precioTotal;
   }, 0);
@@ -108,8 +109,8 @@ export default function Venta (props) {
       const facturaId = await databaseWrite.postFactura({
         NUMERO_FACTURA: numeroFactura,
         FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
-        DESCUENTO: descuento.value,
-        OBSERVACIONES: observaciones.value,
+        DESCUENTO: descuento,
+        OBSERVACIONES: observaciones,
         CLIENTE_ID: cliente.id,
         TURNO_ID: turno.id // TODO: MAKE TURNO
       });
@@ -203,14 +204,14 @@ export default function Venta (props) {
       </div>
       <div className='panel'>
         <InputSelect table='TIPO_PAGO' name='Tipos de pago' accessor='NOMBRE' value={tipoPago} setValue={setTipoPago} />
-        <InputTextField name='Descuento' {...descuento} autoComplete='off' />
+        <InputTextField name='Descuento' {...descuentoProps} autoComplete='off' />
       </div>
       <div className='panel'>
         <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addVentaHandler} onChange={event => setCodigo(event.target.value)} />
         <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
       </div>
       <div className='panel'>
-        <InputTextField name='Observaciones' {...observaciones} />
+        <InputTextField name='Observaciones' value={observaciones} onChange={e => setObservaciones(e.target.value)} />
       </div>
       <table id='table'>
         <thead>
@@ -232,7 +233,7 @@ export default function Venta (props) {
             setItems={setItems}
             articulo={item}
             tipoPago={tipoPago}
-            descuento={descuento.value} />)}
+            descuento={descuento} />)}
         </tbody>
         <tfoot>
           <tr>
@@ -253,9 +254,13 @@ export default function Venta (props) {
         <button className='codigo-search' onClick={handleSubmit}>AGREGAR VENTA</button>
         <button className='codigo-search' onClick={handleAgregarPago}>AGREGAR PAGO</button>
       </div>
-      <div className='panel'>
-        {pagos.map(pago => <pre>{JSON.stringify(pago, null, 2)}</pre>)}
-      </div>
+      {
+        pagos.length > 0 &&
+        <div className='panel' >
+          <h3>PAGOS</h3>
+          {pagos.map(pago => <Pago pago={pago} />)}
+        </div>
+      }
     </React.Fragment>
   );
 }
