@@ -16,21 +16,24 @@ function useFormInputFloat (initialValue, maxValue) {
 
   // allow for numbers unfinished ending in zeros or dots
   function onChange (event) {
+    event.persist();
+    let value = parseFloat(event.target.value);
     if (!/\d+[.0]+$/.test(event.target.value)) {
-      event.target.value = parseFloat(event.target.value) || '0';
+      value = parseFloat(event.target.value) || 0;
     }
     if (parseFloat(event.target.value) > maxValue) {
-      event.target.value = maxValue;
+      value = maxValue;
       event.target.classList.add('error-shake');
       setTimeout(e => event.target.classList.remove('error-shake'), 500);
       dialogs.error(
-        'EL LIMITE ES ' + parseFloat(event.target.value).toFixed(2)
+        'EL LIMITE ES ' + parseFloat(maxValue).toFixed(2)
       );
     }
-    setValue(event.target.value);
+    setValue(value);
   }
 
   function onKeyPress (event) {
+    event.persist();
     if (event.key.length <= 1) {
       if (!/[0-9.]/.test(event.key) ||
             !/^\d*\.{0,1}\d*$/.test(event.target.value + event.key)) {
