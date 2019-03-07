@@ -5,6 +5,8 @@ import Crud from './crud/crud';
 import Venta from './venta/venta';
 import ConsultaArticulo from './crud/consultaArticulo';
 import ConsultaFactura from './facturas/ConsultaFactura';
+import CrudArticulo from './articulo/crudArticulo';
+import {ConfigContextProvider} from './context/ConfigContext';
 import '../styles/main.scss';
 
 function App () {
@@ -18,7 +20,7 @@ function App () {
   }, []);
 
   return (
-    <React.Fragment>
+    <ConfigContextProvider>
       <header className='header'>
         <nav className='header__menu'>
           <ul className='navigation'>
@@ -55,7 +57,7 @@ function App () {
               <button className='navigation__btn' onClick={() => setMainElement(<ConsultaFactura />)}>FACTURA</button>
             </li>
             <li className='navigation__item'>
-              <button className='navigation__btn'>CRUDARTICULO</button>
+              <button className='navigation__btn' onClick={() => setMainElement(<CrudArticulo />)}>CRUDARTICULO</button>
             </li>
           </ul>
         </nav>
@@ -63,7 +65,7 @@ function App () {
       <main>
         {mainElement}
       </main>
-    </React.Fragment>
+    </ConfigContextProvider>
   );
 }
 

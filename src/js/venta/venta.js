@@ -1,10 +1,10 @@
 import { format as dateFormat } from 'date-fns';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
 import { InputTextField, InputSelect, useFormInputFloat } from '../components/inputs';
 import Modal from '../components/modal';
-import { DESCUENTO_MAX, ESTADOS_DE_PAGO, TIPOS_DE_PAGO } from '../constants/bussinessConstants';
+import { ConfigContext } from '../context/ConfigContext';
 import Consulta from '../crud/consulta';
 import ConsultaArticulo from '../crud/consultaArticulo';
 import * as databaseRead from '../database/getData';
@@ -18,7 +18,9 @@ import Pago from './Pago';
 import './venta.css';
 
 export default function Venta (props) {
-  const [descuento, setDescuento, descuentoProps] = useFormInputFloat(0, DESCUENTO_MAX);
+  const {state: {DESCUENTO_MAXIMO}} = useContext(ConfigContext);
+
+  const [descuento, setDescuento, descuentoProps] = useFormInputFloat(0, DESCUENTO_MAXIMO || 20);
   const [numeroFactura, setNumeroFactura] = useState(0);
   const [cliente, setCliente] = useState({id: 0, NOMBRE: ''});
   const [vendedor, setVendedor] = useState({id: 0, NOMBRE: ''});

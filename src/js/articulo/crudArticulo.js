@@ -1,18 +1,20 @@
 import * as databaseRead from '../database/getData';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { InputTextField, InputSelect, useFormInput, useFormInputFloat } from '../components/inputs';
-import { DESCUENTO_MAX, RATIO_CONTADO, RATIO_COSTO } from '../constants/bussinessConstants';
 import {round} from '../utilities/math';
 import dialogs from '../utilities/dialogs';
+import { ConfigContext } from '../context/ConfigContext';
 
 export default function CrudArticulo (props) {
+  const {state: {DESCUENTO_MAXIMO, RATIO_CONTADO, RATIO_COSTO}} = useContext(ConfigContext);
+
   const [id, setId] = useState(0);
   const [codigo, setCodigo] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [precioLista, setPrecioLista, precioListaProps] = useFormInputFloat(0);
   const [precioContado, setPrecioContado, precioContadoProps] = useFormInputFloat(0);
   const [precioCosto, setPrecioCosto, precioCostoProps] = useFormInputFloat(0);
-  const [promoDescuento, setPromoDescuento, promoDescuentoProps] = useFormInputFloat(0, DESCUENTO_MAX);
+  const [promoDescuento, setPromoDescuento, promoDescuentoProps] = useFormInputFloat(0, DESCUENTO_MAXIMO);
   const [stock, setStock] = useState(0);
   const [rubro, setRubro] = useState({});
   const [marca, setMarca] = useState({});
@@ -29,7 +31,7 @@ export default function CrudArticulo (props) {
   useEffect(() => {
     if (precioContado > precioLista) {
       dialogs.error('El precio de contado debe ser menor al precio de lista');
-      setPrecioContado(precioLista);
+      setPrecioContado(round(precioLista * RATIO_CONTADO));
     }
   }, [precioLista, precioContado]);
 
