@@ -80,4 +80,5 @@ typings/
 .dynamodb/
 .vscode/settings.json
 dist/*
+build/*
 testing/*
