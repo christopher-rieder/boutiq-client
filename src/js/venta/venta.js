@@ -1,8 +1,8 @@
 import { format as dateFormat } from 'date-fns';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useReducer } from 'react';
 import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
-import { InputTextField, InputSelect, useFormInputFloat } from '../components/inputs';
+import { InputTextField, InputSelect, InputFloatField } from '../components/inputs';
 import Modal from '../components/modal';
 import { ConfigContext } from '../context/ConfigContext';
 import Consulta from '../crud/consulta';
@@ -16,36 +16,40 @@ import ItemVenta from './ItemVenta';
 import AgregarPago from './AgregarPago';
 import Pago from './Pago';
 import './venta.css';
+import VentaReducer from './VentaReducer';
 
 export default function Venta (props) {
-  const {state: {DESCUENTO_MAXIMO}} = useContext(ConfigContext);
-
-  const [descuento, setDescuento, descuentoProps] = useFormInputFloat(0, DESCUENTO_MAXIMO || 20);
-  const [numeroFactura, setNumeroFactura] = useState(0);
-  const [cliente, setCliente] = useState({id: 0, NOMBRE: ''});
-  const [vendedor, setVendedor] = useState({id: 0, NOMBRE: ''});
-  const [turno, setTurno] = useState({id: 0});
-  const [tipoPago, setTipoPago] = useState({id: 1, NOMBRE: 'EFECTIVO'});
-  const [pagos, setPagos] = useState([]);
+  const [factura, dispatchFactura] = useReducer(VentaReducer.reducer, VentaReducer.initialState);
+  console.log(factura);
   const [items, setItems] = useState([]);
   const [codigo, setCodigo] = useState('');
-  const [observaciones, setObservaciones] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
+  const {state: {DESCUENTO_MAXIMO}} = useContext(ConfigContext);
+
+  const getNuevaFactura = async () => {
+    const lastNumeroFactura = await databaseRead.getLastNumeroFactura();
+    const cliente = await databaseRead.getClienteById(1);
+    const vendedor = await databaseRead.getVendedorById(1);
+    const turno = await databaseRead.getTurnoActual();
+    dispatchFactura({
+      type: 'nuevaFactura',
+      payload: {
+        numeroFactura: lastNumeroFactura.lastId + 1,
+        cliente,
+        vendedor,
+        turno
+      }
+    });
+  };
   useEffect(() => {
-    databaseRead.getLastNumeroFactura().then(res => setNumeroFactura(res.lastId + 1));
-    databaseRead.getClienteById(1).then(res => setCliente(res));
-    databaseRead.getVendedorById(1).then(res => setVendedor(res));
-    databaseRead.getTurnoActual().then(res => setTurno(res));
-    setDescuento(0);
-    setItems([]);
-    setObservaciones('');
-  }, [numeroFactura]);
+    getNuevaFactura();
+  }, [factura.numeroFactura]);
 
   const getTotal = () => items.reduce((total, articulo) => {
-    const precioBase = articulo[tipoPago.id === 1 ? 'PRECIO_CONTADO' : 'PRECIO_LISTA'];
-    const precioUnitario = articulo.PRECIO_CUSTOM || round(precioBase * (1 - descuento / 100) * (1 - articulo.DESCUENTO / 100));
+    const precioBase = articulo[factura.tipoPago.id === 1 ? 'PRECIO_CONTADO' : 'PRECIO_LISTA'];
+    const precioUnitario = articulo.PRECIO_CUSTOM || round(precioBase * (1 - factura.descuento / 100) * (1 - articulo.DESCUENTO / 100));
     const precioTotal = precioUnitario * articulo.CANTIDAD;
     return total + precioTotal;
   }, 0);
@@ -109,12 +113,12 @@ export default function Venta (props) {
   const postFacturaToAPI = async () => {
     try {
       const facturaId = await databaseWrite.postFactura({
-        NUMERO_FACTURA: numeroFactura,
+        NUMERO_FACTURA: factura.numeroFactura,
         FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
-        DESCUENTO: descuento,
-        OBSERVACIONES: observaciones,
-        CLIENTE_ID: cliente.id,
-        TURNO_ID: turno.id // TODO: MAKE TURNO
+        DESCUENTO: factura.descuento,
+        OBSERVACIONES: factura.observaciones,
+        CLIENTE_ID: factura.cliente.id,
+        TURNO_ID: factura.turno.id // TODO: MAKE TURNO
       });
 
       items.forEach(item => {
@@ -127,15 +131,15 @@ export default function Venta (props) {
         });
       });
 
-      if (pagos.length === 0) {
+      if (factura.pagos.length === 0) {
         databaseWrite.postPago({
           FACTURA_ID: facturaId,
           MONTO: getTotal(),
-          TIPO_PAGO_ID: tipoPago.id,
-          ESTADO_ID: tipoPago.id === TIPOS_DE_PAGO.EFECTIVO ? ESTADOS_DE_PAGO.PAGADO : ESTADOS_DE_PAGO.PENDIENTE
+          TIPO_PAGO_ID: factura.tipoPago.id,
+          ESTADO_ID: factura.tipoPago.id === TIPOS_DE_PAGO.EFECTIVO ? ESTADOS_DE_PAGO.PAGADO : ESTADOS_DE_PAGO.PENDIENTE
         });
       } else {
-        pagos.forEach(pago => {
+        factura.pagos.forEach(pago => {
           databaseWrite.postPago({
             FACTURA_ID: facturaId,
             MONTO: pago.MONTO,
@@ -145,16 +149,19 @@ export default function Venta (props) {
         });
       }
 
-      dialogs.success(`FACTURA ${numeroFactura} REALIZADA!!!`);
+      dialogs.success(`FACTURA ${factura.numeroFactura} REALIZADA!!!`);
     } catch (err) {
       dialogs.error(`ERROR! ${err}`);
     }
 
-    setNumeroFactura(numeroFactura + 1);
+    setNumeroFactura(factura.numeroFactura + 1);
   };
 
   function addPago (pago) {
-    setPagos(pagos.concat(pago));
+    dispatchFactura({
+      type: 'addPago',
+      payload: pago
+    });
   }
 
   function handleAgregarPago () {
@@ -187,7 +194,7 @@ export default function Venta (props) {
         table='cliente'
         columnsWidths={[40, 400, 120, 120, 120]}
         setDisplayModal={setDisplayModal}
-        handleSelection={obj => setCliente(obj)} />
+        handleSelection={obj => dispatchFactura({type: 'setCliente', payload: obj})} />
     );
     setDisplayModal(true);
   };
@@ -201,19 +208,19 @@ export default function Venta (props) {
       }
 
       <div className='panel'>
-        <InputTextField name='Factura' value={numeroFactura} readOnly />
-        <InputTextField name='Cliente' value={cliente.NOMBRE} readOnly onClick={clienteModal} />
+        <InputTextField name='Factura' value={factura.numeroFactura} readOnly />
+        <InputTextField name='Cliente' value={factura.cliente.NOMBRE} readOnly onClick={clienteModal} />
       </div>
       <div className='panel'>
-        <InputSelect table='TIPO_PAGO' name='Tipos de pago' accessor='NOMBRE' value={tipoPago} setValue={setTipoPago} />
-        <InputTextField name='Descuento' {...descuentoProps} autoComplete='off' />
+        <InputSelect table='TIPO_PAGO' name='Tipos de pago' accessor='NOMBRE' value={factura.tipoPago} setValue={tipoPago => dispatchFactura({type: 'setTipoPago', payload: tipoPago})} />
+        <InputFloatField name='Descuento' value={factura.descuento} maxValue={DESCUENTO_MAXIMO} setValue={descuento => dispatchFactura({type: 'setDescuento', payload: descuento})} autoComplete='off' />
       </div>
       <div className='panel'>
         <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addVentaHandler} onChange={event => setCodigo(event.target.value)} />
         <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
       </div>
       <div className='panel'>
-        <InputTextField name='Observaciones' value={observaciones} onChange={e => setObservaciones(e.target.value)} />
+        <InputTextField name='Observaciones' value={factura.observaciones} onChange={event => dispatchFactura({type: 'setObservaciones', payload: event.target.value})} />
       </div>
       <table id='table'>
         <thead>
@@ -234,8 +241,8 @@ export default function Venta (props) {
             items={items}
             setItems={setItems}
             articulo={item}
-            tipoPago={tipoPago}
-            descuento={descuento} />)}
+            tipoPago={factura.tipoPago}
+            descuento={factura.descuento} />)}
         </tbody>
         <tfoot>
           <tr>
@@ -248,8 +255,8 @@ export default function Venta (props) {
         </tfoot>
       </table>
       <div className='panel'>
-        <InputTextField readOnly name='Vendedor' value={vendedor.NOMBRE} />
-        <InputTextField readOnly name='Turno' value={turno.id} />
+        <InputTextField readOnly name='Vendedor' value={factura.vendedor.NOMBRE} />
+        <InputTextField readOnly name='Turno' value={factura.turno.id} />
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
       <div className='panel'>
@@ -257,10 +264,10 @@ export default function Venta (props) {
         <button className='codigo-search' onClick={handleAgregarPago}>AGREGAR PAGO</button>
       </div>
       {
-        pagos.length > 0 &&
+        factura.pagos.length > 0 &&
         <div className='panel' >
           <h3>PAGOS</h3>
-          {pagos.map(pago => <Pago pago={pago} />)}
+          {factura.pagos.map(pago => <Pago pago={pago} />)}
         </div>
       }
     </React.Fragment>

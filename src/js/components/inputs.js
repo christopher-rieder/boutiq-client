@@ -11,6 +11,42 @@ const InputTextField = (props) => {
   );
 };
 
+const InputFloatField = (props) => {
+  // allow for numbers unfinished ending in zeros or dots
+  const {maxValue, setValue, ...componentProps} = props;
+
+  function onChange (event) {
+    event.persist();
+    let value = parseFloat(event.target.value);
+    if (!/\d+[.0]+$/.test(event.target.value)) {
+      value = parseFloat(event.target.value) || 0;
+    }
+    if (parseFloat(event.target.value) > maxValue) {
+      value = maxValue;
+      event.target.classList.add('error-shake');
+      setTimeout(e => event.target.classList.remove('error-shake'), 500);
+      dialogs.error(
+        'EL LIMITE ES ' + parseFloat(maxValue).toFixed(2)
+      );
+    }
+    setValue(value);
+  }
+
+  function onKeyPress (event) {
+    event.persist();
+    if (event.key.length <= 1) {
+      if (!/[0-9.]/.test(event.key) ||
+            !/^\d*\.{0,1}\d*$/.test(event.target.value + event.key)) {
+        event.preventDefault();
+        return false;
+      }
+    }
+  }
+  return (
+    <InputTextField onKeyPress={onKeyPress} onChange={onChange} {...componentProps} />
+  );
+};
+
 function useFormInputFloat (initialValue, maxValue) {
   const [value, setValue] = useState(initialValue);
 
@@ -174,6 +210,7 @@ function InputSelect ({table, name, accessor, value, setValue}) {
 export {
   useFormInput,
   useFormInputFloat,
+  InputFloatField,
   InputSelect,
   InputTextField,
   InputSearch,
