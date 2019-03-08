@@ -37,13 +37,18 @@ export default function Venta (props) {
         numeroFactura: lastNumeroFactura.lastId + 1,
         cliente,
         vendedor,
-        turno
+        turno,
+        descuento: 0,
+        pagos: [],
+        items: [],
+        observaciones: ''
       }
     });
   };
+
   useEffect(() => {
     getNuevaFactura();
-  }, [factura.numeroFactura]);
+  }, []);
 
   const addVentaHandler = (event) => {
     if (!codigo) return false;
@@ -136,7 +141,7 @@ export default function Venta (props) {
       dialogs.error(`ERROR! ${err}`);
     }
 
-    setNumeroFactura(factura.numeroFactura + 1);
+    getNuevaFactura();
   };
 
   function addPago (pago) {
