@@ -11,7 +11,6 @@ import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
 import dialogs from '../utilities/dialogs';
 import { money } from '../utilities/format';
-import { round } from '../utilities/math';
 import ItemVenta from './ItemVenta';
 import AgregarPago from './AgregarPago';
 import Pago from './Pago';
@@ -20,13 +19,12 @@ import VentaReducer from './VentaReducer';
 
 export default function Venta (props) {
   const [factura, dispatchFactura] = useReducer(VentaReducer.reducer, VentaReducer.initialState);
-  console.log(factura);
-  const [items, setItems] = useState([]);
   const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
   const {state: {DESCUENTO_MAXIMO}} = useContext(ConfigContext);
+  const getTotal = () => factura.items.reduce((total, item) => total + item.CANTIDAD * item.PRECIO_UNITARIO, 0);
 
   const getNuevaFactura = async () => {
     const lastNumeroFactura = await databaseRead.getLastNumeroFactura();
@@ -47,13 +45,6 @@ export default function Venta (props) {
     getNuevaFactura();
   }, [factura.numeroFactura]);
 
-  const getTotal = () => items.reduce((total, articulo) => {
-    const precioBase = articulo[factura.tipoPago.id === 1 ? 'PRECIO_CONTADO' : 'PRECIO_LISTA'];
-    const precioUnitario = articulo.PRECIO_CUSTOM || round(precioBase * (1 - factura.descuento / 100) * (1 - articulo.DESCUENTO / 100));
-    const precioTotal = precioUnitario * articulo.CANTIDAD;
-    return total + precioTotal;
-  }, 0);
-
   const addVentaHandler = (event) => {
     if (!codigo) return false;
     if (event.which !== 13) return false;
@@ -62,9 +53,9 @@ export default function Venta (props) {
 
   const addVentaItem = (data) => {
     const cod = data ? data.CODIGO : codigo;
-    const articulo = items.find(item => item.CODIGO === cod);
+    const articulo = factura.items.find(item => item.CODIGO === cod);
     if (articulo) {
-      setItems(items.map(item => item.CODIGO === codigo ? {...item, CANTIDAD: item.CANTIDAD + 1} : item));
+      dispatchFactura({type: 'addOneQuantityItem', payload: cod});
       dialogs.success('AGREGADO!!!  +1');
       var aud = new window.Audio(audioOk);
       aud.play();
@@ -76,9 +67,7 @@ export default function Venta (props) {
             var aud2 = new window.Audio(audioError);
             aud2.play();
           } else {
-            res.CANTIDAD = 1;
-            res.DESCUENTO = res.PROMO_BOOL ? res.DESCUENTO_PROMO : 0;
-            setItems(items.concat(res));
+            dispatchFactura({type: 'addItem', payload: res});
             dialogs.success('AGREGADO!!!');
             var aud = new window.Audio(audioOk);
             aud.play();
@@ -90,24 +79,17 @@ export default function Venta (props) {
 
   const handleSubmit = event => {
     event.preventDefault();
-    if (items.length === 0) {
+    if (factura.items.length === 0) {
       dialogs.error('Factura vacia; no agregada');
-      return;
+    } else {
+      // TODO: VALIDATIONS
+      dialogs.confirm(
+        confirmed => confirmed && postFacturaToAPI(), // Callback
+        'Confirmar venta?', // Message text
+        'CONFIRMAR', // Confirm text
+        'VOLVER' // Cancel text
+      );
     }
-    // TODO: VALIDATIONS
-    dialogs.confirm(
-      confirmed => {
-        if (confirmed) {
-          postFacturaToAPI();
-        } else {
-          // do nothing
-        }
-      }, // Callback
-      'Confirmar venta?', // Message text
-      'CONFIRMAR', // Confirm text
-      'VOLVER', // Cancel text
-      {} // Additional options
-    );
   };
 
   const postFacturaToAPI = async () => {
@@ -121,7 +103,7 @@ export default function Venta (props) {
         TURNO_ID: factura.turno.id // TODO: MAKE TURNO
       });
 
-      items.forEach(item => {
+      factura.items.forEach(item => {
         databaseWrite.postItemFactura({
           FACTURA_ID: facturaId,
           CANTIDAD: item.CANTIDAD,
@@ -136,7 +118,7 @@ export default function Venta (props) {
           FACTURA_ID: facturaId,
           MONTO: getTotal(),
           TIPO_PAGO_ID: factura.tipoPago.id,
-          ESTADO_ID: factura.tipoPago.id === TIPOS_DE_PAGO.EFECTIVO ? ESTADOS_DE_PAGO.PAGADO : ESTADOS_DE_PAGO.PENDIENTE
+          ESTADO_ID: factura.tipoPago.id === 1 ? 1 : 2 // TODO: BUSSINESS LOGIC; HANDLE IN A BETTER WAY
         });
       } else {
         factura.pagos.forEach(pago => {
@@ -236,13 +218,10 @@ export default function Venta (props) {
           </tr>
         </thead>
         <tbody id='tbody'>
-          {items.map(item => <ItemVenta
+          {factura.items.map(item => <ItemVenta
             key={item.id}
-            items={items}
-            setItems={setItems}
-            articulo={item}
-            tipoPago={factura.tipoPago}
-            descuento={factura.descuento} />)}
+            dispatchFactura={dispatchFactura}
+            articulo={item} />)}
         </tbody>
         <tfoot>
           <tr>
