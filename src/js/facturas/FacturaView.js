@@ -2,7 +2,6 @@ import { format as dateFormat } from 'date-fns';
 import React from 'react';
 
 export default function FacturaView ({obj, setObj}) {
-  console.log(obj);
   if (!obj.NUMERO_FACTURA) {
     return <div />;
   } else {

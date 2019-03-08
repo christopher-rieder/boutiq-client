@@ -48,7 +48,6 @@ async function postCrudObjectToAPI (item, table) {
 }
 
 async function putObjectToAPI (item, endpoint) {
-  console.log(`${URL}/api/` + endpoint);
   return window.fetch(`${URL}/api/` + endpoint, {
     method: 'put',
     headers: {

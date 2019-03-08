@@ -51,7 +51,7 @@ function App () {
               <button className='navigation__btn' onClick={() => setMainElement(<Venta articuloData={articuloData} />)} >VENTA</button>
             </li>
             <li className='navigation__item'>
-              <button className='navigation__btn' onClick={() => setMainElement(<ConsultaArticulo articuloData={articuloData} handleSelection={(articulo) => console.log(articulo)} />)}>ARTICULO</button>
+              <button className='navigation__btn' onClick={() => setMainElement(<ConsultaArticulo articuloData={articuloData} handleSelection={(articulo) => console.log(articulo) /* TODO: ARTICULO CRUD */} />)}>ARTICULO</button>
             </li>
             <li className='navigation__item'>
               <button className='navigation__btn' onClick={() => setMainElement(<ConsultaFactura />)}>FACTURA</button>
