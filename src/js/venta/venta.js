@@ -28,8 +28,8 @@ export default function Venta (props) {
 
   const getNuevaFactura = async () => {
     const lastNumeroFactura = await databaseRead.getLastNumeroFactura();
-    const cliente = await databaseRead.getClienteById(1);
-    const vendedor = await databaseRead.getVendedorById(1);
+    const cliente = await databaseRead.getItemById('cliente', 1);
+    const vendedor = await databaseRead.getItemById('vendedor', 1);
     const turno = await databaseRead.getTurnoActual();
     dispatchFactura({
       type: 'nuevaFactura',
@@ -141,6 +141,7 @@ export default function Venta (props) {
       dialogs.error(`ERROR! ${err}`);
     }
 
+    props.updateArticuloData();
     getNuevaFactura();
   };
 

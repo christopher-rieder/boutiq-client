@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import {getAllArticulos} from './database/getData';
 import Crud from './crud/crud';
 import Venta from './venta/venta';
+import Compra from './compra/Compra';
 import ConsultaArticulo from './crud/consultaArticulo';
 import ConsultaFactura from './facturas/ConsultaFactura';
 import CrudArticulo from './articulo/crudArticulo';
@@ -13,11 +14,13 @@ function App () {
   const [mainElement, setMainElement] = useState(<div />);
   const [articuloData, setArticuloData] = useState([]);
 
-  useEffect(() => {
+  const updateArticuloData = () => {
     getAllArticulos().then(res => {
       setArticuloData(res);
     });
-  }, []);
+  };
+
+  useEffect(updateArticuloData, []);
 
   return (
     <ConfigContextProvider>
@@ -48,7 +51,10 @@ function App () {
               </div>
             </li>
             <li className='navigation__item'>
-              <button className='navigation__btn' onClick={() => setMainElement(<Venta articuloData={articuloData} />)} >VENTA</button>
+              <button className='navigation__btn' onClick={() => setMainElement(<Venta articuloData={articuloData} updateArticuloData={updateArticuloData} />)} >VENTA</button>
+            </li>
+            <li className='navigation__item'>
+              <button className='navigation__btn' onClick={() => setMainElement(<Compra articuloData={articuloData} updateArticuloData={updateArticuloData} />)} >COMPRA</button>
             </li>
             <li className='navigation__item'>
               <button className='navigation__btn' onClick={() => setMainElement(<ConsultaArticulo articuloData={articuloData} handleSelection={(articulo) => console.log(articulo) /* TODO: ARTICULO CRUD */} />)}>ARTICULO</button>

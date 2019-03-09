@@ -25,16 +25,16 @@ function getArticuloById (id) {
   return window.fetch(`${URL}/api/articulo/id/${id}`).then(res => res.json());
 }
 
-function getClienteById (id) {
-  return window.fetch(`${URL}/api/cliente/${id}`).then(res => res.json());
-}
-
-function getVendedorById (id) {
-  return window.fetch(`${URL}/api/vendedor/${id}`).then(res => res.json());
+function getItemById (tabla, id) {
+  return window.fetch(`${URL}/api/${tabla}/${id}`).then(res => res.json());
 }
 
 function getLastNumeroFactura () {
   return window.fetch(`${URL}/api/factura/last`).then(res => res.json());
+}
+
+function getLastNumeroCompra () {
+  return window.fetch(`${URL}/api/compra/last`).then(res => res.json());
 }
 
 function getTurnoActual () {
@@ -49,7 +49,7 @@ export {
   getTurnoActual,
   getArticuloByCodigo,
   getArticuloById,
-  getClienteById,
-  getVendedorById,
+  getItemById,
+  getLastNumeroCompra,
   getLastNumeroFactura
 };

@@ -24,6 +24,29 @@ async function postItemFactura (item) {
   }).then(res => res.json());
 }
 
+function postCompra (factura) {
+  return window.fetch(`${URL}/api/compra`, {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(factura)
+  }).then(res => res.json())
+    .then(res => res.lastId);
+}
+
+async function postItemCompra (item) {
+  return window.fetch(`${URL}/api/itemCompra`, {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(item)
+  }).then(res => res.json());
+}
+
 async function postPago (item) {
   return window.fetch(`${URL}/api/pago`, {
     method: 'post',
@@ -60,6 +83,8 @@ async function putObjectToAPI (item, endpoint) {
 }
 
 export {
+  postCompra,
+  postItemCompra,
   postFactura,
   postPago,
   postCrudObjectToAPI,
