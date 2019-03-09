@@ -17,9 +17,9 @@ const InputFloatField = (props) => {
 
   function onChange (event) {
     event.persist();
-    let value = parseFloat(event.target.value);
-    if (!/\d+[.0]+$/.test(event.target.value)) {
-      value = parseFloat(event.target.value) || 0;
+    let value = parseFloat(event.target.value || 0);
+    if (/\d+[.0]+$/.test(event.target.value)) {
+      value = event.target.value;
     }
     if (parseFloat(event.target.value) > maxValue) {
       value = maxValue;
@@ -47,17 +47,15 @@ const InputFloatField = (props) => {
   );
 };
 
-function useFormInputFloat (initialValue, maxValue) {
-  const [value, setValue] = useState(initialValue);
-
+const InputIntField = (props) => {
   // allow for numbers unfinished ending in zeros or dots
+  const {maxValue, setValue, ...componentProps} = props;
+
   function onChange (event) {
     event.persist();
-    let value = parseFloat(event.target.value);
-    if (!/\d+[.0]+$/.test(event.target.value)) {
-      value = parseFloat(event.target.value) || 0;
-    }
-    if (parseFloat(event.target.value) > maxValue) {
+    let value = parseInt(event.target.value || 0);
+    value = isNaN(value) ? 0 : value;
+    if (value > maxValue) {
       value = maxValue;
       event.target.classList.add('error-shake');
       setTimeout(e => event.target.classList.remove('error-shake'), 500);
@@ -70,41 +68,15 @@ function useFormInputFloat (initialValue, maxValue) {
 
   function onKeyPress (event) {
     event.persist();
-    if (event.key.length <= 1) {
-      if (!/[0-9.]/.test(event.key) ||
-            !/^\d*\.{0,1}\d*$/.test(event.target.value + event.key)) {
-        event.preventDefault();
-        event.target.classList.add('error-shake');
-        setTimeout(e => event.target.classList.remove('error-shake'), 500);
-        return false;
-      }
+    if (!/[0-9]/.test(event.key)) {
+      event.preventDefault();
+      return false;
     }
   }
-
-  return [
-    value,
-    setValue,
-    {
-      value,
-      onChange,
-      onKeyPress
-    }
-  ];
-}
-
-function useFormInput (initialValue) {
-  const [value, setValue] = useState(initialValue);
-
-  function onChange (e) {
-    setValue(e.target.value);
-  }
-
-  return {
-    value,
-    setValue,
-    onChange
-  };
-}
+  return (
+    <InputTextField onKeyPress={onKeyPress} onChange={onChange} {...componentProps} />
+  );
+};
 
 function InputText ({context, col, value, onChange, onKeyPress, disabled}) {
   return (
@@ -208,8 +180,7 @@ function InputSelect ({table, name, accessor, value, setValue}) {
 }
 
 export {
-  useFormInput,
-  useFormInputFloat,
+  InputIntField,
   InputFloatField,
   InputSelect,
   InputTextField,

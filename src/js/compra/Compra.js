@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useReducer } from 'react';
 import CompraReducer from './CompraReducer';
-import CrudArticulo from '../articulo/crudArticulo';
+import CrudArticulo from '../crud/crudArticulo';
 
 import Consulta from '../crud/consulta';
 import ItemCompra from './ItemCompra';
@@ -126,7 +126,7 @@ export default function Compra (props) {
   const crudArticuloModal = () => {
     setModalContent(
       <CrudArticulo
-        codigo={codigo}
+        initialState={{codigo}}
         handleSelection={addCompraItem}
         setDisplayModal={setDisplayModal} />
     );

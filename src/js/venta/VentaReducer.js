@@ -80,9 +80,6 @@ const addItem = (state, articulo) => {
 
   // item initialization
   newItem.CANTIDAD = 1;
-  newItem.DESCUENTO = newItem.PROMO_BOOL
-    ? newItem.DESCUENTO_PROMO
-    : 0;
 
   newItem.PRECIO_BASE = newItem[accessor];
   newItem.PRECIO_UNITARIO = newItem.PRECIO_CUSTOM ||

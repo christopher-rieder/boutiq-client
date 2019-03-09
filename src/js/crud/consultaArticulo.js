@@ -61,9 +61,9 @@ const columns = [
     width: 75
   },
   {
-    Header: 'PROMO',
-    id: 'DESCUENTO_PROMO',
-    accessor: e => e.PROMO_BOOL ? e.DESCUENTO_PROMO + '%' : '',
+    Header: 'DESCUENTO',
+    id: 'DESCUENTO',
+    accessor: e => e.DESCUENTO + '%',
     filterMethod: numberRangeFiltering,
     width: 120
   }

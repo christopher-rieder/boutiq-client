@@ -1,6 +1,12 @@
 // const URL = 'http://181.167.238.144:3000';
 const URL = 'http://192.168.0.2:3000';
 
+const processError = res => Promise.all([res, res.json()]);
+const returnJsonOrError = ([res, json]) => {
+  if (!res.ok) throw new Error(json.message);
+  return json;
+};
+
 function postFactura (factura) {
   return window.fetch(`${URL}/api/factura`, {
     method: 'post',
@@ -70,16 +76,16 @@ async function postCrudObjectToAPI (item, table) {
     .then(res => res.lastId);
 }
 
-async function putObjectToAPI (item, endpoint) {
+function postObjectToAPI (item, endpoint) {
   return window.fetch(`${URL}/api/` + endpoint, {
-    method: 'put',
+    method: 'post',
     headers: {
       'Accept': 'application/json, text/plain, */*',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(item)
-  }).then(res => res.json())
-    .then(res => res.lastId);
+  }).then(processError)
+    .then(returnJsonOrError);
 }
 
 export {
@@ -88,6 +94,6 @@ export {
   postFactura,
   postPago,
   postCrudObjectToAPI,
-  putObjectToAPI,
+  postObjectToAPI,
   postItemFactura
 };

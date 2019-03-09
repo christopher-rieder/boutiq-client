@@ -6,7 +6,7 @@ import Venta from './venta/venta';
 import Compra from './compra/Compra';
 import ConsultaArticulo from './crud/consultaArticulo';
 import ConsultaFactura from './facturas/ConsultaFactura';
-import CrudArticulo from './articulo/crudArticulo';
+import CrudArticulo from './crud/crudArticulo';
 import {ConfigContextProvider} from './context/ConfigContext';
 import '../styles/main.scss';
 
