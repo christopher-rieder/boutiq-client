@@ -146,6 +146,7 @@ export default function Venta (props) {
   };
 
   function addPago (pago) {
+    // TODO: insert pago logic here...
     dispatchFactura({
       type: 'addPago',
       payload: pago
@@ -253,6 +254,10 @@ export default function Venta (props) {
         <div className='panel' >
           <h3>PAGOS</h3>
           {factura.pagos.map(pago => <Pago pago={pago} />)}
+          <div>
+            <p>TOTAL</p>
+            <p>{factura.pagos.reduce((total, pago) => total + pago.MONTO, 0)}</p>
+          </div>
         </div>
       }
     </React.Fragment>

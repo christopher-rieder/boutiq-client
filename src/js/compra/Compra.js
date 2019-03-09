@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext, useReducer } from 'react';
 import CompraReducer from './CompraReducer';
+import CrudArticulo from '../articulo/crudArticulo';
 
 import Consulta from '../crud/consulta';
 import ItemCompra from './ItemCompra';
@@ -49,9 +50,12 @@ export default function Compra (props) {
       databaseRead.getArticuloByCodigo(cod)
         .then(res => {
           if (res.length === 0) {
-            dialogs.error('CODIGO NO EXISTENTE');
-            var aud2 = new window.Audio(audioError);
-            aud2.play();
+            dialogs.confirm(
+              confirmed => confirmed && crudArticuloModal(), // Callback
+              'ARTICULO NO EXISTENTE AGREGAR NUEVO?', // Message text
+              'SI', // Confirm text
+              'NO' // Cancel text
+            );
           } else {
             dispatchCompra({type: 'addItem', payload: res});
             dialogs.success('AGREGADO!!!');
@@ -119,6 +123,16 @@ export default function Compra (props) {
     setDisplayModal(true);
   };
 
+  const crudArticuloModal = () => {
+    setModalContent(
+      <CrudArticulo
+        codigo={codigo}
+        handleSelection={addCompraItem}
+        setDisplayModal={setDisplayModal} />
+    );
+    setDisplayModal(true);
+  };
+
   const proveedorModal = () => {
     setModalContent(
       <Consulta
@@ -144,6 +158,7 @@ export default function Compra (props) {
       <div className='panel'>
         <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addCompraHandler} onChange={event => setCodigo(event.target.value)} />
         <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
+        <button className='codigo-search' onClick={crudArticuloModal}>AGREGAR ARTICULO NUEVO</button>
       </div>
       <div className='panel'>
         <InputTextField name='Observaciones' value={compra.observaciones} onChange={event => dispatchCompra({type: 'setObservaciones', payload: event.target.value})} />

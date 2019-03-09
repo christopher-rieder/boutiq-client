@@ -9,7 +9,7 @@ export default function CrudArticulo (props) {
   const {state: {DESCUENTO_MAXIMO, RATIO_CONTADO, RATIO_COSTO}} = useContext(ConfigContext);
 
   const [id, setId] = useState(0);
-  const [codigo, setCodigo] = useState('');
+  const [codigo, setCodigo] = useState(props.codigo || '');
   const [descripcion, setDescripcion] = useState('');
   const [precioLista, setPrecioLista, precioListaProps] = useFormInputFloat(0);
   const [precioContado, setPrecioContado, precioContadoProps] = useFormInputFloat(0);
