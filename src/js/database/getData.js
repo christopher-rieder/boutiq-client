@@ -1,10 +1,6 @@
 // const URL = 'http://181.167.238.144:3000';
 const URL = 'http://192.168.0.2:3000';
 
-function getBussinessConstants () {
-  return window.fetch(`${URL}/api/rawTables/constants`).then(res => res.json());
-}
-
 function getTable (table) {
   return window.fetch(`${URL}/api/rawTables/${table}`).then(res => res.json());
 }
@@ -46,7 +42,6 @@ function getTurnoActual () {
 }
 
 export {
-  getBussinessConstants,
   getTable,
   getAllArticulos,
   getAllFacturas,

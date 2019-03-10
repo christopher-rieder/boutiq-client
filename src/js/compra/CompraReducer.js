@@ -1,6 +1,4 @@
-import React, {createContext, useReducer} from 'react';
-
-const initialState = {
+const compraInitialState = {
   proveedor: {id: 0, NOMBRE: ''},
   observaciones: '',
   numeroCompra: 0,
@@ -45,7 +43,7 @@ const setCantidadIndividual = (state, {articulo, value}) => {
   };
 };
 
-const reducer = (state, action) => {
+const compraReducer = (state, action) => {
   switch (action.type) {
     case 'nuevaCompra':
       return {
@@ -69,18 +67,7 @@ const reducer = (state, action) => {
   }
 };
 
-const CompraContext = createContext();
-function CompraContextProvider (props) {
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  return (
-    <CompraContext.Provider value={{state, dispatch}}>
-      {props.children}
-    </CompraContext.Provider>
-  );
-}
-
 export {
-  CompraContext,
-  CompraContextProvider
+  compraReducer,
+  compraInitialState
 };

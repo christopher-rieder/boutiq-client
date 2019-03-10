@@ -1,7 +1,6 @@
-import React, {createContext, useReducer} from 'react';
 import { round } from '../utilities/math';
 
-const initialState = {
+const ventaInitialState = {
   descuento: 0,
   cliente: {id: 0, NOMBRE: ''},
   vendedor: {id: 0, NOMBRE: ''},
@@ -108,7 +107,7 @@ const removeItem = (state, articulo) => {
   };
 };
 
-const reducer = (state, action) => {
+const ventaReducer = (state, action) => {
   switch (action.type) {
     case 'nuevaFactura':
       return {
@@ -144,19 +143,7 @@ const reducer = (state, action) => {
   }
 };
 
-const VentaContext = createContext();
-
-function VentaContextProvider (props) {
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  return (
-    <VentaContext.Provider value={{state, dispatch}}>
-      {props.children}
-    </VentaContext.Provider>
-  );
-}
-
 export {
-  VentaContext,
-  VentaContextProvider
+  ventaReducer,
+  ventaInitialState
 };

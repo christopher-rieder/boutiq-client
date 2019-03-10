@@ -4,7 +4,7 @@ import { postObjectToAPI } from '../database/writeData';
 import { InputTextField, InputSelect, InputFloatField, InputIntField } from '../components/inputs';
 import {round} from '../utilities/math';
 import dialogs from '../utilities/dialogs';
-import { ConfigContext } from '../context/ConfigContext';
+import { MainContext } from '../context/MainContext';
 import { ArticuloContext } from '../crud/ArticuloContext';
 
 const initialState = {
@@ -63,7 +63,7 @@ const reducer = (state, action) => {
 };
 
 export default function CrudArticulo (props) {
-  const {state: {DESCUENTO_MAXIMO, RATIO_CONTADO, RATIO_COSTO}} = useContext(ConfigContext);
+  const {constants: {DESCUENTO_MAXIMO, RATIO_CONTADO, RATIO_COSTO}} = useContext(MainContext);
   const [state, dispatch] = useReducer(reducer, initialState);
   const {id, codigo, descripcion, precioLista, precioContado, precioCosto, descuento, stock, rubro, marca} = state;
   const dispatcherOnChange = type => e => dispatch({type, payload: e.target.value});

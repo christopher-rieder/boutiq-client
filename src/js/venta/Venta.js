@@ -4,7 +4,6 @@ import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
 import { InputTextField, InputSelect, InputFloatField } from '../components/inputs';
 import Modal from '../components/modal';
-import { ConfigContext } from '../context/ConfigContext';
 import Consulta from '../crud/consulta';
 import ConsultaArticulo from '../crud/consultaArticulo';
 import * as databaseRead from '../database/getData';
@@ -15,17 +14,17 @@ import ItemVenta from './ItemVenta';
 import AgregarPago from './AgregarPago';
 import Pago from './Pago';
 import './venta.css';
-import {VentaContext} from './VentaReducer';
+import { MainContext } from '../context/MainContext';
 import { ArticuloContext } from '../crud/ArticuloContext';
 
 export default function Venta (props) {
-  const {state, dispatch} = useContext(VentaContext);
+  const {ventaState: state, ventaDispatch: dispatch} = useContext(MainContext);
   const {articuloData, setArticuloData} = useContext(ArticuloContext);
   const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
-  const {state: {DESCUENTO_MAXIMO}} = useContext(ConfigContext);
+  const {constants: {DESCUENTO_MAXIMO}} = useContext(MainContext);
   const getTotal = () => state.items.reduce((total, item) => total + item.CANTIDAD * item.PRECIO_UNITARIO, 0);
 
   const getNuevaFactura = async () => {
