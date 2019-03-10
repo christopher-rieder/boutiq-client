@@ -1,5 +1,5 @@
 import { format as dateFormat } from 'date-fns';
-import React, { useEffect, useState, useContext, useReducer } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
 import { InputTextField, InputSelect, InputFloatField } from '../components/inputs';
@@ -15,10 +15,12 @@ import ItemVenta from './ItemVenta';
 import AgregarPago from './AgregarPago';
 import Pago from './Pago';
 import './venta.css';
-import VentaReducer from './VentaReducer';
+import {VentaContext} from './VentaReducer';
+import { ArticuloContext } from '../crud/ArticuloContext';
 
 export default function Venta (props) {
-  const [state, dispatch] = useReducer(VentaReducer.reducer, VentaReducer.initialState);
+  const {state, dispatch} = useContext(VentaContext);
+  const {articuloData, setArticuloData} = useContext(ArticuloContext);
   const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
@@ -47,7 +49,9 @@ export default function Venta (props) {
   };
 
   useEffect(() => {
-    getNuevaFactura();
+    if (state.numeroFactura === 0) {
+      getNuevaFactura();
+    }
   }, []);
 
   const addVentaHandler = (event) => {
@@ -137,12 +141,11 @@ export default function Venta (props) {
       }
 
       dialogs.success(`FACTURA ${state.numeroFactura} REALIZADA!!!`);
+      setTimeout(() => setArticuloData([]), 1000); // FIXME: HACKY
+      getNuevaFactura();
     } catch (err) {
       dialogs.error(`ERROR! ${err}`);
     }
-
-    props.updateArticuloData();
-    getNuevaFactura();
   };
 
   function addPago (pago) {
@@ -162,6 +165,15 @@ export default function Venta (props) {
     );
     setDisplayModal(true);
   }
+  const vaciarVenta = (event) => {
+    const vaciarAction = {type: 'nuevaFactura', payload: {observaciones: '', items: [], pagos: [], descuento: 0}};
+    dialogs.confirm(
+      confirmed => confirmed && dispatch(vaciarAction), // Callback
+      'VACIAR VENTA?', // Message text
+      'SI', // Confirm text
+      'NO' // Cancel text
+    );
+  };
 
   // // function processSeña () {
   // //   // TODO: process seña stuff
@@ -170,7 +182,7 @@ export default function Venta (props) {
   const articuloModal = () => {
     setModalContent(
       <ConsultaArticulo
-        articuloData={props.articuloData}
+        articuloData={articuloData}
         handleSelection={addVentaItem}
         setDisplayModal={setDisplayModal} />
     );
@@ -248,6 +260,9 @@ export default function Venta (props) {
       <div className='panel'>
         <button className='codigo-search' onClick={handleSubmit}>AGREGAR VENTA</button>
         <button className='codigo-search' onClick={handleAgregarPago}>AGREGAR PAGO</button>
+      </div>
+      <div className='panel'>
+        <button className='codigo-search' onClick={vaciarVenta}>VACIAR VENTA</button>
       </div>
       {
         state.pagos.length > 0 &&

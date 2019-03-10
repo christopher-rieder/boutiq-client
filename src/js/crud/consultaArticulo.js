@@ -1,9 +1,9 @@
 import matchSorter from 'match-sorter';
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-import { getAllArticulos } from '../database/getData';
 import {numberRangeFiltering} from '../utilities/filterFunctions';
+import { ArticuloContext } from '../crud/ArticuloContext';
 
 const columns = [
   {
@@ -70,17 +70,7 @@ const columns = [
 ];
 
 export default function ConsultaArticulo (props) {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    if (props.articuloData) {
-      setData(props.articuloData);
-    } else {
-      getAllArticulos().then(res => {
-        setData(res);
-      });
-    }
-  }, []);
+  const {articuloData} = useContext(ArticuloContext);
 
   function getTdProps (state, rowInfo, column, instance) {
     return {
@@ -94,7 +84,7 @@ export default function ConsultaArticulo (props) {
 
   return (
     <ReactTable
-      data={data}
+      data={articuloData}
       filterable
       defaultFilterMethod={(filter, row) =>
         String(row[filter.id]) === filter.value}

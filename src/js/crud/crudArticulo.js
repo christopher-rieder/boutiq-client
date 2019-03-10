@@ -4,6 +4,7 @@ import { InputTextField, InputSelect, InputFloatField, InputIntField } from '../
 import {round} from '../utilities/math';
 import dialogs from '../utilities/dialogs';
 import { ConfigContext } from '../context/ConfigContext';
+import { ArticuloContext } from '../crud/ArticuloContext';
 
 const initialState = {
   id: 0,
@@ -65,6 +66,7 @@ export default function CrudArticulo (props) {
   const dispatcherOnChange = type => e => dispatch({type, payload: e.target.value});
   const dispatcherSetValue = type => payload => dispatch({type, payload});
   const dispatcherPrecios = type => payload => dispatch({type, payload, RATIO_CONTADO, RATIO_COSTO});
+  const {articuloData, setArticuloData} = useContext(ArticuloContext);
 
   const handleSubmit = (event) => {
     postObjectToAPI({
@@ -79,7 +81,10 @@ export default function CrudArticulo (props) {
       RUBRO_ID: rubro.id,
       MARCA_ID: marca.id
     }, 'articulo')
-      .then((res) => dialogs.success('ARTICULO AGREGADO'))
+      .then((res) => {
+        dialogs.success('ARTICULO AGREGADO');
+        setTimeout(() => setArticuloData([]), 1000); // FIXME: HACKY
+      })
       .catch((err) => dialogs.error(err));
   };
 

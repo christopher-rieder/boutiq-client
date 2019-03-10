@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useContext, useReducer } from 'react';
-import CompraReducer from './CompraReducer';
+import React, { useEffect, useState, useContext } from 'react';
 import CrudArticulo from '../crud/crudArticulo';
 
 import Consulta from '../crud/consulta';
@@ -9,13 +8,14 @@ import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
 import ConsultaArticulo from '../crud/consultaArticulo';
 import { InputTextField } from '../components/inputs';
-import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
 import Modal from '../components/modal';
-import { ConfigContext } from '../context/ConfigContext';
+import { CompraContext } from './CompraReducer';
+import { ArticuloContext } from '../crud/ArticuloContext';
 
 export default function Compra (props) {
-  const [compra, dispatchCompra] = useReducer(CompraReducer.reducer, CompraReducer.initialState);
+  const {state, dispatch} = useContext(CompraContext);
+  const {articuloData, setArticuloData} = useContext(ArticuloContext);
   const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
@@ -23,7 +23,7 @@ export default function Compra (props) {
   const getNuevaCompra = async () => {
     const lastNumeroCompra = await databaseRead.getLastNumeroCompra();
     const proveedor = await databaseRead.getItemById('proveedor', 1);
-    dispatchCompra({
+    dispatch({
       type: 'nuevaCompra',
       payload: {
         numeroCompra: lastNumeroCompra.lastId + 1,
@@ -35,14 +35,16 @@ export default function Compra (props) {
   };
 
   useEffect(() => {
-    getNuevaCompra();
+    if (state.numeroCompra === 0) {
+      getNuevaCompra();
+    }
   }, []);
 
   const addCompraItem = (data) => {
     const cod = data ? data.CODIGO : codigo;
-    const articulo = compra.items.find(item => item.CODIGO === cod);
+    const articulo = state.items.find(item => item.CODIGO === cod);
     if (articulo) {
-      dispatchCompra({type: 'addOneQuantityItem', payload: cod});
+      dispatch({type: 'addOneQuantityItem', payload: cod});
       dialogs.success('AGREGADO!!!  +1');
       var aud = new window.Audio(audioOk);
       aud.play();
@@ -57,7 +59,7 @@ export default function Compra (props) {
               'NO' // Cancel text
             );
           } else {
-            dispatchCompra({type: 'addItem', payload: res});
+            dispatch({type: 'addItem', payload: res});
             dialogs.success('AGREGADO!!!');
             var aud = new window.Audio(audioOk);
             aud.play();
@@ -65,6 +67,16 @@ export default function Compra (props) {
         });
     }
     setCodigo('');
+  };
+
+  const vaciarCompra = (event) => {
+    const vaciarAction = {type: 'nuevaCompra', payload: {observaciones: '', items: []}};
+    dialogs.confirm(
+      confirmed => confirmed && dispatch(vaciarAction), // Callback
+      'VACIAR COMPRA?', // Message text
+      'SI', // Confirm text
+      'NO' // Cancel text
+    );
   };
 
   const addCompraHandler = (event) => {
@@ -75,7 +87,7 @@ export default function Compra (props) {
 
   const handleSubmit = event => {
     event.preventDefault();
-    if (compra.items.length === 0) {
+    if (state.items.length === 0) {
       dialogs.error('Factura vacia; no agregada');
     } else {
       // TODO: VALIDATIONS
@@ -91,13 +103,13 @@ export default function Compra (props) {
   const postCompraToAPI = async () => {
     try {
       const facturaId = await databaseWrite.postCompra({
-        NUMERO_COMPRA: compra.numeroCompra,
+        NUMERO_COMPRA: state.numeroCompra,
         FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
-        OBSERVACIONES: compra.observaciones,
-        PROVEEDOR_ID: compra.proveedor.id
+        OBSERVACIONES: state.observaciones,
+        PROVEEDOR_ID: state.proveedor.id
       });
 
-      compra.items.forEach(item => {
+      state.items.forEach(item => {
         databaseWrite.postItemCompra({
           COMPRA_ID: facturaId,
           CANTIDAD: item.CANTIDAD,
@@ -105,18 +117,19 @@ export default function Compra (props) {
         });
       });
 
-      dialogs.success(`COMPRA ${compra.numeroCompra} REALIZADA!!!`);
+      dialogs.success(`COMPRA ${state.numeroCompra} REALIZADA!!!`);
+      setTimeout(() => setArticuloData([]), 1000); // FIXME: HACKY
+      // TODO: UPDATE
+      getNuevaCompra();
     } catch (err) {
       dialogs.error(`ERROR! ${err}`);
     }
-    props.updateArticuloData();
-    getNuevaCompra();
   }; // TODO: post factura
 
   const articuloModal = () => {
     setModalContent(
       <ConsultaArticulo
-        articuloData={props.articuloData}
+        articuloData={articuloData}
         handleSelection={addCompraItem}
         setDisplayModal={setDisplayModal} />
     );
@@ -139,7 +152,7 @@ export default function Compra (props) {
         table='proveedor'
         columnsWidths={[40, 400, 120, 120, 120]}
         setDisplayModal={setDisplayModal}
-        handleSelection={obj => dispatchCompra({type: 'setProveedor', payload: obj})} />
+        handleSelection={obj => dispatch({type: 'setProveedor', payload: obj})} />
     );
     setDisplayModal(true);
   };
@@ -152,8 +165,8 @@ export default function Compra (props) {
         </Modal>
       }
       <div className='panel'>
-        <InputTextField name='Factura' value={compra.numeroCompra} readOnly />
-        <InputTextField name='Cliente' value={compra.proveedor.NOMBRE} readOnly onClick={proveedorModal} />
+        <InputTextField name='Factura' value={state.numeroCompra} readOnly />
+        <InputTextField name='Cliente' value={state.proveedor.NOMBRE} readOnly onClick={proveedorModal} />
       </div>
       <div className='panel'>
         <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addCompraHandler} onChange={event => setCodigo(event.target.value)} />
@@ -161,7 +174,7 @@ export default function Compra (props) {
         <button className='codigo-search' onClick={crudArticuloModal}>AGREGAR ARTICULO NUEVO</button>
       </div>
       <div className='panel'>
-        <InputTextField name='Observaciones' value={compra.observaciones} onChange={event => dispatchCompra({type: 'setObservaciones', payload: event.target.value})} />
+        <InputTextField name='Observaciones' value={state.observaciones} onChange={event => dispatch({type: 'setObservaciones', payload: event.target.value})} />
       </div>
       <table id='table'>
         <thead>
@@ -174,14 +187,17 @@ export default function Compra (props) {
           </tr>
         </thead>
         <tbody id='tbody'>
-          {compra.items.map(item => <ItemCompra
+          {state.items.map(item => <ItemCompra
             key={item.id}
-            dispatchCompra={dispatchCompra}
+            dispatchCompra={dispatch}
             articulo={item} />)}
         </tbody>
       </table>
       <div className='panel'>
         <button className='codigo-search' onClick={handleSubmit}>AGREGAR COMPRA</button>
+      </div>
+      <div className='panel'>
+        <button className='codigo-search' onClick={vaciarCompra}>VACIAR COMPRA</button>
       </div>
     </React.Fragment>
   );

@@ -1,3 +1,4 @@
+import React, {createContext, useReducer} from 'react';
 import { round } from '../utilities/math';
 
 const initialState = {
@@ -143,7 +144,19 @@ const reducer = (state, action) => {
   }
 };
 
-export default {
-  reducer,
-  initialState
+const VentaContext = createContext();
+
+function VentaContextProvider (props) {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return (
+    <VentaContext.Provider value={{state, dispatch}}>
+      {props.children}
+    </VentaContext.Provider>
+  );
+}
+
+export {
+  VentaContext,
+  VentaContextProvider
 };
