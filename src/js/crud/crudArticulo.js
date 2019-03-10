@@ -63,7 +63,7 @@ const reducer = (state, action) => {
 };
 
 export default function CrudArticulo (props) {
-  const {constants: {DESCUENTO_MAXIMO, RATIO_CONTADO, RATIO_COSTO}} = useContext(MainContext);
+  const {constants: {DESCUENTO_MAXIMO, RATIO_CONTADO, RATIO_COSTO}, tablaMarca, tablaRubro} = useContext(MainContext);
   const [state, dispatch] = useReducer(reducer, initialState);
   const {id, codigo, descripcion, precioLista, precioContado, precioCosto, descuento, stock, rubro, marca} = state;
   const dispatcherOnChange = type => e => dispatch({type, payload: e.target.value});
@@ -134,12 +134,12 @@ export default function CrudArticulo (props) {
           <InputFloatField name='Precio de Costo' value={precioCosto} maxValue={precioContado} setValue={dispatcherPrecios('precioCosto')} autoComplete='off' />
           <InputIntField name='Stock' value={stock} setValue={dispatcherSetValue('stock')} autoComplete='off' />
           <InputFloatField name='Descuento en promo' value={descuento} maxValue={DESCUENTO_MAXIMO} setValue={dispatcherSetValue('descuento')} autoComplete='off' />
-          <InputSelect table='MARCA' name='Marca' accessor='NOMBRE' value={marca} setValue={dispatcherSetValue('marca')} />
-          <InputSelect table='RUBRO' name='Rubro' accessor='NOMBRE' value={rubro} setValue={dispatcherSetValue('rubro')} />
+          <InputSelect table={tablaMarca} name='Marca' accessor='NOMBRE' value={marca} setValue={dispatcherSetValue('marca')} />
+          <InputSelect table={tablaRubro} name='Rubro' accessor='NOMBRE' value={rubro} setValue={dispatcherSetValue('rubro')} />
         </div>
         <div>
           <button className='btn-guardar' onClick={() => loadFromDatabase(state.id)}>RECARGAR</button>
-          <button className='btn-guardar' onClick={handleSubmit}>GUARDAR</button>
+          {id > 0 && <button className='btn-guardar' onClick={handleSubmit}>GUARDAR</button>}
         </div>
       </main>
     </React.Fragment>

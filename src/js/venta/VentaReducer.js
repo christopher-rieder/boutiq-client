@@ -5,7 +5,7 @@ const ventaInitialState = {
   cliente: {id: 0, NOMBRE: ''},
   vendedor: {id: 0, NOMBRE: ''},
   turno: {id: 0},
-  tipoPago: {id: 0, NOMBRE: ''},
+  tipoPago: {},
   observaciones: '',
   numeroFactura: 0,
   pagos: [],

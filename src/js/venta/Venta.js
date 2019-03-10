@@ -18,7 +18,7 @@ import { MainContext } from '../context/MainContext';
 import { ArticuloContext } from '../crud/ArticuloContext';
 
 export default function Venta (props) {
-  const {ventaState: state, ventaDispatch: dispatch} = useContext(MainContext);
+  const {ventaState: state, ventaDispatch: dispatch, tablaTipoPago} = useContext(MainContext);
   const {articuloData, setArticuloData} = useContext(ArticuloContext);
   const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
@@ -42,6 +42,7 @@ export default function Venta (props) {
         descuento: 0,
         pagos: [],
         items: [],
+        tipoPago: tablaTipoPago[0],
         observaciones: ''
       }
     });
@@ -212,7 +213,7 @@ export default function Venta (props) {
         <InputTextField name='Cliente' value={state.cliente.NOMBRE} readOnly onClick={clienteModal} />
       </div>
       <div className='panel'>
-        <InputSelect table='TIPO_PAGO' name='Tipos de pago' accessor='NOMBRE' value={state.tipoPago} setValue={tipoPago => dispatch({type: 'setTipoPago', payload: tipoPago})} />
+        <InputSelect table={tablaTipoPago} name='Tipos de pago' accessor='NOMBRE' value={state.tipoPago} setValue={tipoPago => dispatch({type: 'setTipoPago', payload: tipoPago})} />
         <InputFloatField name='Descuento' value={state.descuento} maxValue={DESCUENTO_MAXIMO} setValue={descuento => dispatch({type: 'setDescuento', payload: descuento})} autoComplete='off' />
       </div>
       <div className='panel'>
