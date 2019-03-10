@@ -4,7 +4,8 @@ import Crud from './crud/crud';
 import Venta from './venta/venta';
 import Compra from './compra/Compra';
 import ConsultaArticulo from './crud/consultaArticulo';
-import ConsultaFactura from './facturas/ConsultaFactura';
+import ConsultaFactura from './venta/ConsultaFactura';
+import ConsultaCompra from './compra/ConsultaCompra';
 import CrudArticulo from './crud/crudArticulo';
 import {ConfigContextProvider} from './context/ConfigContext';
 import {VentaContextProvider} from './venta/VentaReducer';
@@ -57,6 +58,9 @@ function App () {
                   </li>
                   <li className='navigation__item'>
                     <button className='navigation__btn' onClick={() => setMainElement(<ConsultaFactura />)}>FACTURA</button>
+                  </li>
+                  <li className='navigation__item'>
+                    <button className='navigation__btn' onClick={() => setMainElement(<ConsultaCompra />)}>COMPRA</button>
                   </li>
                   <li className='navigation__item'>
                     <button className='navigation__btn' onClick={() => setMainElement(<CrudArticulo />)}>CRUDARTICULO</button>
