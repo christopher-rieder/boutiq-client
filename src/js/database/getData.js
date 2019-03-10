@@ -17,28 +17,32 @@ function getAllCompras () {
   return window.fetch(`${URL}/api/compra/all`).then(res => res.json());
 }
 
+function getPagosPendientes () {
+  return window.fetch(`${URL}/api/pago/pendientes`).then(res => res.json());
+}
+
 function getArticuloByCodigo (codigo) {
-  return window.fetch(`${URL}/api/articulo/codigo/${codigo}`).then(res => res.json());
+  return window.fetch(`${URL}/api/articulo/codigo/${codigo}`).then(res => res.json()).then(res => res[0]);
 }
 
 function getArticuloById (id) {
-  return window.fetch(`${URL}/api/articulo/id/${id}`).then(res => res.json());
+  return window.fetch(`${URL}/api/articulo/id/${id}`).then(res => res.json()).then(res => res[0]);
 }
 
 function getItemById (tabla, id) {
-  return window.fetch(`${URL}/api/${tabla}/${id}`).then(res => res.json());
+  return window.fetch(`${URL}/api/${tabla}/${id}`).then(res => res.json()).then(res => res[0]);
 }
 
 function getLastNumeroFactura () {
-  return window.fetch(`${URL}/api/factura/last`).then(res => res.json());
+  return window.fetch(`${URL}/api/factura/last`).then(res => res.json()).then(res => res[0]);
 }
 
 function getLastNumeroCompra () {
-  return window.fetch(`${URL}/api/compra/last`).then(res => res.json());
+  return window.fetch(`${URL}/api/compra/last`).then(res => res.json()).then(res => res[0]);
 }
 
 function getTurnoActual () {
-  return window.fetch(`${URL}/api/turno/actual`).then(res => res.json());
+  return window.fetch(`${URL}/api/turno/actual`).then(res => res.json()).then(res => res[0]);
 }
 
 export {
@@ -46,6 +50,7 @@ export {
   getAllArticulos,
   getAllFacturas,
   getAllCompras,
+  getPagosPendientes,
   getTurnoActual,
   getArticuloByCodigo,
   getArticuloById,

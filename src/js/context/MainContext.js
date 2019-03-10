@@ -31,7 +31,6 @@ function MainContextProvider (props) {
   };
 
   const updateTables = () => {
-    console.log('LOADING EVERITHING!!!');
     constants.length === 0 && getTable('CONSTANTS').then(updateConstants);
     tablaEstadoPago.length === 0 && getTable('ESTADO_PAGO').then(res => setTablaEstadoPago(res));
     tablaMarca.length === 0 && getTable('MARCA').then(res => setTablaMarca(res));
