@@ -7,6 +7,7 @@ import ConsultaArticulo from './crud/consultaArticulo';
 import ConsultaFactura from './venta/ConsultaFactura';
 import ConsultaCompra from './compra/ConsultaCompra';
 import CrudArticulo from './crud/crudArticulo';
+import RealizarStock from './stock/RealizarStock';
 import {ConfigContextProvider} from './context/ConfigContext';
 import {VentaContextProvider} from './venta/VentaReducer';
 import {CompraContextProvider} from './compra/CompraReducer';
@@ -54,7 +55,7 @@ function App () {
                     <button className='navigation__btn' onClick={() => setMainElement(<Compra />)} >COMPRA</button>
                   </li>
                   <li className='navigation__item'>
-                    <button className='navigation__btn' onClick={() => setMainElement(<ConsultaArticulo handleSelection={(articulo) => console.log(articulo) /* TODO: ARTICULO CRUD */} />)}>ARTICULO</button>
+                    <button className='navigation__btn' onClick={() => setMainElement(<ConsultaArticulo handleSelection={({id}) => setMainElement(<CrudArticulo initialState={{id}} />) /* TODO: ARTICULO CRUD */} />)}>ARTICULO</button>
                   </li>
                   <li className='navigation__item'>
                     <button className='navigation__btn' onClick={() => setMainElement(<ConsultaFactura />)}>FACTURA</button>
@@ -64,6 +65,9 @@ function App () {
                   </li>
                   <li className='navigation__item'>
                     <button className='navigation__btn' onClick={() => setMainElement(<CrudArticulo />)}>CRUDARTICULO</button>
+                  </li>
+                  <li className='navigation__item'>
+                    <button className='navigation__btn' onClick={() => setMainElement(<RealizarStock />)}>REALIZAR STOCK</button>
                   </li>
                 </ul>
               </nav>

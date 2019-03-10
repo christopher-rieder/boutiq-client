@@ -1,4 +1,5 @@
-import React, { useContext, useReducer } from 'react';
+import React, { useContext, useReducer, useEffect } from 'react';
+import { getArticuloById } from '../database/getData';
 import { postObjectToAPI } from '../database/writeData';
 import { InputTextField, InputSelect, InputFloatField, InputIntField } from '../components/inputs';
 import {round} from '../utilities/math';
@@ -37,6 +38,8 @@ const reducer = (state, action) => {
   if (index >= 0) return {...state, [setters[index]]: payload}; // simple setters
 
   switch (type) {
+    case 'fromDatabase':
+      return payload;
     case 'precioLista':
       return {
         ...state,
@@ -61,12 +64,38 @@ const reducer = (state, action) => {
 
 export default function CrudArticulo (props) {
   const {state: {DESCUENTO_MAXIMO, RATIO_CONTADO, RATIO_COSTO}} = useContext(ConfigContext);
-  const [state, dispatch] = useReducer(reducer, {...initialState, ...props.initialState});
+  const [state, dispatch] = useReducer(reducer, initialState);
   const {id, codigo, descripcion, precioLista, precioContado, precioCosto, descuento, stock, rubro, marca} = state;
   const dispatcherOnChange = type => e => dispatch({type, payload: e.target.value});
   const dispatcherSetValue = type => payload => dispatch({type, payload});
   const dispatcherPrecios = type => payload => dispatch({type, payload, RATIO_CONTADO, RATIO_COSTO});
   const {articuloData, setArticuloData} = useContext(ArticuloContext);
+
+  const loadFromDatabase = id => {
+    getArticuloById(id)
+      .then(res => {
+        dispatch({
+          type: 'fromDatabase',
+          payload: {
+            id: res.id,
+            codigo: res.CODIGO,
+            descripcion: res.DESCRIPCION,
+            precioLista: res.PRECIO_LISTA,
+            precioContado: res.PRECIO_CONTADO,
+            precioCosto: res.PRECIO_COSTO,
+            descuento: res.DESCUENTO,
+            stock: res.STOCK,
+            rubro: {id: res.RUBRO_ID, NOMBRE: res.RUBRO_NOMBRE},
+            marca: {id: res.MARCA_ID, NOMBRE: res.MARCA_NOMBRE}
+          }});
+      });
+  };
+
+  useEffect(() => {
+    if (props.initialState && props.initialState.id) {
+      loadFromDatabase(props.initialState.id);
+    }
+  }, []);
 
   const handleSubmit = (event) => {
     postObjectToAPI({
@@ -109,6 +138,7 @@ export default function CrudArticulo (props) {
           <InputSelect table='RUBRO' name='Rubro' accessor='NOMBRE' value={rubro} setValue={dispatcherSetValue('rubro')} />
         </div>
         <div>
+          <button className='btn-guardar' onClick={() => loadFromDatabase(state.id)}>RECARGAR</button>
           <button className='btn-guardar' onClick={handleSubmit}>GUARDAR</button>
         </div>
       </main>
