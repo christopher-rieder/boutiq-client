@@ -31,8 +31,14 @@ function App () {
                 <button className='navigation__btn' onClick={() => setMainElement(<Crud table='proveedor' />)}>
                   proveedor
                 </button>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='estado_pago' />)}>
+                  estado_pago
+                </button>
                 <button className='navigation__btn' onClick={() => setMainElement(<Crud table='tipo_pago' />)}>
                   tipo_pago
+                </button>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='constants' />)}>
+                  constants
                 </button>
                 <button className='navigation__btn' onClick={() => setMainElement(<Crud table='vendedor' />)}>
                   vendedor
@@ -61,7 +67,7 @@ function App () {
               <button className='navigation__btn' onClick={() => setMainElement(<CrudArticulo />)}>CRUDARTICULO</button>
             </li>
             <li className='navigation__item'>
-              <button className='navigation__btn' onClick={() => setMainElement(<RealizarStock />)}>REALIZAR STOCK</button>
+              <button className='navigation__btn' onClick={() => setMainElement(<RealizarStock />)}>REALIZAR STOCK (WIP)</button>
             </li>
           </ul>
         </nav>

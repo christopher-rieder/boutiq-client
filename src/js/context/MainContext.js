@@ -7,7 +7,7 @@ const MainContext = createContext();
 function MainContextProvider (props) {
   const [ventaState, ventaDispatch] = useReducer(ventaReducer, ventaInitialState);
   const [compraState, compraDispatch] = useReducer(compraReducer, compraInitialState);
-  const [constants, setConstants] = useState({});
+  const [constants, setConstants] = useState([]);
   const [tablaEstadoPago, setTablaEstadoPago] = useState([]);
   const [tablaMarca, setTablaMarca] = useState([]);
   const [tablaRubro, setTablaRubro] = useState([]);

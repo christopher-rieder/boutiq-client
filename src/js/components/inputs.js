@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import dialogs from '../utilities/dialogs';
-import {getTable} from '../database/getData';
 
 const InputTextField = (props) => {
   return (
     <div>
-      <label className='label' htmlFor='venta-factura'>{props.name}</label>
-      <input className='main_input-rename' type='text' {...props} />
+      <label className='label' htmlFor={props.name}>{props.name}</label>
+      <input className='main_input-rename' id={props.name} type='text' {...props} />
     </div>
   );
 };
@@ -78,38 +77,6 @@ const InputIntField = (props) => {
   );
 };
 
-function InputText ({context, col, value, onChange, onKeyPress, disabled}) {
-  return (
-    <div>
-      <label
-        className={context + '__label'}
-        htmlFor={context + '-' + col}
-      >{col}</label>
-      <input
-        disabled={disabled}
-        type='text'
-        autoComplete='off'
-        name={context + '-' + col}
-        id={context + '-' + col}
-        value={value}
-        onKeyPress={onKeyPress}
-        onChange={onChange}
-      />
-    </div>
-  );
-}
-
-function InputSearch (props) {
-  return (
-    <input
-      type='search'
-      className='crud-search'
-      placeholder='Search..'
-      {...props}
-    />
-  );
-}
-
 function InputFactory (col, type, table, value, onChange) {
   switch (type) {
     case 'id':
@@ -130,30 +97,10 @@ function InputFactory (col, type, table, value, onChange) {
           <input value={value} className='crud-input-item' onChange={onChange} required name={col} type='text' id={'crud-' + table + '-' + col} placeholder={col} autoComplete='off' />
         </div>
       );
-    case 'integer':
-      return (<div key={col}><label className={table + '__label'} htmlFor={table + '-' + col} >{col}</label>
-        <input value={value} className='crud-input-item' onChange={onChange} required name={col} type='number' id={'crud-' + table + '-' + col} placeholder={col} /></div>
-      );
-    case 'float':
-      return (<div key={col}><label className={table + '__label'} htmlFor={table + '-' + col} >{col}</label>
-        <input value={value} className='crud-input-item' onChange={onChange} required name={col} type='number' id={'crud-' + table + '-' + col} placeholder={col} /></div>
-      );
-    case 'boolean':
-      return (<div key={col}><label className={table + '__label'} htmlFor={table + '-' + col} >{col}</label>
-        <input value={value} className='crud-input-item' onChange={onChange} name={col} type='checkbox' id={'crud-' + table + '-' + col} /></div>
-      );
     default: return '';
-    // case 'select':
-    //   return (<div key={col}><label className={table + '__label'} htmlFor={table + '-' + col} >{col}</label>
-    //     <select required name={col} id={'crud-' + table + '-' + col} /></div>
-    //   );
   }
 }
 
-/**
- *
- * @param {*} param0
- */
 function InputSelect ({table, name, accessor, value, setValue}) {
   function onChange (e) {
     setValue(table.find(obj => obj[accessor] === e.target.value));
@@ -169,12 +116,4 @@ function InputSelect ({table, name, accessor, value, setValue}) {
   );
 }
 
-export {
-  InputIntField,
-  InputFloatField,
-  InputSelect,
-  InputTextField,
-  InputSearch,
-  InputFactory,
-  InputText
-};
+export { InputIntField, InputFloatField, InputSelect, InputTextField, InputFactory };

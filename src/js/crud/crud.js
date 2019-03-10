@@ -1,23 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import matchSorter from 'match-sorter';
 import '../../styles/main.scss';
-import { InputFactory, InputSearch } from '../components/inputs';
+import { InputFactory, InputTextField } from '../components/inputs';
 import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
 import dialogs from '../utilities/dialogs';
-dialogs.options.toasts.max = 3;
+import { MainContext } from '../context/MainContext';
 
 const cols = {
   marca: ['id', 'NOMBRE'],
   rubro: ['id', 'NOMBRE'],
   proveedor: ['id', 'NOMBRE'],
-  tipo_pago: ['id', 'NOMBRE'],
+  estado_pago: ['id', 'NOMBRE'],
+  tipo_pago: ['id', 'NOMBRE', 'LISTA_DE_PRECIO'],
   vendedor: ['id', 'NOMBRE'],
+  constants: ['id', 'NOMBRE', 'VALOR'],
   cliente: ['id', 'NOMBRE', 'DOMICILIO', 'TELEFONO', 'CREDITO']
 };
 const coltypes = ['id', 'text', 'text', 'text', 'text', 'text', 'text'];
 
 export default function Crud (props) {
+  const {
+    setConstants,
+    setTablaEstadoPago,
+    setTablaMarca,
+    setTablaRubro,
+    setTablaTipoPago
+  } = useContext(MainContext);
+
   const [search, setSearch] = useState('');
   const [objList, setObjList] = useState([]);
   const [obj, setObj] = useState({id: 1, NOMBRE: 'OBJ'});
@@ -50,6 +60,13 @@ export default function Crud (props) {
       setTimeout(() => document.querySelector('#crud-id-' + obj.id).classList.remove('crud-list-item-highlight'), 1000);
       dialogs.success('ACTUALIZADO');
     }
+    switch (crudTable) {
+      case 'constants': setTimeout(() => setConstants([]), 1000); break;
+      case 'estado_pago': setTimeout(() => setTablaEstadoPago([]), 1000); break;
+      case 'marca': setTimeout(() => setTablaMarca([]), 1000); break;
+      case 'rubro': setTimeout(() => setTablaRubro([]), 1000); break;
+      case 'tipo_pago': setTimeout(() => setTablaTipoPago([]), 1000); break;
+    }
   };
 
   const createHandler = event => {
@@ -78,7 +95,7 @@ export default function Crud (props) {
   return (
     <div className='crud-container'>
       <div className='crud-sidebar'>
-        <InputSearch value={search} onChange={event => setSearch(event.target.value)} />
+        <InputTextField name='Buscar' value={search} autoFocus autoComplete='off' onChange={event => setSearch(event.target.value)} />
         <ul className='crud-list' onClick={liClickHandler} >
           {list()}
         </ul>
