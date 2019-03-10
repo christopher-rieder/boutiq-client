@@ -15,11 +15,10 @@ import AgregarPago from './AgregarPago';
 import Pago from './Pago';
 import './venta.css';
 import { MainContext } from '../context/MainContext';
-import { ArticuloContext } from '../crud/ArticuloContext';
 
 export default function Venta (props) {
   const {ventaState: state, ventaDispatch: dispatch, tablaTipoPago} = useContext(MainContext);
-  const {articuloData, setArticuloData} = useContext(ArticuloContext);
+  const {articuloData, setArticuloData} = useContext(MainContext);
   const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);

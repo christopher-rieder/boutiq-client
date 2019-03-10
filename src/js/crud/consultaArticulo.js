@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import {numberRangeFiltering} from '../utilities/filterFunctions';
-import { ArticuloContext } from '../crud/ArticuloContext';
+import { MainContext } from '../context/MainContext';
 
 const columns = [
   {
@@ -70,7 +70,7 @@ const columns = [
 ];
 
 export default function ConsultaArticulo (props) {
-  const {articuloData} = useContext(ArticuloContext);
+  const {articuloData} = useContext(MainContext);
 
   function getTdProps (state, rowInfo, column, instance) {
     return {

@@ -11,11 +11,10 @@ import { InputTextField } from '../components/inputs';
 import audioOk from '../../resources/audio/ok.wav';
 import Modal from '../components/modal';
 import { MainContext } from '../context/MainContext';
-import { ArticuloContext } from '../crud/ArticuloContext';
 
 export default function Compra (props) {
   const {compraState: state, compraDispatch: dispatch} = useContext(MainContext);
-  const {articuloData, setArticuloData} = useContext(ArticuloContext);
+  const {articuloData, setArticuloData} = useContext(MainContext);
   const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);

@@ -5,7 +5,6 @@ import { InputTextField, InputSelect, InputFloatField, InputIntField } from '../
 import {round} from '../utilities/math';
 import dialogs from '../utilities/dialogs';
 import { MainContext } from '../context/MainContext';
-import { ArticuloContext } from '../crud/ArticuloContext';
 
 const initialState = {
   id: 0,
@@ -69,7 +68,7 @@ export default function CrudArticulo (props) {
   const dispatcherOnChange = type => e => dispatch({type, payload: e.target.value});
   const dispatcherSetValue = type => payload => dispatch({type, payload});
   const dispatcherPrecios = type => payload => dispatch({type, payload, RATIO_CONTADO, RATIO_COSTO});
-  const {articuloData, setArticuloData} = useContext(ArticuloContext);
+  const {articuloData, setArticuloData} = useContext(MainContext);
 
   const loadFromDatabase = id => {
     getArticuloById(id)

@@ -1,47 +1,54 @@
 import React, {createContext, useEffect, useReducer, useState} from 'react';
-import {getTable, getBussinessConstants} from '../database/getData';
+import {getTable, getAllArticulos} from '../database/getData';
 import {ventaReducer, ventaInitialState} from '../venta/VentaReducer';
 import {compraReducer, compraInitialState} from '../compra/CompraReducer';
 const MainContext = createContext();
 
 function MainContextProvider (props) {
-  const [constants, setConstants] = useState({});
   const [ventaState, ventaDispatch] = useReducer(ventaReducer, ventaInitialState);
   const [compraState, compraDispatch] = useReducer(compraReducer, compraInitialState);
-  const [render, setRender] = useState(false);
+  const [constants, setConstants] = useState({});
   const [tablaEstadoPago, setTablaEstadoPago] = useState([]);
   const [tablaMarca, setTablaMarca] = useState([]);
   const [tablaRubro, setTablaRubro] = useState([]);
   const [tablaTipoPago, setTablaTipoPago] = useState([]);
+  const [articuloData, setArticuloData] = useState([]);
 
-  async function loadEverything () {
-    const CONSTANTS = await getTable('CONSTANTS');
+  const updateArticuloData = () => {
+    if (articuloData.length === 0) {
+      getAllArticulos().then(res => {
+        setArticuloData(res);
+      });
+    }
+  };
+
+  const updateConstants = res => {
     let obj = {};
-    CONSTANTS.forEach(row => {
+    res.forEach(row => {
       obj[row.NOMBRE] = row.VALOR;
     });
     setConstants(obj);
-    const ESTADO_PAGO = await getTable('ESTADO_PAGO');
-    const MARCA = await getTable('MARCA');
-    const RUBRO = await getTable('RUBRO');
-    const TIPO_PAGO = await getTable('TIPO_PAGO');
-    setTablaEstadoPago(ESTADO_PAGO);
-    setTablaMarca(MARCA);
-    setTablaRubro(RUBRO);
-    setTablaTipoPago(TIPO_PAGO);
+  };
 
-    setRender(true);
-  }
+  const updateTables = () => {
+    console.log('LOADING EVERITHING!!!');
+    constants.length === 0 && getTable('CONSTANTS').then(updateConstants);
+    tablaEstadoPago.length === 0 && getTable('ESTADO_PAGO').then(res => setTablaEstadoPago(res));
+    tablaMarca.length === 0 && getTable('MARCA').then(res => setTablaMarca(res));
+    tablaRubro.length === 0 && getTable('RUBRO').then(res => setTablaRubro(res));
+    tablaTipoPago.length === 0 && getTable('TIPO_PAGO').then(res => setTablaTipoPago(res));
+  };
+
+  useEffect(updateArticuloData, [articuloData]);
+  useEffect(updateTables, [constants, tablaEstadoPago, tablaMarca, tablaRubro, tablaTipoPago]);
 
   // TODO: | LOGIN | TURNO
   // TODO: | LOGIN | VENDEDOR
 
-  useEffect(() => {
-    loadEverything();
-  }, []);
-
   return (
     <MainContext.Provider value={{
+      articuloData,
+      setArticuloData,
       constants,
       setConstants,
       ventaState,
@@ -57,7 +64,7 @@ function MainContextProvider (props) {
       tablaTipoPago,
       setTablaTipoPago
     }}>
-      {render && props.children}
+      {props.children}
     </MainContext.Provider>
   );
 }

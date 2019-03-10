@@ -3,11 +3,11 @@ import React, {useContext, useState} from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import {numberRangeFiltering} from '../utilities/filterFunctions';
-import { ArticuloContext } from '../crud/ArticuloContext';
+import { MainContext } from '../context/MainContext';
 import { format as dateFormat } from 'date-fns';
 
 export default function RealizarStock (props) {
-  const {articuloData} = useContext(ArticuloContext);
+  const {articuloData} = useContext(MainContext);
   const [stockData, setStockData] = useState([...articuloData]);
   const stockUpdateHandler = (codigo) => event => {
     setStockData(stockData.map(articulo => articulo.CODIGO === codigo ? {...articulo, STOCK_REAL: event.target.value} : articulo));
