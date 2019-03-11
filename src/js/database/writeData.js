@@ -64,6 +64,17 @@ async function postPago (item) {
   }).then(res => res.json());
 }
 
+async function updatePago (item) {
+  return window.fetch(`${URL}/api/pago/${item.id}`, {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(item)
+  }).then(res => res.json());
+}
+
 async function postCrudObjectToAPI (item, table) {
   return window.fetch(`${URL}/api/crud/` + table, {
     method: 'post',
@@ -93,6 +104,7 @@ export {
   postItemCompra,
   postFactura,
   postPago,
+  updatePago,
   postCrudObjectToAPI,
   postObjectToAPI,
   postItemFactura

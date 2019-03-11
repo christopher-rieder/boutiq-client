@@ -1,5 +1,6 @@
 import { format as dateFormat } from 'date-fns';
 import React from 'react';
+import Pago from '../pagos/Pago';
 
 export default function FacturaView ({obj, setObj}) {
   if (!obj.NUMERO_FACTURA) {
@@ -67,9 +68,7 @@ export default function FacturaView ({obj, setObj}) {
         </section>
         {obj.PAGOS.length > 0 &&
         <section className='factura__pagos'>
-          <pre>
-            {JSON.stringify(obj.PAGOS)}
-          </pre>
+          {obj.PAGOS.map(pago => <Pago key={pago.id + '_' + pago.TIPO_PAGO.id + '_' + pago.ESTADO.id} pago={pago} />)}
         </section>
         }
       </div>

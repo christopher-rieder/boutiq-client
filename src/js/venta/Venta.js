@@ -11,8 +11,8 @@ import * as databaseWrite from '../database/writeData';
 import dialogs from '../utilities/dialogs';
 import { money } from '../utilities/format';
 import ItemVenta from './ItemVenta';
-import AgregarPago from './AgregarPago';
-import Pago from './Pago';
+import AgregarPago from '../pagos/AgregarPago';
+import Pago from '../pagos/Pago';
 import './venta.css';
 import { MainContext } from '../context/MainContext';
 

@@ -6,6 +6,7 @@ import Compra from './compra/Compra';
 import ConsultaArticulo from './crud/consultaArticulo';
 import ConsultaFactura from './venta/ConsultaFactura';
 import ConsultaCompra from './compra/ConsultaCompra';
+import ConsultaPagos from './pagos/ConsultaPago';
 import CrudArticulo from './crud/crudArticulo';
 import RealizarStock from './stock/RealizarStock';
 import {MainContextProvider} from './context/MainContext';
@@ -68,6 +69,9 @@ function App () {
             </li>
             <li className='navigation__item'>
               <button className='navigation__btn' onClick={() => setMainElement(<RealizarStock />)}>REALIZAR STOCK (WIP)</button>
+            </li>
+            <li className='navigation__item'>
+              <button className='navigation__btn' onClick={() => setMainElement(<ConsultaPagos />)}>VER PAGOS</button>
             </li>
           </ul>
         </nav>
