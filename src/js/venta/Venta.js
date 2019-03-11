@@ -134,7 +134,7 @@ export default function Venta (props) {
             FACTURA_ID: facturaId,
             MONTO: pago.MONTO,
             TIPO_PAGO_ID: pago.TIPO_PAGO.id,
-            ESTADO: pago.ESTADO.id
+            ESTADO_ID: pago.ESTADO.id
           });
         });
       }
@@ -271,6 +271,10 @@ export default function Venta (props) {
           <div>
             <p>TOTAL</p>
             <p>{state.pagos.reduce((total, pago) => total + pago.MONTO, 0)}</p>
+          </div>
+          <div>
+            <p>PENDIENTE</p>
+            <p>{getTotal() - state.pagos.reduce((total, pago) => total + pago.MONTO, 0)}</p>
           </div>
         </div>
       }

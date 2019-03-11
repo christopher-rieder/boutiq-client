@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { getPagosPendientes } from '../database/getData';
+import { getPagosPendientes, getFacturasById } from '../database/getData';
 import { updatePago } from '../database/writeData';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
@@ -8,6 +8,7 @@ import matchSorter from 'match-sorter';
 import { InputTextField, InputSelect } from '../components/inputs';
 import { MainContext } from '../context/MainContext';
 import {numberRangeFiltering} from '../utilities/filterFunctions';
+import FacturaView from '../venta/FacturaView';
 
 const columns = [
   {
@@ -59,7 +60,8 @@ const columns = [
 export default function ConsultaPago (props) {
   const [data, setData] = useState([]);
   const {tablaEstadoPago} = useContext(MainContext);
-  const [obj, setObj] = useState({NUMERO_FACTURA: 0, FECHA_HORA: 0, MONTO: 0, ESTADO: tablaEstadoPago[1], TIPO_PAGO: ''});
+  const [obj, setObj] = useState('');
+  const [factura, setFactura] = useState('');
 
   useEffect(() => {
     getPagosPendientes()
@@ -71,7 +73,11 @@ export default function ConsultaPago (props) {
   function getTdProps (state, rowInfo, column, instance) {
     return {
       onClick: (e, handleOriginal) => {
-        if (rowInfo) setObj(rowInfo.original);
+        if (rowInfo) {
+          setObj(rowInfo.original);
+          console.log(rowInfo.original.FACTURA_ID);
+          getFacturasById(rowInfo.original.FACTURA_ID).then(res => setFactura(res));
+        }
         if (handleOriginal) handleOriginal();
       }
     };
@@ -110,15 +116,24 @@ export default function ConsultaPago (props) {
         />
       </div>
       <main className='main'>
-        <InputTextField name='Numero Factura' value={obj.NUMERO_FACTURA} readOnly />
-        <InputTextField name='Fecha' value={obj.FECHA_HORA ? dateFormat(new Date(obj.FECHA_HORA), 'dd/MM/yyyy | HH:mm:ss') : ''} readOnly />
-        <InputTextField name='Monto' value={obj.MONTO} readOnly />
-        <InputTextField name='Tipo de Pago' value={obj.TIPO_PAGO} readOnly />
-        <InputSelect table={tablaEstadoPago} name='Estado de pago' accessor='NOMBRE' value={obj.ESTADO} setValue={ESTADO => setObj({...obj, ESTADO})} />
-        <div className='panel'>
-          <button className='codigo-search' onClick={handlePago}>ACTUALIZAR PAGO</button>
-        </div>
+        {obj !== '' && <PagoCrud {...{obj, setObj, tablaEstadoPago, handlePago}} />}
+        {factura !== '' && <FacturaView obj={factura} />}
       </main>
+    </div>
+  );
+}
+
+function PagoCrud ({obj, setObj, tablaEstadoPago, handlePago}) {
+  return (
+    <div>
+      <InputTextField name='Numero Factura' value={obj.NUMERO_FACTURA} readOnly />
+      <InputTextField name='Fecha' value={dateFormat(new Date(obj.FECHA_HORA), 'dd/MM/yyyy | HH:mm:ss')} readOnly />
+      <InputTextField name='Monto' value={obj.MONTO} readOnly />
+      <InputTextField name='Tipo de Pago' value={obj.TIPO_PAGO} readOnly />
+      <InputSelect table={tablaEstadoPago} name='Estado de pago' accessor='NOMBRE' value={obj.ESTADO} setValue={ESTADO => setObj({...obj, ESTADO})} />
+      <div className='panel'>
+        <button className='codigo-search' onClick={handlePago}>ACTUALIZAR PAGO</button>
+      </div>
     </div>
   );
 }

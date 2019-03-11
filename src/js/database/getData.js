@@ -25,6 +25,10 @@ function getArticuloByCodigo (codigo) {
   return window.fetch(`${URL}/api/articulo/codigo/${codigo}`).then(res => res.json()).then(res => res[0]);
 }
 
+function getFacturasById (id) {
+  return window.fetch(`${URL}/api/factura/${id}`).then(res => res.json()).then(res => res[0]);
+}
+
 function getArticuloById (id) {
   return window.fetch(`${URL}/api/articulo/id/${id}`).then(res => res.json()).then(res => res[0]);
 }
@@ -49,6 +53,7 @@ export {
   getTable,
   getAllArticulos,
   getAllFacturas,
+  getFacturasById,
   getAllCompras,
   getPagosPendientes,
   getTurnoActual,
