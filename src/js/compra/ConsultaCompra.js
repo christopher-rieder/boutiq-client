@@ -6,6 +6,7 @@ import 'react-table/react-table.css';
 import * as databaseRead from '../database/getData';
 import './consultas.css';
 import CompraView from './CompraView';
+import {numberRangeFiltering} from '../utilities/filterFunctions';
 
 const columns = [
   {
@@ -13,7 +14,7 @@ const columns = [
     id: 'NUMERO_FACTURA',
     width: 60,
     accessor: 'NUMERO_FACTURA',
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: 'id' }),
+    filterMethod: numberRangeFiltering,
     filterAll: true
   },
   {
@@ -21,7 +22,7 @@ const columns = [
     id: 'FECHA_HORA',
     width: 200,
     accessor: e => dateFormat(new Date(e.FECHA_HORA), 'dd/MM/yyyy | HH:mm:ss'),
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: 'FECHA_HORA' }),
+    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['FECHA_HORA'] }),
     filterAll: true
   },
   {
@@ -29,7 +30,7 @@ const columns = [
     id: 'PROVEEDOR',
     width: 200,
     accessor: e => e.PROVEEDOR.NOMBRE,
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: 'CLIENTE' }),
+    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['CLIENTE'] }),
     filterAll: true
   }
 ];

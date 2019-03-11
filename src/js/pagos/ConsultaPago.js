@@ -29,6 +29,14 @@ const columns = [
     Header: 'MONTO',
     id: 'MONTO',
     accessor: 'MONTO',
+    aggregate: (values, row) => console.log('values', values),
+    Aggregated: row => {
+      return (
+        <span>
+          {row.value} (avg)
+        </span>
+      );
+    },
     filterMethod: numberRangeFiltering
   },
   {
@@ -68,6 +76,15 @@ export default function ConsultaPago (props) {
       }
     };
   }
+  function getTheadFilterProps (state, rowInfo, column, instance) {
+    return {
+      onClick: (e, handleOriginal) => {
+        console.log('headfilter', state);
+
+        if (handleOriginal) handleOriginal();
+      }
+    };
+  }
 
   const handlePago = event => {
     updatePago({
@@ -86,9 +103,10 @@ export default function ConsultaPago (props) {
           defaultFilterMethod={(filter, row) =>
             String(row[filter.id]) === filter.value}
           columns={columns}
-          defaultPageSize={20}
+          defaultPageSize={12}
           className='-striped -highlight'
           getTdProps={getTdProps}
+          getTheadFilterProps={getTheadFilterProps}
         />
       </div>
       <main className='main'>

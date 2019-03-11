@@ -71,14 +71,14 @@ export default function RealizarStock (props) {
       Header: 'MARCA',
       id: 'MARCA',
       accessor: e => e.MARCA,
-      filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['DESCRIPCION'] }),
+      filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['MARCA'] }),
       filterAll: true
     },
     {
       Header: 'RUBRO',
       id: 'RUBRO',
       accessor: e => e.RUBRO,
-      filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['DESCRIPCION'] }),
+      filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['RUBRO'] }),
       filterAll: true
     }
   ];
