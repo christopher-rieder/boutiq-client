@@ -8,7 +8,7 @@ import ConsultaFactura from './venta/ConsultaFactura';
 import ConsultaCompra from './compra/ConsultaCompra';
 import ConsultaPagos from './pagos/ConsultaPago';
 import CrudArticulo from './crud/crudArticulo';
-import Seña from './señas/Seña';
+import Seña from './seña/Seña';
 import RealizarStock from './stock/RealizarStock';
 import {MainContextProvider} from './context/MainContext';
 import '../styles/main.scss';
