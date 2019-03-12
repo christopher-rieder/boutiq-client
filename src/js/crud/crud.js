@@ -95,7 +95,7 @@ export default function Crud (props) {
   return (
     <div className='crud-container'>
       <div className='crud-sidebar'>
-        <InputTextField name='Buscar' value={search} autoFocus autoComplete='off' onChange={event => setSearch(event.target.value)} />
+        <InputTextField name='Buscar' value={search} autoFocus autoComplete='off' setValue={setSearch} />
         <ul className='crud-list' onClick={liClickHandler} >
           {list()}
         </ul>

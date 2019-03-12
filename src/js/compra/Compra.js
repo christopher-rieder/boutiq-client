@@ -50,7 +50,7 @@ export default function Compra (props) {
     } else { // add new articulo
       databaseRead.getArticuloByCodigo(cod)
         .then(res => {
-          if (res.length === 0) {
+          if (!res || res.length === 0) {
             dialogs.confirm(
               confirmed => confirmed && crudArticuloModal(), // Callback
               'ARTICULO NO EXISTENTE AGREGAR NUEVO?', // Message text
@@ -168,12 +168,12 @@ export default function Compra (props) {
         <InputTextField name='Proveedor' value={state.proveedor.NOMBRE} readOnly onClick={proveedorModal} />
       </div>
       <div className='panel'>
-        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addCompraHandler} onChange={event => setCodigo(event.target.value)} />
+        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addCompraHandler} setValue={setCodigo} />
         <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
         <button className='codigo-search' onClick={crudArticuloModal}>AGREGAR ARTICULO NUEVO</button>
       </div>
       <div className='panel'>
-        <InputTextField name='Observaciones' value={state.observaciones} onChange={event => dispatch({type: 'setObservaciones', payload: event.target.value})} />
+        <InputTextField name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
       </div>
       <table id='table'>
         <thead>

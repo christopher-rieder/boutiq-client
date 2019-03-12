@@ -65,10 +65,9 @@ export default function CrudArticulo (props) {
   const {constants: {DESCUENTO_MAXIMO, RATIO_CONTADO, RATIO_COSTO}, tablaMarca, tablaRubro} = useContext(MainContext);
   const [state, dispatch] = useReducer(reducer, initialState);
   const {id, codigo, descripcion, precioLista, precioContado, precioCosto, descuento, stock, rubro, marca} = state;
-  const dispatcherOnChange = type => e => dispatch({type, payload: e.target.value});
   const dispatcherSetValue = type => payload => dispatch({type, payload});
   const dispatcherPrecios = type => payload => dispatch({type, payload, RATIO_CONTADO, RATIO_COSTO});
-  const {articuloData, setArticuloData} = useContext(MainContext);
+  const {setArticuloData} = useContext(MainContext);
 
   const loadFromDatabase = id => {
     getArticuloById(id)
@@ -93,6 +92,9 @@ export default function CrudArticulo (props) {
   useEffect(() => {
     if (props.initialState && props.initialState.id) {
       loadFromDatabase(props.initialState.id);
+    }
+    if (props.initialState && props.initialState.codigo) {
+      dispatcherSetValue('codigo')(props.initialState.codigo);
     }
   }, []);
 
@@ -126,8 +128,8 @@ export default function CrudArticulo (props) {
       <main>
         <div id='crud-articulo' className='main-grid'>
           <InputTextField name='id' value={id} readOnly />
-          <InputTextField name='Codigo' value={codigo} onChange={dispatcherOnChange('codigo')} />
-          <InputTextField name='Descripcion' value={descripcion} onChange={dispatcherOnChange('descripcion')} />
+          <InputTextField name='Codigo' value={codigo} setValue={dispatcherSetValue('codigo')} />
+          <InputTextField name='Descripcion' value={descripcion} setValue={dispatcherSetValue('descripcion')} />
           <InputFloatField name='Precio de Lista' value={precioLista} setValue={dispatcherPrecios('precioLista')} autoComplete='off' />
           <InputFloatField name='Precio de Contado' value={precioContado} maxValue={precioLista} setValue={dispatcherPrecios('precioContado')} autoComplete='off' />
           <InputFloatField name='Precio de Costo' value={precioCosto} maxValue={precioContado} setValue={dispatcherPrecios('precioCosto')} autoComplete='off' />

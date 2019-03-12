@@ -213,11 +213,11 @@ export default function Venta (props) {
         <InputFloatField name='Descuento' value={state.descuento} maxValue={DESCUENTO_MAXIMO} setValue={descuento => dispatch({type: 'setDescuento', payload: descuento})} autoComplete='off' />
       </div>
       <div className='panel'>
-        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addVentaHandler} onChange={event => setCodigo(event.target.value)} />
+        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addVentaHandler} setValue={setCodigo} />
         <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
       </div>
       <div className='panel'>
-        <InputTextField name='Observaciones' value={state.observaciones} onChange={event => dispatch({type: 'setObservaciones', payload: event.target.value})} />
+        <InputTextField name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
       </div>
       <table id='table'>
         <thead>

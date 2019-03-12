@@ -142,11 +142,11 @@ export default function Seña (props) {
         <InputTextField name='Cliente' value={state.cliente.NOMBRE} readOnly onClick={clienteModal} />
       </div>
       <div className='panel'>
-        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addItemHandler} onChange={event => setCodigo(event.target.value)} />
+        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addItemHandler} setValue={setCodigo} />
         <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
       </div>
       <div className='panel'>
-        <InputTextField name='Observaciones' value={state.observaciones} onChange={event => dispatch({type: 'setObservaciones', payload: event.target.value})} />
+        <InputTextField name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
       </div>
       <table id='table'>
         <thead>

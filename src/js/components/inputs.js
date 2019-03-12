@@ -1,12 +1,24 @@
 import React from 'react';
 import dialogs from '../utilities/dialogs';
 
-const InputTextField = (props) => {
+const BasicInput = (props) => {
   return (
     <div>
-      <label className='label' htmlFor={props.name}>{props.name}</label>
-      <input className='main_input-rename' id={props.name} type='text' {...props} />
+      <label className='basic-input-label' htmlFor={props.name}>{props.name}</label>
+      <input className='basic-input-text' id={props.name} type='text' {...props} />
     </div>
+  );
+};
+
+const InputTextField = (props) => {
+  const {setValue, ...componentProps} = props;
+
+  function onChange (event) {
+    setValue(event.target.value);
+  }
+
+  return (
+    <BasicInput onChange={onChange} {...componentProps} />
   );
 };
 
@@ -42,7 +54,7 @@ const InputFloatField = (props) => {
     }
   }
   return (
-    <InputTextField onKeyPress={onKeyPress} onChange={onChange} {...componentProps} />
+    <BasicInput onKeyPress={onKeyPress} onChange={onChange} {...componentProps} />
   );
 };
 
@@ -73,7 +85,7 @@ const InputIntField = (props) => {
     }
   }
   return (
-    <InputTextField onKeyPress={onKeyPress} onChange={onChange} {...componentProps} />
+    <BasicInput onKeyPress={onKeyPress} onChange={onChange} {...componentProps} />
   );
 };
 
