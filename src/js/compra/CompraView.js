@@ -6,41 +6,36 @@ export default function CompraView ({obj, setObj}) {
     return <div />;
   } else {
     return (
-      <div className='compra__container'>
-        <header className='compra__header'>
-          <h2 className='compra__header__heading'>
-           COMPRA
-          </h2>
-        </header>
-        <section className='compra__datos'>
-          <p className='compra__datos__numero_compra'>
+      <div className='compra-view__container'>
+        <section className='compra-view__detalles'>
+          <p className='tabla-view__detalle tabla-view__numero'>
             N° de Compra: {obj.NUMERO_COMPRA}
           </p>
-          <p className='compra__datos__fecha'>
+          <p className='tabla-view__detalle tabla-view__fecha'>
             Fecha: {dateFormat(new Date(obj.FECHA_HORA), 'dd/MM/yyyy | HH:mm:ss')}
           </p>
-          <p className='compra__datos__cliente'>
+          <p className='tabla-view__detalle tabla-view__cliente'>
             Proveedor: {obj.PROVEEDOR.NOMBRE}
           </p>
-          <p className='compra__datos__observaciones'>
+          <p className='tabla-view__detalle tabla-view__observaciones'>
             Observaciones: {obj.OBSERVACIONES}
           </p>
         </section>
-        <section className='compra__items'>
-          <table className='compra__tabla'>
-            <thead>
-              <tr>
-                <th>CODIGO</th>
-                <th>DESCRIPCION</th>
-                <th>CANT</th>
+        <section className='compra-view__items'>
+          <table className='tabla-view__tabla'>
+            <thead className='tabla-view__tabla-head'>
+              <tr className='tabla-view__tabla-head-row'>
+                <th className='tabla-view__tabla-head-cell'>CODIGO</th>
+                <th className='tabla-view__tabla-head-cell'>DESCRIPCION</th>
+                <th className='tabla-view__tabla-head-cell'>CANT</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className='tabla-view__tabla-body'>
               {obj.ITEMS.map(item => (
-                <tr key={item.CODIGO}>
-                  <td>{item.CODIGO}</td>
-                  <td>{item.DESCRIPCION}</td>
-                  <td>{item.CANTIDAD}</td>
+                <tr key={item.CODIGO} className='tabla-view__tabla-body-row'>
+                  <td className='tabla-view__tabla-body-cell'>{item.CODIGO}</td>
+                  <td className='tabla-view__tabla-body-cell'>{item.DESCRIPCION}</td>
+                  <td className='tabla-view__tabla-body-cell'>{item.CANTIDAD}</td>
                 </tr>)
               )}
             </tbody>
