@@ -8,6 +8,7 @@ import ConsultaFactura from './venta/ConsultaFactura';
 import ConsultaCompra from './compra/ConsultaCompra';
 import ConsultaPagos from './pagos/ConsultaPago';
 import CrudArticulo from './crud/crudArticulo';
+import Seña from './señas/Seña';
 import RealizarStock from './stock/RealizarStock';
 import {MainContextProvider} from './context/MainContext';
 import '../styles/main.scss';
@@ -72,6 +73,9 @@ function App () {
             </li>
             <li className='navigation__item'>
               <button className='navigation__btn' onClick={() => setMainElement(<ConsultaPagos />)}>VER PAGOS</button>
+            </li>
+            <li className='navigation__item'>
+              <button className='navigation__btn' onClick={() => setMainElement(<Seña />)}>SEÑA</button>
             </li>
           </ul>
         </nav>

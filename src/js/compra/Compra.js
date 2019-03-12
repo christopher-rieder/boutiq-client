@@ -164,8 +164,8 @@ export default function Compra (props) {
         </Modal>
       }
       <div className='panel'>
-        <InputTextField name='Factura' value={state.numeroCompra} readOnly />
-        <InputTextField name='Cliente' value={state.proveedor.NOMBRE} readOnly onClick={proveedorModal} />
+        <InputTextField name='Compra' value={state.numeroCompra} readOnly />
+        <InputTextField name='Proveedor' value={state.proveedor.NOMBRE} readOnly onClick={proveedorModal} />
       </div>
       <div className='panel'>
         <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addCompraHandler} onChange={event => setCodigo(event.target.value)} />

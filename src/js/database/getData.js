@@ -45,6 +45,10 @@ function getLastNumeroCompra () {
   return window.fetch(`${URL}/api/compra/last`).then(res => res.json()).then(res => res[0]);
 }
 
+function getLastNumeroSeña () {
+  return window.fetch(`${URL}/api/seña/last`).then(res => res.json()).then(res => res[0]);
+}
+
 function getTurnoActual () {
   return window.fetch(`${URL}/api/turno/actual`).then(res => res.json()).then(res => res[0]);
 }
@@ -60,6 +64,7 @@ export {
   getArticuloByCodigo,
   getArticuloById,
   getItemById,
+  getLastNumeroSeña,
   getLastNumeroCompra,
   getLastNumeroFactura
 };
