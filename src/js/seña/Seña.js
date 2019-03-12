@@ -10,7 +10,7 @@ import * as databaseWrite from '../database/writeData';
 import dialogs from '../utilities/dialogs';
 import { MainContext } from '../context/MainContext';
 import { señaReducer } from './SeñaReducer';
-import ItemSeña from './ItemSeña';
+import ItemArticulo from '../components/ItemArticulo';
 
 export default function Seña (props) {
   const {articuloData, tablaEstadoPago, consumidorFinal} = useContext(MainContext);
@@ -154,10 +154,11 @@ export default function Seña (props) {
             <th className='table-header-cantidad'>Cant</th>
             <th className='table-header-codigo'>Codigo</th>
             <th className='table-header-descripcion'>Descripcion</th>
+            <th className='table-header-stock'>Stock</th>
           </tr>
         </thead>
         <tbody id='tbody'>
-          {state.items.map(item => <ItemSeña
+          {state.items.map(item => <ItemArticulo
             key={item.id}
             dispatch={dispatch}
             articulo={item} />)}

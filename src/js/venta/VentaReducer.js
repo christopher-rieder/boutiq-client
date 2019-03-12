@@ -74,16 +74,22 @@ const setPrecioIndividual = (state, {articulo, value}) => {
       : item)
   };
 };
+
 const addItem = (state, articulo) => {
-  const newItem = {...articulo};
   const accessor = state.tipoPago.LISTA_DE_PRECIO;
-
-  // item initialization
-  newItem.CANTIDAD = 1;
-
-  newItem.PRECIO_BASE = newItem[accessor];
-  newItem.PRECIO_UNITARIO = newItem.PRECIO_CUSTOM ||
-                            round(newItem[accessor] * (1 - state.descuento / 100) * (1 - newItem.DESCUENTO / 100));
+  const newItem = {
+    CANTIDAD: 1,
+    REMOVE_STOCK: true,
+    CODIGO: articulo.CODIGO,
+    DESCRIPCION: articulo.DESCRIPCION,
+    STOCK: articulo.STOCK,
+    PRECIO_BASE: articulo[accessor],
+    PRECIO_CONTADO: articulo.PRECIO_CONTADO,
+    PRECIO_LISTA: articulo.PRECIO_LISTA,
+    PRECIO_UNITARIO: round(articulo[accessor] * (1 - state.descuento / 100) * (1 - articulo.DESCUENTO / 100)),
+    PRECIO_TOTAL: round(articulo[accessor] * (1 - state.descuento / 100) * (1 - articulo.DESCUENTO / 100)),
+    DESCUENTO: articulo.DESCUENTO
+  };
 
   return {
     ...state,

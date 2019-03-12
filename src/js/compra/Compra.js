@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import CrudArticulo from '../crud/crudArticulo';
 
 import Consulta from '../crud/consulta';
-import ItemCompra from './ItemCompra';
+import ItemArticulo from '../components/ItemArticulo';
 import dialogs from '../utilities/dialogs';
 import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
@@ -185,9 +185,9 @@ export default function Compra (props) {
           </tr>
         </thead>
         <tbody id='tbody'>
-          {state.items.map(item => <ItemCompra
+          {state.items.map(item => <ItemArticulo
             key={item.id}
-            dispatchCompra={dispatch}
+            dispatch={dispatch}
             articulo={item} />)}
         </tbody>
       </table>

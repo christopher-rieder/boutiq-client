@@ -1,8 +1,14 @@
 
 const addItem = (state, articulo) => {
+  const newItem = {
+    CANTIDAD: 1,
+    CODIGO: articulo.CODIGO,
+    DESCRIPCION: articulo.DESCRIPCION,
+    STOCK: articulo.STOCK
+  };
   return {
     ...state,
-    items: state.items.concat({...articulo, CANTIDAD: 1})
+    items: state.items.concat(newItem)
   };
 };
 

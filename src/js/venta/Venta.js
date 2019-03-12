@@ -10,7 +10,7 @@ import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
 import dialogs from '../utilities/dialogs';
 import { money } from '../utilities/format';
-import ItemVenta from './ItemVenta';
+import ItemArticulo from '../components/ItemArticulo';
 import AgregarPago from '../pagos/AgregarPago';
 import Pago from '../pagos/Pago';
 import './venta.css';
@@ -226,6 +226,7 @@ export default function Venta (props) {
             <th className='table-header-codigo'>Codigo</th>
             <th className='table-header-descripcion'>Descripcion</th>
             <th className='table-header-stock'>Stock</th>
+            <th className='table-header-stock'>Stock Nuevo</th>
             <th className='table-header-precio-base'>Precio Base</th>
             <th className='table-header-precio-unitario'>Precio Unitario</th>
             <th className='table-header-precio-total'>Precio Total</th>
@@ -233,9 +234,9 @@ export default function Venta (props) {
           </tr>
         </thead>
         <tbody id='tbody'>
-          {state.items.map(item => <ItemVenta
+          {state.items.map(item => <ItemArticulo
             key={item.id}
-            dispatchFactura={dispatch}
+            dispatch={dispatch}
             articulo={item} />)}
         </tbody>
         <tfoot>

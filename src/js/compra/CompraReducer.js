@@ -6,10 +6,13 @@ const compraInitialState = {
 };
 
 const addItem = (state, articulo) => {
-  const newItem = {...articulo};
-
-  // item initialization
-  newItem.CANTIDAD = 1;
+  const newItem = {
+    CANTIDAD: 1,
+    AÑADE_STOCK: true,
+    CODIGO: articulo.CODIGO,
+    DESCRIPCION: articulo.DESCRIPCION,
+    STOCK: articulo.STOCK
+  };
 
   return {
     ...state,

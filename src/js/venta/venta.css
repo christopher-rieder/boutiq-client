@@ -71,18 +71,18 @@ td {
   border-left: 1px solid silver;
 }
 
-.table-cell-cantidad,
-.table-cell-precioUnitario,
-.table-cell-descuentoIndividual {
+.tabla-transaccion-cantidad,
+.tabla-transaccion-precioUnitario,
+.tabla-transaccion-descuentoIndividual {
   padding: 0px;
   margin: 0px;
   background-color: #eee;
   border: 1px solid #bbb;
 }
 
-.table-cell-cantidad input,
-.table-cell-precioUnitario input,
-.table-cell-descuentoIndividual input {
+.tabla-transaccion-cantidad input,
+.tabla-transaccion-precioUnitario input,
+.tabla-transaccion-descuentoIndividual input {
   padding-left: 25%;
   width: 75%;
   height: 32px;
@@ -92,25 +92,25 @@ td {
   font-weight: 600;
 }
 
-.table-cell-precioTotal {
+.tabla-transaccion-precioTotal {
   font-size: 1.2rem;
   background-color: greenyellow;
 }
 
-.table-cell-precioTotal::first-letter {
+.tabla-transaccion-precioTotal::first-letter {
   font-weight: 600;
   margin-right: 2px;
 }
 
-.table-cell-precioBase {
+.tabla-transaccion-precioBase {
   color: #666;
   font-size: 0.8rem;
 }
 
-.table-cell-codigo,
-.table-cell-descripcion,
-.table-cell-precioBase,
-.table-cell-precioTotal {
+.tabla-transaccion-codigo,
+.tabla-transaccion-descripcion,
+.tabla-transaccion-precioBase,
+.tabla-transaccion-precioTotal {
   padding: 8px;
   margin: 8px;
 }
