@@ -14,19 +14,18 @@ import { MainContext } from '../context/MainContext';
 
 export default function Compra (props) {
   const {compraState: state, compraDispatch: dispatch} = useContext(MainContext);
-  const {articuloData, setArticuloData} = useContext(MainContext);
+  const {articuloData, setArticuloData, proveedorDefault} = useContext(MainContext);
   const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
   const getNuevaCompra = async () => {
     const lastNumeroCompra = await databaseRead.getLastNumeroCompra();
-    const proveedor = await databaseRead.getItemById('proveedor', 1);
     dispatch({
       type: 'nuevaCompra',
       payload: {
         numeroCompra: lastNumeroCompra.lastId + 1,
-        proveedor,
+        proveedorDefault,
         items: [],
         observaciones: ''
       }

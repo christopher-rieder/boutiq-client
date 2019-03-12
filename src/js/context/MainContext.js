@@ -14,6 +14,7 @@ function MainContextProvider (props) {
   const [tablaTipoPago, setTablaTipoPago] = useState([]);
   const [articuloData, setArticuloData] = useState([]);
   const [consumidorFinal, setConsumidorFinal] = useState({});
+  const [proveedorDefault, setProveedorDefault] = useState({});
   const [vendedor, setVendedor] = useState({});
   const [turno, setTurno] = useState({});
 
@@ -43,6 +44,7 @@ function MainContextProvider (props) {
 
   const defaultValues = () => {
     getItemById('cliente', 1).then(res => setConsumidorFinal(res));
+    getItemById('proveedor', 1).then(res => setProveedorDefault(res));
     getItemById('vendedor', 1).then(res => setVendedor(res));
     getTurnoActual().then(res => setTurno(res));
   };
@@ -60,6 +62,7 @@ function MainContextProvider (props) {
       setArticuloData,
       constants,
       consumidorFinal,
+      proveedorDefault,
       vendedor,
       setVendedor,
       turno,
