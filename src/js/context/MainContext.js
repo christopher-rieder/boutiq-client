@@ -1,5 +1,5 @@
 import React, {createContext, useEffect, useReducer, useState} from 'react';
-import {getTable, getAllArticulos} from '../database/getData';
+import {getTable, getAllArticulos, getItemById, getTurnoActual} from '../database/getData';
 import {ventaReducer, ventaInitialState} from '../venta/VentaReducer';
 import {compraReducer, compraInitialState} from '../compra/CompraReducer';
 const MainContext = createContext();
@@ -13,6 +13,9 @@ function MainContextProvider (props) {
   const [tablaRubro, setTablaRubro] = useState([]);
   const [tablaTipoPago, setTablaTipoPago] = useState([]);
   const [articuloData, setArticuloData] = useState([]);
+  const [consumidorFinal, setConsumidorFinal] = useState({});
+  const [vendedor, setVendedor] = useState({});
+  const [turno, setTurno] = useState({});
 
   const updateArticuloData = () => {
     if (articuloData.length === 0) {
@@ -38,6 +41,13 @@ function MainContextProvider (props) {
     tablaTipoPago.length === 0 && getTable('TIPO_PAGO').then(res => setTablaTipoPago(res));
   };
 
+  const defaultValues = () => {
+    getItemById('cliente', 1).then(res => setConsumidorFinal(res));
+    getItemById('vendedor', 1).then(res => setVendedor(res));
+    getTurnoActual().then(res => setTurno(res));
+  };
+
+  useEffect(defaultValues, []);
   useEffect(updateArticuloData, [articuloData]);
   useEffect(updateTables, [constants, tablaEstadoPago, tablaMarca, tablaRubro, tablaTipoPago]);
 
@@ -49,6 +59,11 @@ function MainContextProvider (props) {
       articuloData,
       setArticuloData,
       constants,
+      consumidorFinal,
+      vendedor,
+      setVendedor,
+      turno,
+      setTurno,
       setConstants,
       ventaState,
       ventaDispatch,

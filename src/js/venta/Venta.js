@@ -18,7 +18,7 @@ import { MainContext } from '../context/MainContext';
 
 export default function Venta (props) {
   const {ventaState: state, ventaDispatch: dispatch, tablaTipoPago} = useContext(MainContext);
-  const {articuloData, setArticuloData} = useContext(MainContext);
+  const {articuloData, setArticuloData, consumidorFinal, vendedor, turno} = useContext(MainContext);
   const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
@@ -28,14 +28,11 @@ export default function Venta (props) {
 
   const getNuevaFactura = async () => {
     const lastNumeroFactura = await databaseRead.getLastNumeroFactura();
-    const cliente = await databaseRead.getItemById('cliente', 1);
-    const vendedor = await databaseRead.getItemById('vendedor', 1);
-    const turno = await databaseRead.getTurnoActual();
     dispatch({
       type: 'nuevaFactura',
       payload: {
         numeroFactura: lastNumeroFactura.lastId + 1,
-        cliente,
+        cliente: consumidorFinal,
         vendedor,
         turno,
         descuento: 0,

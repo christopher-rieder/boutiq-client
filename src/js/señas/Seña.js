@@ -13,10 +13,10 @@ import { señaReducer } from './SeñaReducer';
 import ItemSeña from './ItemSeña';
 
 export default function Seña (props) {
-  const {articuloData, tablaEstadoPago} = useContext(MainContext);
+  const {articuloData, tablaEstadoPago, consumidorFinal} = useContext(MainContext);
   const [state, dispatch] = useReducer(
     señaReducer,
-    { cliente: {id: 0, NOMBRE: ''},
+    { cliente: consumidorFinal,
       observaciones: '',
       numeroSeña: 0,
       estado: tablaEstadoPago[1], // PENDIENTE
@@ -27,12 +27,11 @@ export default function Seña (props) {
 
   const getNuevaSeña = async () => {
     const lastNumeroSeña = await databaseRead.getLastNumeroSeña();
-    const cliente = await databaseRead.getItemById('cliente', 1);
     dispatch({
       type: 'nuevo',
       payload: {
         numeroSeña: lastNumeroSeña.lastId + 1,
-        cliente,
+        cliente: consumidorFinal,
         items: [],
         observaciones: ''
       }
