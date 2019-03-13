@@ -1,6 +1,6 @@
 import React, { useContext, useReducer, useEffect } from 'react';
 import { getArticuloById } from '../database/getData';
-import { postObjectToAPI } from '../database/writeData';
+import { postCrudObjectToAPI } from '../database/writeData';
 import { InputTextField, InputSelect, InputFloatField, InputIntField } from '../components/inputs';
 import {round} from '../utilities/math';
 import dialogs from '../utilities/dialogs';
@@ -67,7 +67,7 @@ export default function CrudArticulo (props) {
   const {id, codigo, descripcion, precioLista, precioContado, precioCosto, descuento, stock, rubro, marca} = state;
   const dispatcherSetValue = type => payload => dispatch({type, payload});
   const dispatcherPrecios = type => payload => dispatch({type, payload, RATIO_CONTADO, RATIO_COSTO});
-  const {setArticuloData} = useContext(MainContext);
+  const {articuloData, setArticuloData} = useContext(MainContext);
 
   const loadFromDatabase = id => {
     getArticuloById(id)
@@ -99,7 +99,7 @@ export default function CrudArticulo (props) {
   }, []);
 
   const handleSubmit = (event) => {
-    postObjectToAPI({
+    postCrudObjectToAPI({
       id: id,
       CODIGO: codigo,
       DESCRIPCION: descripcion,

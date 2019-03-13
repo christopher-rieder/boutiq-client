@@ -20,6 +20,9 @@ export default function Seña (props) {
     { cliente: consumidorFinal,
       observaciones: '',
       numeroSeña: 0,
+      vendedor,
+      turno,
+      monto: 0,
       estado: tablaEstadoPago[1], // PENDIENTE
       items: []});
   const [codigo, setCodigo] = useState('');
@@ -90,7 +93,7 @@ export default function Seña (props) {
         OBSERVACIONES: state.observaciones,
         CLIENTE_ID: state.cliente.id,
         TURNO_ID: turno.id
-      }, 'seña');
+      }, 'seña').then(json => json.lastId);
 
       state.items.forEach(item => {
         // updating local state, same thing happens in the backend
@@ -147,7 +150,7 @@ export default function Seña (props) {
   };
 
   const vaciar = (event) => {
-    const vaciarAction = {type: 'nuevaFactura', payload: {observaciones: '', items: [], pagos: [], descuento: 0}};
+    const vaciarAction = {type: 'nuevo', payload: {observaciones: '', items: [], pagos: [], descuento: 0}};
     dialogs.confirm(
       confirmed => confirmed && dispatch(vaciarAction), // Callback
       'VACIAR SEÑA?', // Message text
@@ -181,6 +184,8 @@ export default function Seña (props) {
             <th className='table-header-codigo'>Codigo</th>
             <th className='table-header-descripcion'>Descripcion</th>
             <th className='table-header-stock'>Stock</th>
+            <th className='table-header-precio-lista'>Precio Lista</th>
+            <th className='table-header-precio-total'>Precio Total</th>
           </tr>
         </thead>
         <tbody id='tbody'>
@@ -196,7 +201,7 @@ export default function Seña (props) {
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
       <div className='panel'>
-        <InputFloatField name='Monto' value={state.monto} setValue={monto => dispatch({type: 'setPago', payload: monto})} autoComplete='off' />
+        <InputFloatField name='Monto' value={state.monto} setValue={monto => dispatch({type: 'setMonto', payload: monto})} autoComplete='off' />
         <button className='codigo-search' onClick={handleSubmit}>AGREGAR SEÑA</button>
       </div>
       <div className='panel'>

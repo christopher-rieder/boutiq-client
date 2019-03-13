@@ -5,6 +5,7 @@ const addItem = (state, articulo) => {
     CANTIDAD: 1,
     CODIGO: articulo.CODIGO,
     DESCRIPCION: articulo.DESCRIPCION,
+    PRECIO_UNITARIO: articulo.PRECIO_LISTA,
     STOCK: articulo.STOCK
   };
   return {
@@ -51,9 +52,7 @@ const señaReducer = (state, action) => {
       return { ...state, cliente: action.payload };
     case 'setObservaciones':
       return { ...state, observaciones: action.payload };
-    case 'setPago':
-      return { ...state, pagos: [action.payload] };
-    case 'monto':
+    case 'setMonto':
       return { ...state, monto: action.payload };
     case 'addItem':
       return addItem(state, action.payload);
