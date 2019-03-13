@@ -50,13 +50,13 @@ export default function Venta (props) {
     }
   }, []);
 
-  const addVentaHandler = (event) => {
+  const addItemHandler = (event) => {
     if (!codigo) return false;
     if (event.which !== 13) return false;
-    addVentaItem();
+    addItem();
   };
 
-  const addVentaItem = (data) => {
+  const addItem = (data) => {
     const cod = data ? data.CODIGO : codigo;
     const articulo = state.items.find(item => item.CODIGO === cod);
     if (articulo) {
@@ -89,7 +89,7 @@ export default function Venta (props) {
     } else {
       // TODO: VALIDATIONS
       dialogs.confirm(
-        confirmed => confirmed && postFacturaToAPI(), // Callback
+        confirmed => confirmed && postToAPI(), // Callback
         'Confirmar venta?', // Message text
         'CONFIRMAR', // Confirm text
         'VOLVER' // Cancel text
@@ -97,7 +97,7 @@ export default function Venta (props) {
     }
   };
 
-  const postFacturaToAPI = async () => {
+  const postToAPI = async () => {
     try {
       const facturaId = await databaseWrite.postFactura({
         NUMERO_FACTURA: state.numeroFactura,
@@ -161,7 +161,7 @@ export default function Venta (props) {
     );
     setDisplayModal(true);
   }
-  const vaciarVenta = (event) => {
+  const vaciar = (event) => {
     const vaciarAction = {type: 'nuevaFactura', payload: {observaciones: '', items: [], pagos: [], descuento: 0}};
     dialogs.confirm(
       confirmed => confirmed && dispatch(vaciarAction), // Callback
@@ -179,7 +179,7 @@ export default function Venta (props) {
     setModalContent(
       <ConsultaArticulo
         articuloData={articuloData}
-        handleSelection={addVentaItem}
+        handleSelection={addItem}
         setDisplayModal={setDisplayModal} />
     );
     setDisplayModal(true);
@@ -213,7 +213,7 @@ export default function Venta (props) {
         <InputFloatField name='Descuento' value={state.descuento} maxValue={DESCUENTO_MAXIMO} setValue={descuento => dispatch({type: 'setDescuento', payload: descuento})} autoComplete='off' />
       </div>
       <div className='panel'>
-        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addVentaHandler} setValue={setCodigo} />
+        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addItemHandler} setValue={setCodigo} />
         <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
       </div>
       <div className='panel'>
@@ -259,7 +259,7 @@ export default function Venta (props) {
         <button className='codigo-search' onClick={handleAgregarPago}>AGREGAR PAGO</button>
       </div>
       <div className='panel'>
-        <button className='codigo-search' onClick={vaciarVenta}>VACIAR VENTA</button>
+        <button className='codigo-search' onClick={vaciar}>VACIAR VENTA</button>
       </div>
       {
         state.pagos.length > 0 &&

@@ -25,7 +25,7 @@ export default function Compra (props) {
       type: 'nuevaCompra',
       payload: {
         numeroCompra: lastNumeroCompra.lastId + 1,
-        proveedorDefault,
+        proveedor: proveedorDefault,
         items: [],
         observaciones: ''
       }
@@ -38,7 +38,7 @@ export default function Compra (props) {
     }
   }, []);
 
-  const addCompraItem = (data) => {
+  const addItem = (data) => {
     const cod = data ? data.CODIGO : codigo;
     const articulo = state.items.find(item => item.CODIGO === cod);
     if (articulo) {
@@ -67,7 +67,7 @@ export default function Compra (props) {
     setCodigo('');
   };
 
-  const vaciarCompra = (event) => {
+  const vaciar = (event) => {
     const vaciarAction = {type: 'nuevaCompra', payload: {observaciones: '', items: []}};
     dialogs.confirm(
       confirmed => confirmed && dispatch(vaciarAction), // Callback
@@ -77,10 +77,10 @@ export default function Compra (props) {
     );
   };
 
-  const addCompraHandler = (event) => {
+  const addItemHandler = (event) => {
     if (!codigo) return false;
     if (event.which !== 13) return false;
-    addCompraItem();
+    addItem();
   };
 
   const handleSubmit = event => {
@@ -90,7 +90,7 @@ export default function Compra (props) {
     } else {
       // TODO: VALIDATIONS
       dialogs.confirm(
-        confirmed => confirmed && postCompraToAPI(), // Callback
+        confirmed => confirmed && postToAPI(), // Callback
         'Confirmar compra?', // Message text
         'CONFIRMAR', // Confirm text
         'VOLVER' // Cancel text
@@ -98,7 +98,7 @@ export default function Compra (props) {
     }
   };
 
-  const postCompraToAPI = async () => {
+  const postToAPI = async () => {
     try {
       const facturaId = await databaseWrite.postCompra({
         NUMERO_COMPRA: state.numeroCompra,
@@ -128,7 +128,7 @@ export default function Compra (props) {
     setModalContent(
       <ConsultaArticulo
         articuloData={articuloData}
-        handleSelection={addCompraItem}
+        handleSelection={addItem}
         setDisplayModal={setDisplayModal} />
     );
     setDisplayModal(true);
@@ -138,7 +138,7 @@ export default function Compra (props) {
     setModalContent(
       <CrudArticulo
         initialState={{codigo}}
-        handleSelection={addCompraItem}
+        handleSelection={addItem}
         setDisplayModal={setDisplayModal} />
     );
     setDisplayModal(true);
@@ -167,7 +167,7 @@ export default function Compra (props) {
         <InputTextField name='Proveedor' value={state.proveedor.NOMBRE} readOnly onClick={proveedorModal} />
       </div>
       <div className='panel'>
-        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addCompraHandler} setValue={setCodigo} />
+        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addItemHandler} setValue={setCodigo} />
         <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
         <button className='codigo-search' onClick={crudArticuloModal}>AGREGAR ARTICULO NUEVO</button>
       </div>
@@ -195,7 +195,7 @@ export default function Compra (props) {
         <button className='codigo-search' onClick={handleSubmit}>AGREGAR COMPRA</button>
       </div>
       <div className='panel'>
-        <button className='codigo-search' onClick={vaciarCompra}>VACIAR COMPRA</button>
+        <button className='codigo-search' onClick={vaciar}>VACIAR COMPRA</button>
       </div>
     </React.Fragment>
   );

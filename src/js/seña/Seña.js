@@ -76,7 +76,7 @@ export default function Seña (props) {
     setCodigo('');
   };
 
-  const postSeñaToAPI = async () => {
+  const postToAPI = async () => {
     // TODO: IMPLEMENT...
     // DEFAULT STATE: PENDIENTE.
     // MOVE ESTADO SEÑA TO TABLE?
@@ -91,7 +91,7 @@ export default function Seña (props) {
     } else {
       // TODO: VALIDATIONS
       dialogs.confirm(
-        confirmed => confirmed && postSeñaToAPI(), // Callback
+        confirmed => confirmed && postToAPI(), // Callback
         'Confirmar venta?', // Message text
         'CONFIRMAR', // Confirm text
         'VOLVER' // Cancel text
@@ -120,7 +120,7 @@ export default function Seña (props) {
     setDisplayModal(true);
   };
 
-  const vaciarSeña = (event) => {
+  const vaciar = (event) => {
     const vaciarAction = {type: 'nuevaFactura', payload: {observaciones: '', items: [], pagos: [], descuento: 0}};
     dialogs.confirm(
       confirmed => confirmed && dispatch(vaciarAction), // Callback
@@ -169,7 +169,7 @@ export default function Seña (props) {
         <button className='codigo-search' onClick={handleSubmit}>AGREGAR SEÑA</button>
       </div>
       <div className='panel'>
-        <button className='codigo-search' onClick={vaciarSeña}>VACIAR SEÑA</button>
+        <button className='codigo-search' onClick={vaciar}>VACIAR SEÑA</button>
       </div>
     </React.Fragment>
   );
