@@ -9,6 +9,9 @@ import ConsultaCompra from './compra/ConsultaCompra';
 import ConsultaPagos from './pagos/ConsultaPago';
 import CrudArticulo from './crud/crudArticulo';
 import Seña from './seña/Seña';
+import ConsultaSeña from './seña/ConsultaSeña';
+import Retiro from './retiro/retiro';
+import ConsultaRetiro from './retiro/ConsultaRetiro';
 import RealizarStock from './stock/RealizarStock';
 import {MainContextProvider} from './context/MainContext';
 import '../styles/main.scss';
@@ -76,6 +79,15 @@ function App () {
             </li>
             <li className='navigation__item'>
               <button className='navigation__btn' onClick={() => setMainElement(<Seña />)}>SEÑA</button>
+            </li>
+            <li className='navigation__item'>
+              <button className='navigation__btn' onClick={() => setMainElement(<ConsultaSeña />)}>CONSULTA SEÑA</button>
+            </li>
+            <li className='navigation__item'>
+              <button className='navigation__btn' onClick={() => setMainElement(<Retiro />)}>RETIRO</button>
+            </li>
+            <li className='navigation__item'>
+              <button className='navigation__btn' onClick={() => setMainElement(<ConsultaRetiro />)}>CONSULTA RETIRO</button>
             </li>
           </ul>
         </nav>

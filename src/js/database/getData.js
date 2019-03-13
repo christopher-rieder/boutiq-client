@@ -17,6 +17,14 @@ function getAllCompras () {
   return window.fetch(`${URL}/api/compra/all`).then(res => res.json());
 }
 
+function getAllSeñas () {
+  return window.fetch(`${URL}/api/seña/all`).then(res => res.json());
+}
+
+function getAllRetiros () {
+  return window.fetch(`${URL}/api/retiro/all`).then(res => res.json());
+}
+
 function getPagosPendientes () {
   return window.fetch(`${URL}/api/pago/pendientes`).then(res => res.json());
 }
@@ -49,6 +57,10 @@ function getLastNumeroSeña () {
   return window.fetch(`${URL}/api/seña/last`).then(res => res.json()).then(res => res[0]);
 }
 
+function getLastNumeroRetiro () {
+  return window.fetch(`${URL}/api/retiro/last`).then(res => res.json()).then(res => res[0]);
+}
+
 function getTurnoActual () {
   return window.fetch(`${URL}/api/turno/actual`).then(res => res.json()).then(res => res[0]);
 }
@@ -57,13 +69,16 @@ export {
   getTable,
   getAllArticulos,
   getAllFacturas,
-  getFacturasById,
   getAllCompras,
+  getAllSeñas,
+  getAllRetiros,
   getPagosPendientes,
   getTurnoActual,
   getArticuloByCodigo,
   getArticuloById,
+  getFacturasById,
   getItemById,
+  getLastNumeroRetiro,
   getLastNumeroSeña,
   getLastNumeroCompra,
   getLastNumeroFactura

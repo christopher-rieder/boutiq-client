@@ -1,19 +1,18 @@
 import { format as dateFormat } from 'date-fns';
 import matchSorter from 'match-sorter';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-import SeñaView from './SeñaView';
+import * as databaseRead from '../database/getData';
+import RetiroView from './RetiroView';
 import {numberRangeFiltering} from '../utilities/filterFunctions';
-import { getAllSeñas } from '../database/getData';
-import { MainContext } from '../context/MainContext';
 
 const columns = [
   {
     Header: 'NRO',
-    id: 'NUMERO_SEÑA',
+    id: 'NUMERO_RETIRO',
     width: 60,
-    accessor: 'NUMERO_SEÑA',
+    accessor: 'NUMERO_RETIRO',
     filterMethod: numberRangeFiltering
   },
   {
@@ -25,46 +24,29 @@ const columns = [
     filterAll: true
   },
   {
-    Header: 'CLIENTE',
-    id: 'CLIENTE',
+    Header: 'VENDEDOR',
+    id: 'VENDEDOR',
     width: 200,
-    accessor: e => e.CLIENTE.NOMBRE,
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['CLIENTE'] }),
-    filterAll: true
-  },
-  {
-    Header: 'MONTO',
-    id: 'MONTO',
-    width: 200,
-    accessor: 'MONTO',
-    filterMethod: numberRangeFiltering
-  },
-  {
-    Header: 'ESTADO',
-    id: 'ESTADO',
-    width: 200,
-    accessor: e => e.ESTADO.NOMBRE,
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['ESTADO'] }),
+    accessor: e => e.VENDEDOR.NOMBRE,
+    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['VENDEDOR'] }),
     filterAll: true
   }
 ];
 
-export default function ConsultaSeña (props) {
+export default function ConsultaRetiro (props) {
   const [data, setData] = useState([]);
-  const {tablaEstadoPago} = useContext(MainContext);
-  const [obj, setObj] = useState('');
 
-  useEffect(() => {
-    getAllSeñas()
+  const [obj, setObj] = useState({});
+
+  useEffect(() => { // LOAD TABLE
+    databaseRead.getAllRetiros()
       .then(res => setData(res));
   }, []);
 
   function getTdProps (state, rowInfo, column, instance) {
     return {
       onClick: (e, handleOriginal) => {
-        if (rowInfo) {
-          setObj(rowInfo.original);
-        }
+        if (rowInfo) setObj(rowInfo.original);
         if (handleOriginal) handleOriginal();
       }
     };
@@ -76,16 +58,14 @@ export default function ConsultaSeña (props) {
         <ReactTable
           data={data}
           filterable
-          defaultFilterMethod={(filter, row) =>
-            String(row[filter.id]) === filter.value}
           columns={columns}
-          defaultPageSize={12}
+          defaultPageSize={20}
           className='-striped -highlight'
           getTdProps={getTdProps}
         />
       </div>
       <main className='main'>
-        {obj !== '' && <SeñaView {...{obj, setObj}} />}
+        <RetiroView obj={obj} setObj={setObj} />
       </main>
     </div>
   );
