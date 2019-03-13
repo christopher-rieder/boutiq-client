@@ -26,6 +26,13 @@ function MainContextProvider (props) {
     }
   };
 
+  const updateCantidad = (stock, cantidad, suma) => suma ? stock + cantidad : stock - cantidad;
+
+  const updateCantidadArticulo = (id, cantidad, suma) => {
+    setArticuloData(articuloData.map(
+      articulo => articulo.id === id ? {...articulo, STOCK: updateCantidad(articulo.STOCK, cantidad, suma)} : articulo));
+  };
+
   const updateConstants = res => {
     let obj = {};
     res.forEach(row => {
@@ -60,6 +67,7 @@ function MainContextProvider (props) {
     <MainContext.Provider value={{
       articuloData,
       setArticuloData,
+      updateCantidadArticulo,
       constants,
       consumidorFinal,
       proveedorDefault,

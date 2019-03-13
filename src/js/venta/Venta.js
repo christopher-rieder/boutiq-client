@@ -7,7 +7,7 @@ import Modal from '../components/modal';
 import Consulta from '../crud/consulta';
 import ConsultaArticulo from '../crud/consultaArticulo';
 import * as databaseRead from '../database/getData';
-import * as databaseWrite from '../database/writeData';
+import {postObjectToAPI} from '../database/writeData';
 import dialogs from '../utilities/dialogs';
 import { money } from '../utilities/format';
 import ItemArticulo from '../components/ItemArticulo';
@@ -18,7 +18,7 @@ import { MainContext } from '../context/MainContext';
 
 export default function Venta (props) {
   const {ventaState: state, ventaDispatch: dispatch, tablaTipoPago} = useContext(MainContext);
-  const {setArticuloData, consumidorFinal, vendedor, turno} = useContext(MainContext);
+  const {updateCantidadArticulo, consumidorFinal, vendedor, turno} = useContext(MainContext);
   const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
@@ -99,45 +99,46 @@ export default function Venta (props) {
 
   const postToAPI = async () => {
     try {
-      const facturaId = await databaseWrite.postFactura({
+      const facturaId = await postObjectToAPI({
         NUMERO_FACTURA: state.numeroFactura,
         FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
         DESCUENTO: state.descuento,
         OBSERVACIONES: state.observaciones,
         CLIENTE_ID: state.cliente.id,
         TURNO_ID: state.turno.id // TODO: MAKE TURNO
-      });
+      }, 'factura').then(json => json.lastId);
 
       state.items.forEach(item => {
-        databaseWrite.postItemFactura({
+        // updating local state, same thing happens in the backend
+        updateCantidadArticulo(item.id, item.CANTIDAD, false);
+        postObjectToAPI({
           FACTURA_ID: facturaId,
           CANTIDAD: item.CANTIDAD,
           PRECIO_UNITARIO: item.PRECIO_UNITARIO,
           DESCUENTO: item.DESCUENTO,
           ARTICULO_ID: item.id
-        });
+        }, 'itemFactura');
       });
 
       if (state.pagos.length === 0) {
-        databaseWrite.postPago({
+        postObjectToAPI({
           FACTURA_ID: facturaId,
           MONTO: getTotal(),
           TIPO_PAGO_ID: state.tipoPago.id,
           ESTADO_ID: state.tipoPago.id === 1 ? 1 : 2 // TODO: BUSSINESS LOGIC; HANDLE IN A BETTER WAY
-        });
+        }, 'pago');
       } else {
         state.pagos.forEach(pago => {
-          databaseWrite.postPago({
+          postObjectToAPI({
             FACTURA_ID: facturaId,
             MONTO: pago.MONTO,
             TIPO_PAGO_ID: pago.TIPO_PAGO.id,
             ESTADO_ID: pago.ESTADO.id
-          });
+          }, 'pago');
         });
       }
 
       dialogs.success(`FACTURA ${state.numeroFactura} REALIZADA!!!`);
-      setTimeout(() => setArticuloData([]), 1000); // FIXME: HACKY
       getNuevaFactura();
     } catch (err) {
       dialogs.error(`ERROR! ${err}`);

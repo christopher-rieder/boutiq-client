@@ -1,5 +1,7 @@
 const compraInitialState = {
   proveedor: {id: 0, NOMBRE: ''},
+  vendedor: {id: 0, NOMBRE: ''},
+  turno: {id: 0},
   observaciones: '',
   numeroCompra: 0,
   items: []
@@ -7,6 +9,7 @@ const compraInitialState = {
 
 const addItem = (state, articulo) => {
   const newItem = {
+    id: articulo.id,
     CANTIDAD: 1,
     AÑADE_STOCK: true,
     CODIGO: articulo.CODIGO,

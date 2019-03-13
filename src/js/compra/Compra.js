@@ -1,3 +1,4 @@
+import { format as dateFormat } from 'date-fns';
 import React, { useEffect, useState, useContext } from 'react';
 import CrudArticulo from '../crud/crudArticulo';
 
@@ -5,7 +6,7 @@ import Consulta from '../crud/consulta';
 import ItemArticulo from '../components/ItemArticulo';
 import dialogs from '../utilities/dialogs';
 import * as databaseRead from '../database/getData';
-import * as databaseWrite from '../database/writeData';
+import {postObjectToAPI} from '../database/writeData';
 import ConsultaArticulo from '../crud/consultaArticulo';
 import { InputTextField } from '../components/inputs';
 import audioOk from '../../resources/audio/ok.wav';
@@ -14,7 +15,7 @@ import { MainContext } from '../context/MainContext';
 
 export default function Compra (props) {
   const {compraState: state, compraDispatch: dispatch} = useContext(MainContext);
-  const {setArticuloData, proveedorDefault} = useContext(MainContext);
+  const {updateCantidadArticulo, proveedorDefault, vendedor, turno} = useContext(MainContext);
   const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
@@ -27,6 +28,8 @@ export default function Compra (props) {
         numeroCompra: lastNumeroCompra.lastId + 1,
         proveedor: proveedorDefault,
         items: [],
+        vendedor,
+        turno,
         observaciones: ''
       }
     });
@@ -100,24 +103,25 @@ export default function Compra (props) {
 
   const postToAPI = async () => {
     try {
-      const facturaId = await databaseWrite.postCompra({
+      const facturaId = await postObjectToAPI({
         NUMERO_COMPRA: state.numeroCompra,
         FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
         OBSERVACIONES: state.observaciones,
-        PROVEEDOR_ID: state.proveedor.id
-      });
+        PROVEEDOR_ID: state.proveedor.id,
+        TURNO_ID: turno.id
+      }, 'compra').then(json => json.lastId);
 
       state.items.forEach(item => {
-        databaseWrite.postItemCompra({
+        // updating local state, same thing happens in the backend
+        updateCantidadArticulo(item.id, item.CANTIDAD, true);
+        postObjectToAPI({
           COMPRA_ID: facturaId,
           CANTIDAD: item.CANTIDAD,
           ARTICULO_ID: item.id
-        });
+        }, 'itemCompra');
       });
 
       dialogs.success(`COMPRA ${state.numeroCompra} REALIZADA!!!`);
-      setTimeout(() => setArticuloData([]), 1000); // FIXME: HACKY
-      // TODO: UPDATE
       getNuevaCompra();
     } catch (err) {
       dialogs.error(`ERROR! ${err}`);
@@ -190,6 +194,11 @@ export default function Compra (props) {
             articulo={item} />)}
         </tbody>
       </table>
+      <div className='panel'>
+        <InputTextField readOnly name='Vendedor' value={state.vendedor.NOMBRE} />
+        <InputTextField readOnly name='Turno' value={state.turno.id} />
+        <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
+      </div>
       <div className='panel'>
         <button className='codigo-search' onClick={handleSubmit}>AGREGAR COMPRA</button>
       </div>

@@ -78,6 +78,7 @@ const setPrecioIndividual = (state, {articulo, value}) => {
 const addItem = (state, articulo) => {
   const accessor = state.tipoPago.LISTA_DE_PRECIO;
   const newItem = {
+    id: articulo.id,
     CANTIDAD: 1,
     REMOVE_STOCK: true,
     CODIGO: articulo.CODIGO,

@@ -1,6 +1,7 @@
 
 const addItem = (state, articulo) => {
   const newItem = {
+    id: articulo.id,
     CANTIDAD: 1,
     CODIGO: articulo.CODIGO,
     DESCRIPCION: articulo.DESCRIPCION,

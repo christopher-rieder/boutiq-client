@@ -11,9 +11,9 @@ import {numberRangeFiltering} from '../utilities/filterFunctions';
 const columns = [
   {
     Header: 'NRO',
-    id: 'NUMERO_FACTURA',
+    id: 'NUMERO_COMPRA',
     width: 60,
-    accessor: 'NUMERO_FACTURA',
+    accessor: 'NUMERO_COMPRA',
     filterMethod: numberRangeFiltering,
     filterAll: true
   },

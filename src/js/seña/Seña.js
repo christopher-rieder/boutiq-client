@@ -1,3 +1,4 @@
+import { format as dateFormat } from 'date-fns';
 import React, { useEffect, useState, useContext, useReducer } from 'react';
 import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
@@ -6,14 +7,14 @@ import Modal from '../components/modal';
 import Consulta from '../crud/consulta';
 import ConsultaArticulo from '../crud/consultaArticulo';
 import * as databaseRead from '../database/getData';
-import * as databaseWrite from '../database/writeData';
+import {postObjectToAPI} from '../database/writeData';
 import dialogs from '../utilities/dialogs';
 import { MainContext } from '../context/MainContext';
 import { señaReducer } from './SeñaReducer';
 import ItemArticulo from '../components/ItemArticulo';
 
 export default function Seña (props) {
-  const {tablaEstadoPago, consumidorFinal} = useContext(MainContext);
+  const {tablaEstadoPago, consumidorFinal, updateCantidadArticulo, vendedor, turno} = useContext(MainContext);
   const [state, dispatch] = useReducer(
     señaReducer,
     { cliente: consumidorFinal,
@@ -33,6 +34,9 @@ export default function Seña (props) {
         numeroSeña: lastNumeroSeña.lastId + 1,
         cliente: consumidorFinal,
         items: [],
+        monto: 0,
+        turno,
+        vendedor,
         observaciones: ''
       }
     });
@@ -77,10 +81,33 @@ export default function Seña (props) {
   };
 
   const postToAPI = async () => {
-    // TODO: IMPLEMENT...
-    // DEFAULT STATE: PENDIENTE.
-    // MOVE ESTADO SEÑA TO TABLE?
-    // BETTER USE ESTADO PAGO... -> PAGADO || PENDIENTE
+    try {
+      const señaId = await postObjectToAPI({
+        NUMERO_SEÑA: state.numeroSeña,
+        MONTO: state.monto,
+        FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
+        ESTADO_ID: 2,
+        OBSERVACIONES: state.observaciones,
+        CLIENTE_ID: state.cliente.id,
+        TURNO_ID: turno.id
+      }, 'seña');
+
+      state.items.forEach(item => {
+        // updating local state, same thing happens in the backend
+        updateCantidadArticulo(item.id, item.CANTIDAD, false);
+        postObjectToAPI({
+          SEÑA_ID: señaId,
+          CANTIDAD: item.CANTIDAD,
+          ARTICULO_ID: item.id,
+          PRECIO_UNITARIO: item.PRECIO_UNITARIO
+        }, 'itemSeña');
+      });
+
+      dialogs.success(`SEÑA ${state.numeroSeña} REALIZADA!!!`);
+      getNuevaSeña();
+    } catch (err) {
+      dialogs.error(`ERROR! ${err}`);
+    }
     // TODO: BUSSSINESS LOGIC: PONER EN PLATA INGRESADA EN CAJA DEL DIA O NO ???
   };
 
@@ -163,6 +190,11 @@ export default function Seña (props) {
             articulo={item} />)}
         </tbody>
       </table>
+      <div className='panel'>
+        <InputTextField readOnly name='Vendedor' value={state.vendedor.NOMBRE} />
+        <InputTextField readOnly name='Turno' value={state.turno.id} />
+        <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
+      </div>
       <div className='panel'>
         <InputFloatField name='Monto' value={state.monto} setValue={monto => dispatch({type: 'setPago', payload: monto})} autoComplete='off' />
         <button className='codigo-search' onClick={handleSubmit}>AGREGAR SEÑA</button>
