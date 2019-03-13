@@ -14,7 +14,7 @@ import { MainContext } from '../context/MainContext';
 
 export default function Compra (props) {
   const {compraState: state, compraDispatch: dispatch} = useContext(MainContext);
-  const {articuloData, setArticuloData, proveedorDefault} = useContext(MainContext);
+  const {setArticuloData, proveedorDefault} = useContext(MainContext);
   const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
@@ -127,7 +127,6 @@ export default function Compra (props) {
   const articuloModal = () => {
     setModalContent(
       <ConsultaArticulo
-        articuloData={articuloData}
         handleSelection={addItem}
         setDisplayModal={setDisplayModal} />
     );

@@ -18,7 +18,7 @@ import { MainContext } from '../context/MainContext';
 
 export default function Venta (props) {
   const {ventaState: state, ventaDispatch: dispatch, tablaTipoPago} = useContext(MainContext);
-  const {articuloData, setArticuloData, consumidorFinal, vendedor, turno} = useContext(MainContext);
+  const {setArticuloData, consumidorFinal, vendedor, turno} = useContext(MainContext);
   const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
@@ -178,7 +178,6 @@ export default function Venta (props) {
   const articuloModal = () => {
     setModalContent(
       <ConsultaArticulo
-        articuloData={articuloData}
         handleSelection={addItem}
         setDisplayModal={setDisplayModal} />
     );

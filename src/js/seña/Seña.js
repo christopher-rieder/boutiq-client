@@ -13,7 +13,7 @@ import { señaReducer } from './SeñaReducer';
 import ItemArticulo from '../components/ItemArticulo';
 
 export default function Seña (props) {
-  const {articuloData, tablaEstadoPago, consumidorFinal} = useContext(MainContext);
+  const {tablaEstadoPago, consumidorFinal} = useContext(MainContext);
   const [state, dispatch] = useReducer(
     señaReducer,
     { cliente: consumidorFinal,
@@ -102,7 +102,6 @@ export default function Seña (props) {
   const articuloModal = () => {
     setModalContent(
       <ConsultaArticulo
-        articuloData={articuloData}
         handleSelection={addItem}
         setDisplayModal={setDisplayModal} />
     );
