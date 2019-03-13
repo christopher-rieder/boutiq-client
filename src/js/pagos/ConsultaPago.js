@@ -75,7 +75,6 @@ export default function ConsultaPago (props) {
       onClick: (e, handleOriginal) => {
         if (rowInfo) {
           setObj(rowInfo.original);
-          console.log(rowInfo.original.FACTURA_ID);
           getFacturasById(rowInfo.original.FACTURA_ID).then(res => setFactura(res));
         }
         if (handleOriginal) handleOriginal();
@@ -83,7 +82,7 @@ export default function ConsultaPago (props) {
     };
   }
   function getTheadFilterProps (state, rowInfo, column, instance) {
-    return {
+    return { // TODO: GET CURRENT FILTERED ITEMS, AGGREGATE THAT AND NOT THE WHOLE ARRAY
       onClick: (e, handleOriginal) => {
         console.log('headfilter', state);
 
