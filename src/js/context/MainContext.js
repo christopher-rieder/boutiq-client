@@ -20,11 +20,12 @@ function MainContextProvider (props) {
   const [turno, setTurno] = useState({});
   const [loading, setLoading] = useState(true);
 
-  const updateArticuloData = () => {
+  const updateArticuloData = async () => {
     if (articuloData.length === 0) {
-      getAllArticulos().then(res => {
-        setArticuloData(res);
-      });
+      setLoading(true);
+      const res = await getAllArticulos();
+      setArticuloData(res);
+      setLoading(false);
     }
   };
 
@@ -63,8 +64,14 @@ function MainContextProvider (props) {
     setLoading(false);
   };
 
-  useEffect(defaultValues, []);
-  useEffect(updateArticuloData, [articuloData]);
+  useEffect(() => {
+    defaultValues();
+  }, []);
+
+  useEffect(() => {
+    updateArticuloData();
+  }, [articuloData]);
+
   useEffect(updateTables, [constants, tablaEstadoPago, tablaMarca, tablaRubro, tablaTipoPago]);
 
   // TODO: | LOGIN | TURNO

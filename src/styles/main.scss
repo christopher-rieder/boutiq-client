@@ -1,7 +1,7 @@
 $primary-color: #3e1;
 
-body {
-  font-family: sans-serif;
+* {
+  font-family: 'roboto', sans-serif;
 }
 
 #root {
@@ -29,6 +29,7 @@ body {
 
 
 .navigation__btn {
+  font-family: inherit;
   cursor: pointer;
   padding: 1rem;
   background-color: white;
