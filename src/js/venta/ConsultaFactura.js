@@ -44,8 +44,8 @@ const columns = [
 
 export default function ConsultaFactura (props) {
   const [data, setData] = useState([]);
-
   const [obj, setObj] = useState({});
+  const collapse = {width: '12rem'};
 
   useEffect(() => { // LOAD TABLE
     databaseRead.getAllFacturas()
@@ -63,7 +63,7 @@ export default function ConsultaFactura (props) {
 
   return (
     <div className='container'>
-      <div className='sidebar'>
+      <div className='sidebar' style={collapse} >
         <ReactTable
           data={data}
           filterable

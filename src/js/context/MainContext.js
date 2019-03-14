@@ -36,19 +36,30 @@ function MainContextProvider (props) {
       articulo => articulo.id === id ? {...articulo, STOCK: updateCantidad(articulo.STOCK, cantidad, suma)} : articulo));
   };
 
-  const updateConstants = res => {
-    let obj = {};
-    res.forEach(row => {
-      obj[row.NOMBRE] = row.VALOR;
+  const updateConstants = () => {
+    constants.length === 0 && getTable('CONSTANTS').then(res => {
+      let obj = {};
+      res.forEach(row => {
+        obj[row.NOMBRE] = row.VALOR;
+      });
+      setConstants(obj);
     });
-    setConstants(obj);
   };
 
-  const updateTables = () => {
-    constants.length === 0 && getTable('CONSTANTS').then(updateConstants);
+  const updateTablaEstadoPago = () => {
     tablaEstadoPago.length === 0 && getTable('ESTADO_PAGO').then(res => setTablaEstadoPago(res));
+  };
+
+  const updateTablaMarca = () => {
     tablaMarca.length === 0 && getTable('MARCA').then(res => setTablaMarca(res));
+  };
+
+  const updateTablaRubro = () => {
     tablaRubro.length === 0 && getTable('RUBRO').then(res => setTablaRubro(res));
+    tablaTipoPago.length === 0 && getTable('TIPO_PAGO').then(res => setTablaTipoPago(res));
+  };
+
+  const updateTablaTipoPago = () => {
     tablaTipoPago.length === 0 && getTable('TIPO_PAGO').then(res => setTablaTipoPago(res));
   };
 
@@ -72,7 +83,11 @@ function MainContextProvider (props) {
     updateArticuloData();
   }, [articuloData]);
 
-  useEffect(updateTables, [constants, tablaEstadoPago, tablaMarca, tablaRubro, tablaTipoPago]);
+  useEffect(updateConstants, [constants]);
+  useEffect(updateTablaEstadoPago, [tablaEstadoPago]);
+  useEffect(updateTablaMarca, [tablaMarca]);
+  useEffect(updateTablaRubro, [tablaRubro]);
+  useEffect(updateTablaTipoPago, [tablaTipoPago]);
 
   // TODO: | LOGIN | TURNO
   // TODO: | LOGIN | VENDEDOR

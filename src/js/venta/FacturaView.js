@@ -30,33 +30,33 @@ export default function FacturaView ({obj, setObj}) {
         </section>
         <section className='factura-view__items'>
           <table className='tabla-view__tabla'>
-            <thead className='tabla-view__tabla-head'>
-              <tr className='tabla-view__tabla-head-row'>
-                <th className='tabla-view__tabla-head-cell'>CODIGO</th>
-                <th className='tabla-view__tabla-head-cell'>DESCRIPCION</th>
-                <th className='tabla-view__tabla-head-cell'>CANT</th>
-                <th className='tabla-view__tabla-head-cell'>PRECIO</th>
-                <th className='tabla-view__tabla-head-cell'>TOTAL</th>
-                <th className='tabla-view__tabla-head-cell'>DESC</th>
+            <thead className='tabla-view__head'>
+              <tr className='tabla-view__head-row'>
+                <th className='tabla-view__head-cell'>CODIGO</th>
+                <th className='tabla-view__head-cell'>DESCRIPCION</th>
+                <th className='tabla-view__head-cell'>CANT</th>
+                <th className='tabla-view__head-cell'>PRECIO</th>
+                <th className='tabla-view__head-cell'>TOTAL</th>
+                <th className='tabla-view__head-cell'>DESC</th>
               </tr>
             </thead>
-            <tbody className='tabla-view__tabla-body'>
+            <tbody className='tabla-view__body'>
               {obj.ITEMS.map(item => (
-                <tr key={item.CODIGO}>
-                  <td className='tabla-view__tabla-body-cell'>{item.CODIGO}</td>
-                  <td className='tabla-view__tabla-body-cell'>{item.DESCRIPCION}</td>
-                  <td className='tabla-view__tabla-body-cell'>{item.CANTIDAD}</td>
-                  <td className='tabla-view__tabla-body-cell'>{item.PRECIO_UNITARIO}</td>
-                  <td className='tabla-view__tabla-body-cell'>{item.PRECIO_TOTAL}</td>
-                  <td className='tabla-view__tabla-body-cell'>{item.DESCUENTO_ITEM}</td>
+                <tr key={item.CODIGO} className='tabla-view__body-row' >
+                  <td className='tabla-view__body-cell'>{item.CODIGO}</td>
+                  <td className='tabla-view__body-cell'>{item.DESCRIPCION}</td>
+                  <td className='tabla-view__body-cell'>{item.CANTIDAD}</td>
+                  <td className='tabla-view__body-cell'>{item.PRECIO_UNITARIO}</td>
+                  <td className='tabla-view__body-cell'>{item.PRECIO_TOTAL}</td>
+                  <td className='tabla-view__body-cell'>{item.DESCUENTO_ITEM}</td>
                 </tr>)
               )}
             </tbody>
-            <tfoot className='tabla-view__tabla-foot'>
-              <tr className='tabla-view__tabla-foot-row'>
-                <th className='tabla-view__tabla-foot-cell' colSpan='3' />
-                <th className='tabla-view__tabla-foot-cell'>TOTAL: </th>
-                <th className='tabla-view__tabla-foot-cell'>{obj.ITEMS.reduce((suma, item) => suma + item.PRECIO_TOTAL, 0)}</th>
+            <tfoot className='tabla-view__foot'>
+              <tr className='tabla-view__foot-row'>
+                <th className='tabla-view__foot-cell' colSpan='3' />
+                <th className='tabla-view__foot-cell'>TOTAL: </th>
+                <th className='tabla-view__foot-cell'>{obj.ITEMS.reduce((suma, item) => suma + item.PRECIO_TOTAL, 0)}</th>
               </tr>
             </tfoot>
           </table>
