@@ -4,13 +4,27 @@ body {
   font-family: sans-serif;
 }
 
-.header {}
+#root {
+  margin: 2rem;
+}
+
+.header {
+  margin-bottom: 1rem;
+    border-bottom: 1px solid #bbb;
+}
 
 .header__menu {}
 
 .navigation {
   list-style: none;
   display: flex;
+}
+
+.loading {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
 }
 
 

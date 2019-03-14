@@ -2,6 +2,7 @@ import React, {createContext, useEffect, useReducer, useState} from 'react';
 import {getTable, getAllArticulos, getItemById, getTurnoActual} from '../database/getData';
 import {ventaReducer, ventaInitialState} from '../venta/VentaReducer';
 import {compraReducer, compraInitialState} from '../compra/CompraReducer';
+import Spinner from '../components/Spinner';
 const MainContext = createContext();
 
 function MainContextProvider (props) {
@@ -17,6 +18,7 @@ function MainContextProvider (props) {
   const [proveedorDefault, setProveedorDefault] = useState({});
   const [vendedor, setVendedor] = useState({});
   const [turno, setTurno] = useState({});
+  const [loading, setLoading] = useState(true);
 
   const updateArticuloData = () => {
     if (articuloData.length === 0) {
@@ -49,11 +51,16 @@ function MainContextProvider (props) {
     tablaTipoPago.length === 0 && getTable('TIPO_PAGO').then(res => setTablaTipoPago(res));
   };
 
-  const defaultValues = () => {
-    getItemById('cliente', 1).then(res => setConsumidorFinal(res));
-    getItemById('proveedor', 1).then(res => setProveedorDefault(res));
-    getItemById('vendedor', 1).then(res => setVendedor(res));
-    getTurnoActual().then(res => setTurno(res));
+  const defaultValues = async () => {
+    const cliente = await getItemById('cliente', 1);
+    const proveedor = await getItemById('proveedor', 1);
+    const vendedor = await getItemById('vendedor', 1);
+    const turno = await getTurnoActual();
+    setConsumidorFinal(cliente);
+    setProveedorDefault(proveedor);
+    setVendedor(vendedor);
+    setTurno(turno);
+    setLoading(false);
   };
 
   useEffect(defaultValues, []);
@@ -89,7 +96,8 @@ function MainContextProvider (props) {
       tablaTipoPago,
       setTablaTipoPago
     }}>
-      {props.children}
+
+      { loading ? <Spinner /> : props.children}
     </MainContext.Provider>
   );
 }

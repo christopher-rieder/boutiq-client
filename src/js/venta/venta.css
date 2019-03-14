@@ -4,10 +4,6 @@
   font-family: sans-serif;
 }
 
-body {
-  padding: 24px;
-}
-
 .panel {
   display: flex;
   margin-bottom: 2rem;
