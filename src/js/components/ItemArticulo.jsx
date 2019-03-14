@@ -39,8 +39,8 @@ export default function ItemArticulo ({articulo, dispatch}) {
       <td className='tabla-transaccion-cell tabla-transaccion-descripcion'>{DESCRIPCION}</td>
       <td className='tabla-transaccion-cell tabla-transaccion-stock'>{STOCK}</td>
 
-      {AÑADE_STOCK === true && <td className='tabla-transaccion-cell tabla-transaccion-stock'>{STOCK + CANTIDAD}</td>}
-      {REMOVE_STOCK === true && <td className='tabla-transaccion-cell tabla-transaccion-stock'>{STOCK - CANTIDAD}</td>}
+      {AÑADE_STOCK === true && <td className='tabla-transaccion-cell tabla-transaccion-stockNuevo'>{STOCK + CANTIDAD}</td>}
+      {REMOVE_STOCK === true && <td className='tabla-transaccion-cell tabla-transaccion-stockNuevo'>{STOCK - CANTIDAD}</td>}
 
       {PRECIO_BASE && <td className='tabla-transaccion-cell tabla-transaccion-precioBase'>{money(PRECIO_BASE)}</td>}
       {PRECIO_COSTO && <td className='tabla-transaccion-cell tabla-transaccion-precioCosto'>{money(PRECIO_COSTO)}</td>}

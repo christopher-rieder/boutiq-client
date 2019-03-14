@@ -126,18 +126,18 @@ export default function CrudArticulo (props) {
         </h1>
       </header>
       <main>
-        <div id='crud-articulo' className='main-grid'>
-          <InputTextField name='id' value={id} readOnly />
-          <InputTextField name='Codigo' value={codigo} setValue={dispatcherSetValue('codigo')} />
-          <InputTextField name='Descripcion' value={descripcion} setValue={dispatcherSetValue('descripcion')} />
-          <InputFloatField name='Precio de Lista' value={precioLista} setValue={dispatcherPrecios('precioLista')} autoComplete='off' />
-          <InputFloatField name='Precio de Contado' value={precioContado} maxValue={precioLista} setValue={dispatcherPrecios('precioContado')} autoComplete='off' />
-          <InputFloatField name='Precio de Costo' value={precioCosto} maxValue={precioContado} setValue={dispatcherPrecios('precioCosto')} autoComplete='off' />
-          <InputIntField name='Stock' value={stock} setValue={dispatcherSetValue('stock')} autoComplete='off' />
-          <InputFloatField name='Descuento en promo' value={descuento} maxValue={DESCUENTO_MAXIMO} setValue={dispatcherSetValue('descuento')} autoComplete='off' />
-          <InputSelect table={tablaMarca} name='Marca' accessor='NOMBRE' value={marca} setValue={dispatcherSetValue('marca')} />
-          <InputSelect table={tablaRubro} name='Rubro' accessor='NOMBRE' value={rubro} setValue={dispatcherSetValue('rubro')} />
+        <div className='crud-grid-inputs'>
+          <InputTextField fragment name='id' value={id} readOnly />
+          <InputTextField fragment name='Codigo' value={codigo} setValue={dispatcherSetValue('codigo')} />
+          <InputTextField fragment name='Descripcion' value={descripcion} setValue={dispatcherSetValue('descripcion')} />
+          <InputFloatField fragment name='Precio de Lista' value={precioLista} setValue={dispatcherPrecios('precioLista')} autoComplete='off' />
+          <InputFloatField fragment name='Precio de Contado' value={precioContado} maxValue={precioLista} setValue={dispatcherPrecios('precioContado')} autoComplete='off' />
+          <InputFloatField fragment name='Precio de Costo' value={precioCosto} maxValue={precioContado} setValue={dispatcherPrecios('precioCosto')} autoComplete='off' />
+          <InputIntField fragment name='Stock' value={stock} setValue={dispatcherSetValue('stock')} autoComplete='off' />
+          <InputFloatField fragment name='Descuento en promo' value={descuento} maxValue={DESCUENTO_MAXIMO} setValue={dispatcherSetValue('descuento')} autoComplete='off' />
         </div>
+        <InputSelect table={tablaMarca} name='Marca' accessor='NOMBRE' value={marca} setValue={dispatcherSetValue('marca')} />
+        <InputSelect table={tablaRubro} name='Rubro' accessor='NOMBRE' value={rubro} setValue={dispatcherSetValue('rubro')} />
         <div>
           <button className='btn-guardar' onClick={() => loadFromDatabase(state.id)}>RECARGAR</button>
           {id > 0 && <button className='btn-guardar' onClick={handleSubmit}>GUARDAR</button>}

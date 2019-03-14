@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import matchSorter from 'match-sorter';
 import '../../styles/main.scss';
-import { InputFactory, InputTextField } from '../components/inputs';
+import { InputTextField } from '../components/inputs';
 import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
 import dialogs from '../utilities/dialogs';
@@ -17,7 +17,6 @@ const cols = {
   constants: ['id', 'NOMBRE', 'VALOR'],
   cliente: ['id', 'NOMBRE', 'DOMICILIO', 'TELEFONO', 'CREDITO']
 };
-const coltypes = ['id', 'text', 'text', 'text', 'text', 'text', 'text'];
 
 export default function Crud (props) {
   const {
@@ -89,8 +88,11 @@ export default function Crud (props) {
       </li>
     ));
 
+  // const inputs = () => cols[crudTable]
+  //   .map((col, i) => InputFactory(obj[col], event => setObj({...obj, [col]: event.target.value})));
+
   const inputs = () => cols[crudTable]
-    .map((col, i) => InputFactory(col, coltypes[i], crudTable, obj[col], event => setObj({...obj, [col]: event.target.value})));
+    .map((col, i) => <InputTextField fragment name={col} value={obj[col]} onChange={event => setObj({...obj, [col]: event.target.value})} />);
 
   return (
     <div className='crud-container'>
@@ -101,7 +103,9 @@ export default function Crud (props) {
         </ul>
       </div>
       <div className='crud-main'>
-        {inputs()}
+        <div className='crud-grid-inputs'>
+          {inputs()}
+        </div>
         <button onClick={submitUpdateHandler}>ACTUALIZAR</button>
         <button onClick={createHandler}>CREAR NUEVA</button>
       </div>

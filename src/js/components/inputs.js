@@ -1,13 +1,47 @@
 import React from 'react';
 import dialogs from '../utilities/dialogs';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+
+import humanizeString from 'humanize-string';
 
 const BasicInput = (props) => {
-  return (
-    <div>
-      <label className='basic-input-label' htmlFor={props.name}>{props.name}</label>
-      <input className='basic-input-text' id={props.name} type='text' {...props} />
-    </div>
-  );
+  const {fragment, name, ...componentProps} = props;
+  const parsedName = humanizeString(name);
+
+  if (fragment) {
+    return (
+      <React.Fragment>
+        <label className='basic-input-label' htmlFor={parsedName}>{parsedName}</label>
+        <Input
+          defaultValue='loading...'
+          id={parsedName}
+          label={parsedName}
+          {...componentProps}
+          inputProps={{
+            'aria-label': 'Description'
+          }}
+        />
+      </React.Fragment>
+    );
+  } else {
+    return (
+      <div>
+        <label className='basic-input-label' htmlFor={parsedName}>{parsedName}</label>
+        <Input
+          defaultValue='loading...'
+          id={parsedName}
+          label={parsedName}
+          {...componentProps}
+          inputProps={{
+            'aria-label': 'Description'
+          }}
+        />
+      </div>
+    );
+  }
 };
 
 const InputTextField = (props) => {
@@ -89,30 +123,6 @@ const InputIntField = (props) => {
   );
 };
 
-function InputFactory (col, type, table, value, onChange) {
-  switch (type) {
-    case 'id':
-      return (
-        <div className='crud-input-container' key={col}>
-          <fieldset className='crud-input-fieldset' >
-            <legend className='crud-input-legend' htmlFor={table + '-' + col} >{col}</legend>
-          </fieldset>
-          <input value={value} className='crud-input-item' onChange={onChange} readOnly required name={col} type='text' id={'crud-' + table + '-' + col} />
-        </div>
-      );
-    case 'text':
-      return (
-        <div className='crud-input-container' key={col}>
-          <fieldset className='crud-input-fieldset' >
-            <legend className='crud-input-legend' htmlFor={table + '-' + col} >{col}</legend>
-          </fieldset>
-          <input value={value} className='crud-input-item' onChange={onChange} required name={col} type='text' id={'crud-' + table + '-' + col} placeholder={col} autoComplete='off' />
-        </div>
-      );
-    default: return '';
-  }
-}
-
 function InputSelect ({table, name, accessor, value, setValue}) {
   function onChange (e) {
     setValue(table.find(obj => obj[accessor] === e.target.value));
@@ -120,12 +130,19 @@ function InputSelect ({table, name, accessor, value, setValue}) {
 
   return (
     <div>
-      <label htmlFor='venta-tipos-de-pago'>{name}</label>
-      <select className='main_input-rename' name='venta-tipos-de-pago' id='venta-tipos-de-pago' value={value[accessor]} onChange={onChange}>
-        {table.map(e => <option key={e.id} value={e[accessor]}>{e[accessor]}</option>)}
-      </select>
+      <InputLabel htmlFor={name} style={{color: '#333', marginRight: '1rem'}}>{name}</InputLabel>
+      <Select
+        value={value[accessor] || 'cargando...'}
+        onChange={onChange}
+        inputProps={{
+          name: name,
+          id: name
+        }}
+      >
+        {table.map(e => <MenuItem key={e.id} value={e[accessor]}>{e[accessor]}</MenuItem>)}
+      </Select>
     </div>
   );
 }
 
-export { InputIntField, InputFloatField, InputSelect, InputTextField, InputFactory };
+export { InputIntField, InputFloatField, InputSelect, InputTextField };

@@ -5,7 +5,19 @@
 
 .panel {
   display: flex;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+}
+
+.input-grid {
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: 22rem max-content;
+  grid-row-gap: 1rem;
+  justify-items: left;
+}
+
+.basic-input-label {
+  margin-right: 1rem;
 }
 
 .low-stock {
@@ -22,7 +34,7 @@
 }
 
 .table-header-cantidad {
-  width: 5rem;
+  width: 3rem;
 }
 
 .table-header-codigo {
@@ -35,71 +47,73 @@
   width: 30rem;
 }
 
-.table-header-stock {
+.table-header-stock,
+.table-header-stock-nuevo {
   width: 3rem;
 }
 
 .table-header-precio-base {
-  width: 6rem;
+  width: 5rem;
 }
 
 .table-header-precio-unitario {
-  width: 8rem;
+  width: 5rem;
 }
 
-.table-precio-total {
-  width: 100px;
+.table-header-precio-total {
+  width: 5rem;
 }
 
 .table-header-descuentos {
-  width: 100px;
+  width: 5rem;
 }
 
 
-table {
+#table {
   border-collapse: collapse;
-  margin-bottom: 36px;
+  margin-bottom: 2rem;
 }
 
-td {
+.tabla-transaccion-cell {
   text-align: center;
-  border-left: 1px solid silver;
-}
-
-.tabla-transaccion-cantidad,
-.tabla-transaccion-precioUnitario,
-.tabla-transaccion-descuentoIndividual {
+  color: #333;
+  border: 1px solid #bbb;
   padding: 0px;
   margin: 0px;
-  background-color: #eee;
-  border: 1px solid #bbb;
 }
 
-.tabla-transaccion-cantidad input,
-.tabla-transaccion-precioUnitario input,
-.tabla-transaccion-descuentoIndividual input {
+.tabla-transaccion-cell input {
+  color: #333;
   padding-left: 25%;
   width: 75%;
-  height: 32px;
+  height: 40px;
   border: none;
-  background-color: palegreen;
+  background-color: #eff;
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 500;
+}
+
+.tabla-transaccion-stock {
+  font-size: 1.2rem;
+  font-weight: 500;
 }
 
 .tabla-transaccion-precioTotal {
-  font-size: 1.2rem;
-  background-color: greenyellow;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: black;
+  background-color: #ded;
 }
 
 .tabla-transaccion-precioTotal::first-letter {
-  font-weight: 600;
   margin-right: 2px;
 }
 
-.tabla-transaccion-precioBase {
-  color: #666;
-  font-size: 0.8rem;
+.tabla-transaccion-precioBase,
+.tabla-transaccion-stockNuevo {
+  color: #333;
+  font-weight: 300;
+  font-size: 1rem;
 }
 
 .tabla-transaccion-codigo,
@@ -111,7 +125,7 @@ td {
 }
 
 tr:nth-child(even) {
-  background-color: #ffedde;
+  background-color: #d9fff4;
 }
 
 
@@ -124,6 +138,8 @@ th {
 th {
   border-bottom: 1px solid silver;
   border-left: 1px solid silver;
+  font-weight: 500;
+  font-size: 1.2em;
 }
 
 .venta__label {

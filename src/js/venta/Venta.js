@@ -204,20 +204,16 @@ export default function Venta (props) {
         </Modal>
       }
 
-      <div className='panel'>
-        <InputTextField name='Factura' value={state.numeroFactura} readOnly />
+      <div className='input-grid'>
+        <InputTextField style={{width: '5rem'}} name='Factura' value={state.numeroFactura} readOnly />
         <InputTextField name='Cliente' value={state.cliente.NOMBRE} readOnly onClick={clienteModal} />
-      </div>
-      <div className='panel'>
         <InputSelect table={tablaTipoPago} name='Tipos de pago' accessor='NOMBRE' value={state.tipoPago} setValue={tipoPago => dispatch({type: 'setTipoPago', payload: tipoPago})} />
         <InputFloatField name='Descuento' value={state.descuento} maxValue={DESCUENTO_MAXIMO} setValue={descuento => dispatch({type: 'setDescuento', payload: descuento})} autoComplete='off' />
-      </div>
-      <div className='panel'>
-        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addItemHandler} setValue={setCodigo} />
+        <InputTextField style={{width: '15rem'}} name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addItemHandler} setValue={setCodigo} />
         <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
       </div>
       <div className='panel'>
-        <InputTextField name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
+        <InputTextField style={{width: '40vw'}} name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
       </div>
       <table id='table'>
         <thead>
@@ -226,7 +222,7 @@ export default function Venta (props) {
             <th className='table-header-codigo'>Codigo</th>
             <th className='table-header-descripcion'>Descripcion</th>
             <th className='table-header-stock'>Stock</th>
-            <th className='table-header-stock'>Stock Nuevo</th>
+            <th className='table-header-stock-nuevo'>Stock Nuevo</th>
             <th className='table-header-precio-base'>Precio Base</th>
             <th className='table-header-precio-unitario'>Precio Unitario</th>
             <th className='table-header-precio-total'>Precio Total</th>
