@@ -11,7 +11,7 @@ export default function AgregarPago (props) {
       props.handleSelection({
         TIPO_PAGO: pago.tipoPago,
         MONTO: parseFloat(pago.monto),
-        ESTADO: tablaEstadoPago[pago.tipoPago === 1 ? 1 : 2]
+        ESTADO: tablaEstadoPago[pago.tipoPago.id === 1 ? 0 : 1]
       });
     }
     if (props.setDisplayModal) props.setDisplayModal(false);
