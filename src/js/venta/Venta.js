@@ -1,8 +1,8 @@
 import { format as dateFormat } from 'date-fns';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
-import { InputTextField, InputSelect, InputFloatField } from '../components/inputs';
+import { UncontrolledInput, InputTextField, InputSelect, InputFloatField } from '../components/inputs';
 import Modal from '../components/modal';
 import Consulta from '../crud/consulta';
 import ConsultaArticulo from '../crud/consultaArticulo';
@@ -18,16 +18,25 @@ import { MainContext } from '../context/MainContext';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoneyIcon from '@material-ui/icons/MonetizationOnTwoTone';
+import SendIcon from '@material-ui/icons/SendTwoTone';
+import SearchIcon from '@material-ui/icons/Search';
+
+const vaciarAction = {type: 'nuevaFactura', payload: {observaciones: '', items: [], pagos: [], descuento: 0}};
+const numeroFormWidth = {width: '5rem'};
+const codigoFormWidth = {width: '15rem'};
+const observacionesFormWidth = {width: '40vw'};
+const agregarPagoColor = {color: 'green'};
 
 export default function Venta (props) {
   const {ventaState: state, ventaDispatch: dispatch, tablaTipoPago} = useContext(MainContext);
   const {updateCantidadArticulo, consumidorFinal, vendedor, turno} = useContext(MainContext);
-  const [codigo, setCodigo] = useState('');
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
   const {constants: {DESCUENTO_MAXIMO}} = useContext(MainContext);
-  const getTotal = () => state.items.reduce((total, item) => total + item.CANTIDAD * item.PRECIO_UNITARIO, 0);
+  const getTotal = useMemo(
+    () => state.items.reduce((total, item) => total + item.CANTIDAD * item.PRECIO_UNITARIO, 0),
+    [state.items]);
 
   const getNuevaFactura = async () => {
     const lastNumeroFactura = await databaseRead.getLastNumeroFactura();
@@ -47,20 +56,20 @@ export default function Venta (props) {
     });
   };
 
-  useEffect(() => {
-    if (state.numeroFactura === 0) {
-      getNuevaFactura();
-    }
-  }, []);
+  if (state.numeroFactura === 0) {
+    getNuevaFactura();
+  }
 
   const addItemHandler = (event) => {
-    if (!codigo) return false;
+    if (!event) return false;
     if (event.which !== 13) return false;
-    addItem();
+    if (event.target.value === '') return false;
+    addItem(event.target.value);
+    event.target.value = '';
   };
 
   const addItem = (data) => {
-    const cod = data ? data.CODIGO : codigo;
+    const cod = typeof data === 'string' ? data : data.CODIGO;
     const articulo = state.items.find(item => item.CODIGO === cod);
     if (articulo) {
       dispatch({type: 'addOneQuantityItem', payload: cod});
@@ -82,7 +91,6 @@ export default function Venta (props) {
           }
         });
     }
-    setCodigo('');
   };
 
   const handleSubmit = event => {
@@ -126,7 +134,7 @@ export default function Venta (props) {
       if (state.pagos.length === 0) {
         postObjectToAPI({
           FACTURA_ID: facturaId,
-          MONTO: getTotal(),
+          MONTO: getTotal,
           TIPO_PAGO_ID: state.tipoPago.id,
           ESTADO_ID: state.tipoPago.id === 1 ? 1 : 2 // TODO: BUSSINESS LOGIC; HANDLE IN A BETTER WAY
         }, 'pago');
@@ -165,8 +173,8 @@ export default function Venta (props) {
     );
     setDisplayModal(true);
   }
+
   const vaciar = (event) => {
-    const vaciarAction = {type: 'nuevaFactura', payload: {observaciones: '', items: [], pagos: [], descuento: 0}};
     dialogs.confirm(
       confirmed => confirmed && dispatch(vaciarAction), // Callback
       'VACIAR VENTA?', // Message text
@@ -208,17 +216,18 @@ export default function Venta (props) {
       }
 
       <div className='input-grid'>
-        <InputTextField style={{width: '5rem'}} name='Factura' value={state.numeroFactura} readOnly />
+        <InputTextField style={numeroFormWidth} name='Factura' value={state.numeroFactura} readOnly />
         <InputTextField name='Cliente' value={state.cliente.NOMBRE} readOnly onClick={clienteModal} />
         <InputSelect table={tablaTipoPago} name='Tipos de pago' accessor='NOMBRE' value={state.tipoPago} setValue={tipoPago => dispatch({type: 'setTipoPago', payload: tipoPago})} />
         <InputFloatField name='Descuento' value={state.descuento} maxValue={DESCUENTO_MAXIMO} setValue={descuento => dispatch({type: 'setDescuento', payload: descuento})} autoComplete='off' />
-        <InputTextField style={{width: '15rem'}} name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addItemHandler} setValue={setCodigo} />
+        <UncontrolledInput style={codigoFormWidth} name='Codigo' autoFocus autoComplete='off' onKeyPress={addItemHandler} />
         <Button variant='outlined' color='primary' onClick={articuloModal} >
-          Buscar Articulo
+          Buscar Articulo &nbsp;
+          <SearchIcon />
         </Button>
       </div>
       <div className='panel'>
-        <InputTextField style={{width: '40vw'}} name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
+        <InputTextField style={observacionesFormWidth} name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
       </div>
       <table id='table'>
         <thead>
@@ -245,7 +254,7 @@ export default function Venta (props) {
             <th colSpan='4' />
             <th>TOTAL: </th>
             <th colSpan='2' id='table-footer-total'>
-              {money(getTotal())}
+              {money(getTotal)}
             </th>
           </tr>
         </tfoot>
@@ -256,18 +265,17 @@ export default function Venta (props) {
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
       <div className='panel'>
-        <Button variant='contained' color='primary' onClick={handleSubmit}>
-          Realizar Venta
-        </Button>
-      </div>
-      <div className='panel'>
-        <Button variant='outlined' style={{color: 'green'}} onClick={handleAgregarPago} >
-          Agregar Pago
+        <Button variant='outlined' style={agregarPagoColor} onClick={handleAgregarPago} >
+          Agregar Pago &nbsp;
           <MoneyIcon />
         </Button>
         <Button variant='outlined' color='secondary' onClick={vaciar}>
-          Vaciar
+          Vaciar &nbsp;
           <DeleteIcon />
+        </Button>
+        <Button variant='contained' color='primary' onClick={handleSubmit}>
+          Realizar Venta &nbsp;
+          <SendIcon />
         </Button>
       </div>
       {
@@ -281,7 +289,7 @@ export default function Venta (props) {
           </div>
           <div>
             <p>PENDIENTE</p>
-            <p>{getTotal() - state.pagos.reduce((total, pago) => total + pago.MONTO, 0)}</p>
+            <p>{getTotal - state.pagos.reduce((total, pago) => total + pago.MONTO, 0)}</p>
           </div>
         </div>
       }

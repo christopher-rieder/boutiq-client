@@ -3,11 +3,6 @@
   margin: 0;
 }
 
-.panel {
-  display: flex;
-  margin-bottom: 1rem;
-}
-
 .input-grid {
   margin-bottom: 1rem;
   display: grid;

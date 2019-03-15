@@ -13,6 +13,13 @@ $primary-color: #3e1;
     border-bottom: 1px solid #bbb;
 }
 
+.panel {
+  display: grid;
+  grid-template-columns: max-content max-content max-content;
+  grid-column-gap: 1rem;
+  margin: 1rem 0rem;
+}
+
 .navigation {
   list-style: none;
   display: flex;

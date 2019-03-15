@@ -16,7 +16,6 @@ const BasicInput = (props) => {
       <React.Fragment>
         <label className='basic-input-label' htmlFor={parsedName}>{parsedName}</label>
         <Input
-          defaultValue='loading...'
           id={parsedName}
           label={parsedName}
           {...componentProps}
@@ -31,17 +30,27 @@ const BasicInput = (props) => {
       <div className='basic-input-container'>
         <label className='basic-input-label' htmlFor={parsedName}>{parsedName}</label>
         <Input
-          defaultValue='loading...'
           id={parsedName}
           label={parsedName}
           {...componentProps}
-          inputProps={{
-            'aria-label': 'Description'
-          }}
         />
       </div>
     );
   }
+};
+
+const UncontrolledInput = (props) => {
+  const parsedName = humanizeString(props.name);
+  return (
+    <div className='basic-input-container'>
+      <label className='basic-input-label' htmlFor={parsedName}>{parsedName}</label>
+      <Input
+        id={parsedName}
+        label={parsedName}
+        {...props}
+      />
+    </div>
+  );
 };
 
 const InputTextField = (props) => {
@@ -145,4 +154,4 @@ function InputSelect ({table, name, accessor, value, setValue}) {
   );
 }
 
-export { InputIntField, InputFloatField, InputSelect, InputTextField };
+export { UncontrolledInput, InputIntField, InputFloatField, InputSelect, InputTextField };
