@@ -23,19 +23,19 @@ export default function CompraView ({obj, setObj}) {
         </section>
         <section className='compra-view__items'>
           <table className='tabla-view__tabla'>
-            <thead className='tabla-view__tabla-head'>
-              <tr className='tabla-view__tabla-head-row'>
-                <th className='tabla-view__tabla-head-cell'>CODIGO</th>
-                <th className='tabla-view__tabla-head-cell'>DESCRIPCION</th>
-                <th className='tabla-view__tabla-head-cell'>CANT</th>
+            <thead className='tabla-view__head'>
+              <tr className='tabla-view__head-row'>
+                <th className='tabla-view__head-cell'>CODIGO</th>
+                <th className='tabla-view__head-cell'>DESCRIPCION</th>
+                <th className='tabla-view__head-cell'>CANT</th>
               </tr>
             </thead>
-            <tbody className='tabla-view__tabla-body'>
+            <tbody className='tabla-view__body'>
               {obj.ITEMS.map(item => (
-                <tr key={item.CODIGO} className='tabla-view__tabla-body-row'>
-                  <td className='tabla-view__tabla-body-cell'>{item.CODIGO}</td>
-                  <td className='tabla-view__tabla-body-cell'>{item.DESCRIPCION}</td>
-                  <td className='tabla-view__tabla-body-cell'>{item.CANTIDAD}</td>
+                <tr key={item.CODIGO} className='tabla-view__body-row'>
+                  <td className='tabla-view__body-cell'>{item.CODIGO}</td>
+                  <td className='tabla-view__body-cell'>{item.DESCRIPCION}</td>
+                  <td className='tabla-view__body-cell'>{item.CANTIDAD}</td>
                 </tr>)
               )}
             </tbody>

@@ -12,6 +12,11 @@ import { InputTextField } from '../components/inputs';
 import audioOk from '../../resources/audio/ok.wav';
 import Modal from '../components/modal';
 import { MainContext } from '../context/MainContext';
+import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
+import SendIcon from '@material-ui/icons/SendTwoTone';
+import SearchIcon from '@material-ui/icons/Search';
+import CreateIcon from '@material-ui/icons/Create';
 
 export default function Compra (props) {
   const {compraState: state, compraDispatch: dispatch} = useContext(MainContext);
@@ -171,8 +176,14 @@ export default function Compra (props) {
       </div>
       <div className='panel'>
         <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addItemHandler} setValue={setCodigo} />
-        <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
-        <button className='codigo-search' onClick={crudArticuloModal}>AGREGAR ARTICULO NUEVO</button>
+        <Button variant='outlined' color='primary' onClick={articuloModal} >
+          Buscar Articulo &nbsp;
+          <SearchIcon />
+        </Button>
+        <Button variant='outlined' color='primary' onClick={crudArticuloModal} >
+          Agregar Articulo &nbsp;
+          <CreateIcon />
+        </Button>
       </div>
       <div className='panel'>
         <InputTextField name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
@@ -200,10 +211,14 @@ export default function Compra (props) {
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
       <div className='panel'>
-        <button className='codigo-search' onClick={handleSubmit}>AGREGAR COMPRA</button>
-      </div>
-      <div className='panel'>
-        <button className='codigo-search' onClick={vaciar}>VACIAR COMPRA</button>
+        <Button variant='outlined' color='secondary' onClick={vaciar}>
+          Vaciar &nbsp;
+          <DeleteIcon />
+        </Button>
+        <Button variant='contained' color='primary' onClick={handleSubmit}>
+          Realizar Compra &nbsp;
+          <SendIcon />
+        </Button>
       </div>
     </React.Fragment>
   );
