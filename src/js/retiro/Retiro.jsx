@@ -146,15 +146,13 @@ export default function Retiro (props) {
           {modalContent}
         </Modal>
       }
-      <div className='panel'>
-        <InputTextField name='Retiro' value={state.numeroRetiro} readOnly />
-      </div>
+      <InputTextField name='Retiro' value={state.numeroRetiro} readOnly />
       <div className='panel'>
         <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addItemHandler} setValue={setCodigo} />
         <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
       </div>
       <div className='panel'>
-        <InputTextField name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
+        <InputTextField style={{width: '40vw'}} name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
       </div>
       <table id='table'>
         <thead>

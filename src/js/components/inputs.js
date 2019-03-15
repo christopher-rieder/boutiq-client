@@ -28,7 +28,7 @@ const BasicInput = (props) => {
     );
   } else {
     return (
-      <div>
+      <div className='basic-input-container'>
         <label className='basic-input-label' htmlFor={parsedName}>{parsedName}</label>
         <Input
           defaultValue='loading...'

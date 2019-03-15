@@ -6,17 +6,7 @@ import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
 import dialogs from '../utilities/dialogs';
 import { MainContext } from '../context/MainContext';
-
-const cols = {
-  marca: ['id', 'NOMBRE'],
-  rubro: ['id', 'NOMBRE'],
-  proveedor: ['id', 'NOMBRE'],
-  estado_pago: ['id', 'NOMBRE'],
-  tipo_pago: ['id', 'NOMBRE', 'LISTA_DE_PRECIO'],
-  vendedor: ['id', 'NOMBRE'],
-  constants: ['id', 'NOMBRE', 'VALOR'],
-  cliente: ['id', 'NOMBRE', 'DOMICILIO', 'TELEFONO', 'CREDITO']
-};
+import Button from '@material-ui/core/Button';
 
 export default function Crud (props) {
   const {
@@ -44,11 +34,11 @@ export default function Crud (props) {
   }, [crudTable]);
 
   const submitUpdateHandler = async event => {
-    let lastId = await databaseWrite.postCrudObjectToAPI(obj, crudTable);
+    let lastId = await databaseWrite.postCrudObjectToAPI(obj, crudTable).then(json => json.lastId);
     if (obj.id === 'NUEVO') {
       const nuevo = {...obj, id: lastId};
       setObj(nuevo);
-      setObjList([...objList, nuevo]);
+      setObjList(objList.concat(nuevo));
       setTimeout(() => document.querySelector('#crud-id-' + lastId).classList.add('crud-list-item-highlight'), 0);
       setTimeout(() => document.querySelector('#crud-id-' + lastId).classList.remove('crud-list-item-highlight'), 1000);
       dialogs.success('AGREGADO', {});
@@ -69,7 +59,11 @@ export default function Crud (props) {
   };
 
   const createHandler = event => {
-    setObj({id: 'NUEVO'});
+    const emptyObj = {...obj};
+    Object.keys(emptyObj).forEach(key => {
+      emptyObj[key] = isNaN(obj[key]) ? '' : 0;
+    });
+    setObj({...emptyObj, id: 'NUEVO'});
   };
 
   const liClickHandler = event => {
@@ -84,20 +78,24 @@ export default function Crud (props) {
       <li className='crud-list-item'
         id={'crud-id-' + element.id}
         data-id={element.id}
-        key={element.id}>{element[filterCol]}
+        key={element.id}>
+        {element[filterCol]}
       </li>
     ));
 
-  // const inputs = () => cols[crudTable]
-  //   .map((col, i) => InputFactory(obj[col], event => setObj({...obj, [col]: event.target.value})));
-
-  const inputs = () => cols[crudTable]
-    .map((col, i) => <InputTextField fragment name={col} value={obj[col]} onChange={event => setObj({...obj, [col]: event.target.value})} />);
+  const inputs = () => Object.keys(obj).map(
+    (col, i) => <InputTextField readOnly={col === 'id'} key={col + i} fragment name={col} value={obj[col] || ''} onChange={event => setObj({...obj, [col]: event.target.value})} />);
 
   return (
     <div className='crud-container'>
       <div className='crud-sidebar'>
-        <InputTextField name='Buscar' value={search} autoFocus autoComplete='off' setValue={setSearch} />
+        <div className='flex-spaced'>
+          <InputTextField name='Buscar' value={search} autoFocus autoComplete='off' setValue={setSearch} />
+          <div className='separator' />
+          <Button variant='contained' color='primary' onClick={createHandler}>
+            Nuevo Item
+          </Button>
+        </div>
         <ul className='crud-list' onClick={liClickHandler} >
           {list()}
         </ul>
@@ -106,8 +104,9 @@ export default function Crud (props) {
         <div className='crud-grid-inputs'>
           {inputs()}
         </div>
-        <button onClick={submitUpdateHandler}>ACTUALIZAR</button>
-        <button onClick={createHandler}>CREAR NUEVA</button>
+        <Button variant='contained' color='primary' onClick={submitUpdateHandler}>
+          Guardar item
+        </Button>
       </div>
     </div>
   );

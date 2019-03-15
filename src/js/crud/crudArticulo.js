@@ -99,8 +99,7 @@ export default function CrudArticulo (props) {
   }, []);
 
   const handleSubmit = (event) => {
-    postCrudObjectToAPI({
-      id: id,
+    const articulo = {
       CODIGO: codigo,
       DESCRIPCION: descripcion,
       PRECIO_LISTA: precioLista,
@@ -110,7 +109,13 @@ export default function CrudArticulo (props) {
       STOCK: stock,
       RUBRO_ID: rubro.id,
       MARCA_ID: marca.id
-    }, 'articulo')
+    };
+
+    if (id > 0) {
+      articulo.id = id;
+    }
+
+    postCrudObjectToAPI(articulo, 'articulo')
       .then((res) => {
         dialogs.success('ARTICULO AGREGADO');
         setTimeout(() => setArticuloData([]), 1000); // FIXME: HACKY
@@ -139,8 +144,8 @@ export default function CrudArticulo (props) {
         <InputSelect table={tablaMarca} name='Marca' accessor='NOMBRE' value={marca} setValue={dispatcherSetValue('marca')} />
         <InputSelect table={tablaRubro} name='Rubro' accessor='NOMBRE' value={rubro} setValue={dispatcherSetValue('rubro')} />
         <div>
-          <button className='btn-guardar' onClick={() => loadFromDatabase(state.id)}>RECARGAR</button>
-          {id > 0 && <button className='btn-guardar' onClick={handleSubmit}>GUARDAR</button>}
+          {id > 0 && <button className='btn-guardar' onClick={() => loadFromDatabase(state.id)}>RECARGAR</button>}
+          <button className='btn-guardar' onClick={handleSubmit}>GUARDAR</button>
         </div>
       </main>
     </React.Fragment>

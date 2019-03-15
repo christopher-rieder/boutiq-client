@@ -15,6 +15,9 @@ import AgregarPago from '../pagos/AgregarPago';
 import Pago from '../pagos/Pago';
 import './venta.css';
 import { MainContext } from '../context/MainContext';
+import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
+import MoneyIcon from '@material-ui/icons/MonetizationOnTwoTone';
 
 export default function Venta (props) {
   const {ventaState: state, ventaDispatch: dispatch, tablaTipoPago} = useContext(MainContext);
@@ -67,7 +70,7 @@ export default function Venta (props) {
     } else { // add new articulo
       databaseRead.getArticuloByCodigo(cod)
         .then(res => {
-          if (res.length === 0) {
+          if (!res || res.length === 0) {
             dialogs.error('CODIGO NO EXISTENTE');
             var aud2 = new window.Audio(audioError);
             aud2.play();
@@ -210,7 +213,9 @@ export default function Venta (props) {
         <InputSelect table={tablaTipoPago} name='Tipos de pago' accessor='NOMBRE' value={state.tipoPago} setValue={tipoPago => dispatch({type: 'setTipoPago', payload: tipoPago})} />
         <InputFloatField name='Descuento' value={state.descuento} maxValue={DESCUENTO_MAXIMO} setValue={descuento => dispatch({type: 'setDescuento', payload: descuento})} autoComplete='off' />
         <InputTextField style={{width: '15rem'}} name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addItemHandler} setValue={setCodigo} />
-        <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
+        <Button variant='outlined' color='primary' onClick={articuloModal} >
+          Buscar Articulo
+        </Button>
       </div>
       <div className='panel'>
         <InputTextField style={{width: '40vw'}} name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
@@ -251,11 +256,19 @@ export default function Venta (props) {
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
       <div className='panel'>
-        <button className='codigo-search' onClick={handleSubmit}>AGREGAR VENTA</button>
-        <button className='codigo-search' onClick={handleAgregarPago}>AGREGAR PAGO</button>
+        <Button variant='contained' color='primary' onClick={handleSubmit}>
+          Realizar Venta
+        </Button>
       </div>
       <div className='panel'>
-        <button className='codigo-search' onClick={vaciar}>VACIAR VENTA</button>
+        <Button variant='outlined' style={{color: 'green'}} onClick={handleAgregarPago} >
+          Agregar Pago
+          <MoneyIcon />
+        </Button>
+        <Button variant='outlined' color='secondary' onClick={vaciar}>
+          Vaciar
+          <DeleteIcon />
+        </Button>
       </div>
       {
         state.pagos.length > 0 &&

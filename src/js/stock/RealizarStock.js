@@ -13,10 +13,6 @@ export default function RealizarStock (props) {
     setStockData(stockData.map(articulo => articulo.CODIGO === codigo ? {...articulo, STOCK_REAL: event.target.value} : articulo));
   };
 
-  window.addEventListener('click', event => {
-    console.log(event.target);
-  });
-
   const columns = [
     {
       Header: 'CODIGO',
@@ -45,12 +41,6 @@ export default function RealizarStock (props) {
       expander: true,
       Header: () => <strong>LISTO</strong>,
       width: 65,
-      Expander: ({ isExpanded, ...rest }) =>
-        <div>
-          {isExpanded
-            ? <span>&#x2299;</span>
-            : <span>&#x2295;</span>}
-        </div>,
       style: {
         cursor: 'pointer',
         fontSize: 25,
