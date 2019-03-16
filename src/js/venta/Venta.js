@@ -1,5 +1,6 @@
 import { format as dateFormat } from 'date-fns';
 import React, { useState, useContext, useMemo } from 'react';
+import { connect } from 'react-redux';
 import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
 import { UncontrolledInput, InputTextField, InputSelect, InputFloatField } from '../components/inputs';
@@ -21,42 +22,63 @@ import MoneyIcon from '@material-ui/icons/MonetizationOnTwoTone';
 import SendIcon from '@material-ui/icons/SendTwoTone';
 import SearchIcon from '@material-ui/icons/Search';
 
-const vaciarAction = {type: 'nuevaFactura', payload: {observaciones: '', items: [], pagos: [], descuento: 0}};
 const numeroFormWidth = {width: '5rem'};
 const codigoFormWidth = {width: '15rem'};
 const observacionesFormWidth = {width: '40vw'};
 const agregarPagoColor = {color: 'green'};
 
-export default function Venta (props) {
-  const {ventaState: state, ventaDispatch: dispatch, tablaTipoPago} = useContext(MainContext);
-  const {updateCantidadArticulo, consumidorFinal, vendedor, turno} = useContext(MainContext);
+const mapStateToProps = state => ({
+  descuento: state.venta.descuento,
+  cliente: state.venta.cliente,
+  vendedor: state.venta.vendedor,
+  turno: state.venta.turno,
+  tipoPago: state.venta.tipoPago,
+  observaciones: state.venta.observaciones,
+  numeroFactura: state.venta.numeroFactura,
+  pagos: state.venta.pagos,
+  items: state.venta.items
+});
+
+const mapDispatchToProps = dispatch => ({
+  addOneAction: (codigo) => dispatch({type: 'addOneQuantityItem', payload: codigo}),
+  addItemAction: (articulo) => dispatch({type: 'addItem', payload: articulo}),
+  addPagoAction: (pago) => dispatch({type: 'addPago', payload: pago}),
+  vaciarAction: () => dispatch({type: 'nuevaFactura', payload: {observaciones: '', items: [], pagos: [], descuento: 0}}),
+  setCliente: (cliente) => dispatch({type: 'setCliente', payload: cliente}),
+  setTipoPago: (tipoPago) => dispatch({type: 'setTipoPago', payload: tipoPago}),
+  setDescuento: (descuento) => dispatch({type: 'setDescuento', payload: descuento}),
+  setObservaciones: (observaciones) => dispatch({type: 'setObservaciones', payload: observaciones}),
+  nuevo: (obj) => dispatch({type: 'nuevaFactura', payload: obj})
+});
+
+function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos, tipoPago,
+  addOneAction, addItemAction, addPagoAction, vaciarAction, setCliente,
+  setTipoPago, setDescuento, setObservaciones, nuevo}) {
+  const {updateCantidadArticulo, consumidorFinal, vendedor, turno, tablaTipoPago} = useContext(MainContext);
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
   const {constants: {DESCUENTO_MAXIMO}} = useContext(MainContext);
   const getTotal = useMemo(
-    () => state.items.reduce((total, item) => total + item.CANTIDAD * item.PRECIO_UNITARIO, 0),
-    [state.items]);
+    () => items.reduce((total, item) => total + item.CANTIDAD * item.PRECIO_UNITARIO, 0),
+    [items]);
 
   const getNuevaFactura = async () => {
     const lastNumeroFactura = await databaseRead.getLastNumeroFactura();
-    dispatch({
-      type: 'nuevaFactura',
-      payload: {
-        numeroFactura: lastNumeroFactura.lastId + 1,
-        cliente: consumidorFinal,
-        vendedor,
-        turno,
-        descuento: 0,
-        pagos: [],
-        items: [],
-        tipoPago: tablaTipoPago[0],
-        observaciones: ''
-      }
+    nuevo({
+      numeroFactura: lastNumeroFactura.lastId + 1,
+      cliente: consumidorFinal,
+      vendedor,
+      turno,
+      descuento: 0,
+      pagos: [],
+      items: [],
+      tipoPago: tablaTipoPago[0],
+      observaciones: ''
     });
   };
 
-  if (state.numeroFactura === 0) {
+  if (numeroFactura === 0) {
     getNuevaFactura();
   }
 
@@ -70,9 +92,9 @@ export default function Venta (props) {
 
   const addItem = (data) => {
     const cod = typeof data === 'string' ? data : data.CODIGO;
-    const articulo = state.items.find(item => item.CODIGO === cod);
+    const articulo = items.find(item => item.CODIGO === cod);
     if (articulo) {
-      dispatch({type: 'addOneQuantityItem', payload: cod});
+      addOneAction(cod);
       dialogs.success('AGREGADO!!!  +1');
       var aud = new window.Audio(audioOk);
       aud.play();
@@ -84,7 +106,7 @@ export default function Venta (props) {
             var aud2 = new window.Audio(audioError);
             aud2.play();
           } else {
-            dispatch({type: 'addItem', payload: res});
+            addItemAction(res);
             dialogs.success('AGREGADO!!!');
             var aud = new window.Audio(audioOk);
             aud.play();
@@ -95,7 +117,7 @@ export default function Venta (props) {
 
   const handleSubmit = event => {
     event.preventDefault();
-    if (state.items.length === 0) {
+    if (items.length === 0) {
       dialogs.error('Factura vacia; no agregada');
     } else {
       // TODO: VALIDATIONS
@@ -111,15 +133,15 @@ export default function Venta (props) {
   const postToAPI = async () => {
     try {
       const facturaId = await postObjectToAPI({
-        NUMERO_FACTURA: state.numeroFactura,
+        NUMERO_FACTURA: numeroFactura,
         FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
-        DESCUENTO: state.descuento,
-        OBSERVACIONES: state.observaciones,
-        CLIENTE_ID: state.cliente.id,
-        TURNO_ID: state.turno.id // TODO: MAKE TURNO
+        DESCUENTO: descuento,
+        OBSERVACIONES: observaciones,
+        CLIENTE_ID: cliente.id,
+        TURNO_ID: turno.id // TODO: MAKE TURNO
       }, 'factura').then(json => json.lastId);
 
-      state.items.forEach(item => {
+      items.forEach(item => {
         // updating local state, same thing happens in the backend
         updateCantidadArticulo(item.id, item.CANTIDAD, false);
         postObjectToAPI({
@@ -131,15 +153,15 @@ export default function Venta (props) {
         }, 'itemFactura');
       });
 
-      if (state.pagos.length === 0) {
+      if (pagos.length === 0) {
         postObjectToAPI({
           FACTURA_ID: facturaId,
           MONTO: getTotal,
-          TIPO_PAGO_ID: state.tipoPago.id,
-          ESTADO_ID: state.tipoPago.id === 1 ? 1 : 2 // TODO: BUSSINESS LOGIC; HANDLE IN A BETTER WAY
+          TIPO_PAGO_ID: tipoPago.id,
+          ESTADO_ID: tipoPago.id === 1 ? 1 : 2 // TODO: BUSSINESS LOGIC; HANDLE IN A BETTER WAY
         }, 'pago');
       } else {
-        state.pagos.forEach(pago => {
+        pagos.forEach(pago => {
           postObjectToAPI({
             FACTURA_ID: facturaId,
             MONTO: pago.MONTO,
@@ -149,7 +171,7 @@ export default function Venta (props) {
         });
       }
 
-      dialogs.success(`FACTURA ${state.numeroFactura} REALIZADA!!!`);
+      dialogs.success(`FACTURA ${numeroFactura} REALIZADA!!!`);
       getNuevaFactura();
     } catch (err) {
       dialogs.error(`ERROR! ${err}`);
@@ -158,10 +180,7 @@ export default function Venta (props) {
 
   function addPago (pago) {
     // TODO: insert pago logic here...
-    dispatch({
-      type: 'addPago',
-      payload: pago
-    });
+    addPagoAction(pago);
   }
 
   function handleAgregarPago () {
@@ -176,7 +195,7 @@ export default function Venta (props) {
 
   const vaciar = (event) => {
     dialogs.confirm(
-      confirmed => confirmed && dispatch(vaciarAction), // Callback
+      confirmed => confirmed && vaciarAction(), // Callback
       'VACIAR VENTA?', // Message text
       'SI', // Confirm text
       'NO' // Cancel text
@@ -202,7 +221,7 @@ export default function Venta (props) {
         table='cliente'
         columnsWidths={[40, 400, 120, 120, 120]}
         setDisplayModal={setDisplayModal}
-        handleSelection={obj => dispatch({type: 'setCliente', payload: obj})} />
+        handleSelection={setCliente} />
     );
     setDisplayModal(true);
   };
@@ -216,10 +235,10 @@ export default function Venta (props) {
       }
 
       <div className='input-grid'>
-        <InputTextField style={numeroFormWidth} name='Factura' value={state.numeroFactura} readOnly />
-        <InputTextField name='Cliente' value={state.cliente.NOMBRE} readOnly onClick={clienteModal} />
-        <InputSelect table={tablaTipoPago} name='Tipos de pago' accessor='NOMBRE' value={state.tipoPago} setValue={tipoPago => dispatch({type: 'setTipoPago', payload: tipoPago})} />
-        <InputFloatField name='Descuento' value={state.descuento} maxValue={DESCUENTO_MAXIMO} setValue={descuento => dispatch({type: 'setDescuento', payload: descuento})} autoComplete='off' />
+        <InputTextField style={numeroFormWidth} name='Factura' value={numeroFactura} readOnly />
+        <InputTextField name='Cliente' value={cliente.NOMBRE} readOnly onClick={clienteModal} />
+        <InputSelect table={tablaTipoPago} name='Tipos de pago' accessor='NOMBRE' value={tipoPago} setValue={setTipoPago} />
+        <InputFloatField name='Descuento' value={descuento} maxValue={DESCUENTO_MAXIMO} setValue={setDescuento} autoComplete='off' />
         <UncontrolledInput style={codigoFormWidth} name='Codigo' autoFocus autoComplete='off' onKeyPress={addItemHandler} />
         <Button variant='outlined' color='primary' onClick={articuloModal} >
           Buscar Articulo &nbsp;
@@ -227,7 +246,7 @@ export default function Venta (props) {
         </Button>
       </div>
       <div className='panel'>
-        <InputTextField style={observacionesFormWidth} name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
+        <InputTextField style={observacionesFormWidth} name='Observaciones' value={observaciones} setValue={setObservaciones} />
       </div>
       <table id='table'>
         <thead>
@@ -244,9 +263,8 @@ export default function Venta (props) {
           </tr>
         </thead>
         <tbody id='tbody'>
-          {state.items.map(item => <ItemArticulo
+          {items.map(item => <ItemArticulo
             key={item.id}
-            dispatch={dispatch}
             articulo={item} />)}
         </tbody>
         <tfoot>
@@ -260,8 +278,8 @@ export default function Venta (props) {
         </tfoot>
       </table>
       <div className='panel'>
-        <InputTextField readOnly name='Vendedor' value={state.vendedor.NOMBRE} />
-        <InputTextField readOnly name='Turno' value={state.turno.id} />
+        <InputTextField readOnly name='Vendedor' value={vendedor.NOMBRE} />
+        <InputTextField readOnly name='Turno' value={turno.id} />
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
       <div className='panel'>
@@ -279,20 +297,22 @@ export default function Venta (props) {
         </Button>
       </div>
       {
-        state.pagos.length > 0 &&
+        pagos.length > 0 &&
         <div className='panel' >
           <h3>PAGOS</h3>
-          {state.pagos.map(pago => <Pago pago={pago} />)}
+          {pagos.map(pago => <Pago pago={pago} />)}
           <div>
             <p>TOTAL</p>
-            <p>{state.pagos.reduce((total, pago) => total + pago.MONTO, 0)}</p>
+            <p>{pagos.reduce((total, pago) => total + pago.MONTO, 0)}</p>
           </div>
           <div>
             <p>PENDIENTE</p>
-            <p>{getTotal - state.pagos.reduce((total, pago) => total + pago.MONTO, 0)}</p>
+            <p>{getTotal - pagos.reduce((total, pago) => total + pago.MONTO, 0)}</p>
           </div>
         </div>
       }
     </React.Fragment>
   );
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Venta);

@@ -114,7 +114,7 @@ const removeItem = (state, articulo) => {
   };
 };
 
-const ventaReducer = (state, action) => {
+const ventaReducer = (state = ventaInitialState, action) => {
   switch (action.type) {
     case 'nuevaFactura':
       return {
