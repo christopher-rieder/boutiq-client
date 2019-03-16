@@ -58,12 +58,17 @@ const mapDispatchToProps = dispatch => ({
   setDescuento: (descuento) => dispatch({type: 'venta_setDescuento', payload: descuento}),
   setObservaciones: (observaciones) => dispatch({type: 'venta_setObservaciones', payload: observaciones}),
   nuevo: (obj) => dispatch({type: 'venta_nueva', payload: obj}),
-  onRequestLastVenta: () => dispatch(requestLastNumeroVenta())
+  onRequestLastVenta: () => dispatch(requestLastNumeroVenta()),
+  setDescuentoIndividual: (articulo) => event => dispatch({type: 'venta_setDescuentoIndividual', payload: {articulo, value: event.target.value}}),
+  setPrecioIndividual: (articulo) => event => dispatch({type: 'venta_setPrecioIndividual', payload: {articulo, value: event.target.value}}),
+  setCantidadIndividual: (articulo) => event => dispatch({type: 'venta_setCantidadIndividual', payload: {articulo, value: event.target.value}}),
+  removeItem: (articulo) => () => dispatch({type: 'venta_removeItem', payload: articulo})
 });
 
 function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos, tipoPago,
-  addOne, addItem, addPago, vaciar, setCliente,
-  setTipoPago, setDescuento, setObservaciones, nuevo, onRequestLastVenta}) {
+  nuevo, onRequestLastVenta, addOne, addItem, addPago, vaciar,
+  setCliente, setTipoPago, setDescuento, setObservaciones,
+  setDescuentoIndividual, setPrecioIndividual, setCantidadIndividual, removeItem}) {
   const {updateCantidadArticulo, consumidorFinal, vendedor, turno, tablaTipoPago} = useContext(MainContext);
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
@@ -271,6 +276,10 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
         <tbody id='tbody'>
           {items.map(item => <ItemArticulo
             key={item.id}
+            setDescuentoIndividual={setDescuentoIndividual(item)}
+            setCantidadIndividual={setCantidadIndividual(item)}
+            setPrecioIndividual={setPrecioIndividual(item)}
+            removeItem={removeItem(item)}
             articulo={item} />)}
         </tbody>
         <tfoot>

@@ -2,12 +2,12 @@ import React from 'react';
 import dialogs from '../utilities/dialogs';
 import { money } from '../utilities/format';
 
-export default function ItemArticulo ({articulo, dispatch}) {
+export default function ItemArticulo ({articulo, setDescuentoIndividual, setPrecioIndividual, setCantidadIndividual, removeItem}) {
   const {AÑADE_STOCK, REMOVE_STOCK, CANTIDAD, CODIGO, DESCRIPCION, STOCK, PRECIO_BASE, PRECIO_COSTO, PRECIO_UNITARIO, DESCUENTO} = articulo;
 
-  const removeItem = () => {
+  const handleRemoveItem = () => {
     dialogs.confirm(
-      confirmed => confirmed && dispatch({type: 'removeItem', payload: articulo}),
+      confirmed => confirmed && removeItem(),
       'Eliminar Item?', // Message text
       'CONFIRMAR', // Confirm text
       'VOLVER' // Cancel text
@@ -16,18 +16,10 @@ export default function ItemArticulo ({articulo, dispatch}) {
 
   const cantidadHandler = event => {
     if (parseInt(event.target.value) === 0) {
-      removeItem();
+      handleRemoveItem();
     } else {
-      dispatch({type: 'setCantidadIndividual', payload: {articulo, value: event.target.value}});
+      setCantidadIndividual(event);
     }
-  };
-
-  const precioHandler = event => {
-    dispatch({type: 'setPrecioIndividual', payload: {articulo, value: event.target.value}});
-  };
-
-  const descuentoHandler = event => {
-    dispatch({type: 'setDescuentoIndividual', payload: {articulo, value: event.target.value}});
   };
 
   return (
@@ -47,14 +39,14 @@ export default function ItemArticulo ({articulo, dispatch}) {
 
       {PRECIO_UNITARIO &&
       <td className='tabla-transaccion-cell tabla-transaccion-precioUnitario'>
-        <input type='number' value={PRECIO_UNITARIO} min='0' onChange={precioHandler} />
+        <input type='number' value={PRECIO_UNITARIO} min='0' onChange={setPrecioIndividual} />
       </td>}
 
       {PRECIO_UNITARIO && <td className='tabla-transaccion-cell tabla-transaccion-precioTotal'>{money(PRECIO_UNITARIO * CANTIDAD)}</td>}
 
       {(DESCUENTO || DESCUENTO === 0) &&
       <td className='tabla-transaccion-cell tabla-transaccion-descuentoIndividual'>
-        <input type='number' value={DESCUENTO} min='0' onChange={descuentoHandler} />
+        <input type='number' value={DESCUENTO} min='0' onChange={setDescuentoIndividual} />
       </td>}
 
     </tr>
