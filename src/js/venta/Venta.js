@@ -1,5 +1,5 @@
 import { format as dateFormat } from 'date-fns';
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { connect } from 'react-redux';
 import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
@@ -27,6 +27,13 @@ const codigoFormWidth = {width: '15rem'};
 const observacionesFormWidth = {width: '40vw'};
 const agregarPagoColor = {color: 'green'};
 
+const requestLastNumeroVenta = () => (dispatch) => {
+  dispatch({type: 'REQUEST_LAST_VENTA_PENDING'});
+  databaseRead.getLastNumeroFactura()
+    .then(lastId => dispatch({type: 'REQUEST_LAST_VENTA_SUCCESS', payload: lastId}))
+    .catch(error => dispatch({type: 'REQUEST_LAST_VENTA_FAILED', payload: error}));
+};
+
 const mapStateToProps = state => ({
   descuento: state.venta.descuento,
   cliente: state.venta.cliente,
@@ -36,7 +43,9 @@ const mapStateToProps = state => ({
   observaciones: state.venta.observaciones,
   numeroFactura: state.venta.numeroFactura,
   pagos: state.venta.pagos,
-  items: state.venta.items
+  items: state.venta.items,
+  isPending: state.venta.isPending,
+  error: state.venta.error
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -48,12 +57,13 @@ const mapDispatchToProps = dispatch => ({
   setTipoPago: (tipoPago) => dispatch({type: 'venta_setTipoPago', payload: tipoPago}),
   setDescuento: (descuento) => dispatch({type: 'venta_setDescuento', payload: descuento}),
   setObservaciones: (observaciones) => dispatch({type: 'venta_setObservaciones', payload: observaciones}),
-  nuevo: (obj) => dispatch({type: 'venta_nueva', payload: obj})
+  nuevo: (obj) => dispatch({type: 'venta_nueva', payload: obj}),
+  onRequestLastVenta: () => dispatch(requestLastNumeroVenta())
 });
 
 function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos, tipoPago,
   addOne, addItem, addPago, vaciar, setCliente,
-  setTipoPago, setDescuento, setObservaciones, nuevo}) {
+  setTipoPago, setDescuento, setObservaciones, nuevo, onRequestLastVenta}) {
   const {updateCantidadArticulo, consumidorFinal, vendedor, turno, tablaTipoPago} = useContext(MainContext);
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
@@ -63,24 +73,20 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
     () => items.reduce((total, item) => total + item.CANTIDAD * item.PRECIO_UNITARIO, 0),
     [items]);
 
-  const getNuevaFactura = async () => {
-    const lastNumeroFactura = await databaseRead.getLastNumeroFactura();
+  const getNuevaFactura = () => {
+    onRequestLastVenta();
+    vaciar();
     nuevo({
-      numeroFactura: lastNumeroFactura.lastId + 1,
       cliente: consumidorFinal,
       vendedor,
       turno,
-      descuento: 0,
-      pagos: [],
-      items: [],
-      tipoPago: tablaTipoPago[0],
-      observaciones: ''
+      tipoPago: tablaTipoPago[0]
     });
   };
 
-  if (numeroFactura === 0) {
+  useEffect(() => {
     getNuevaFactura();
-  }
+  }, []);
 
   const handleCodigoSearch = (event) => {
     if (!event) return false;

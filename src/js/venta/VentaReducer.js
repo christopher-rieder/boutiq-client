@@ -9,6 +9,8 @@ const ventaInitialState = {
   observaciones: '',
   numeroFactura: 0,
   pagos: [],
+  isPending: false,
+  error: '',
   items: []
 };
 
@@ -153,6 +155,12 @@ const ventaReducer = (state = ventaInitialState, action) => {
       return setCantidadIndividual(state, action.payload);
     case 'venta_setPrecioIndividual':
       return setPrecioIndividual(state, action.payload);
+    case 'REQUEST_LAST_VENTA_PENDING':
+      return { ...state, isPending: true };
+    case 'REQUEST_LAST_VENTA_SUCCESS':
+      return { ...state, numeroFactura: action.payload.lastId + 1, isPending: false };
+    case 'REQUEST_LAST_VENTA_FAILED':
+      return { ...state, error: action.payload, isPending: false };
     default:
       return state;
   }
