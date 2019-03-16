@@ -116,34 +116,42 @@ const removeItem = (state, articulo) => {
 
 const ventaReducer = (state = ventaInitialState, action) => {
   switch (action.type) {
-    case 'nuevaFactura':
+    case 'venta_nueva':
       return {
         ...state,
         ...action.payload
       };
-    case 'setCliente':
+    case 'venta_vaciar':
+      return {
+        ...state,
+        observaciones: '',
+        items: [],
+        pagos: [],
+        descuento: 0
+      };
+    case 'venta_setCliente':
       return { ...state, cliente: action.payload };
-    case 'setObservaciones':
+    case 'venta_setObservaciones':
       return { ...state, observaciones: action.payload };
-    case 'addPago':
+    case 'venta_addPago':
       return { ...state, pagos: state.pagos.concat(action.payload) };
-    case 'removePago':
+    case 'venta_removePago':
       return { ...state };
-    case 'setDescuento':
+    case 'venta_setDescuento':
       return setDescuento(state, action.payload);
-    case 'setTipoPago':
+    case 'venta_setTipoPago':
       return setTipoDePago(state, action.payload);
-    case 'addItem':
+    case 'venta_addItem':
       return addItem(state, action.payload);
-    case 'removeItem':
+    case 'venta_removeItem':
       return removeItem(state, action.payload);
-    case 'addOneQuantityItem':
+    case 'venta_addOneQuantityItem':
       return addOneQuantityItem(state, action.payload);
-    case 'setDescuentoIndividual':
+    case 'venta_setDescuentoIndividual':
       return setDescuentoIndividual(state, action.payload);
-    case 'setCantidadIndividual':
+    case 'venta_setCantidadIndividual':
       return setCantidadIndividual(state, action.payload);
-    case 'setPrecioIndividual':
+    case 'venta_setPrecioIndividual':
       return setPrecioIndividual(state, action.payload);
     default:
       return state;

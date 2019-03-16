@@ -40,19 +40,19 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  addOneAction: (codigo) => dispatch({type: 'addOneQuantityItem', payload: codigo}),
-  addItemAction: (articulo) => dispatch({type: 'addItem', payload: articulo}),
-  addPagoAction: (pago) => dispatch({type: 'addPago', payload: pago}),
-  vaciarAction: () => dispatch({type: 'nuevaFactura', payload: {observaciones: '', items: [], pagos: [], descuento: 0}}),
-  setCliente: (cliente) => dispatch({type: 'setCliente', payload: cliente}),
-  setTipoPago: (tipoPago) => dispatch({type: 'setTipoPago', payload: tipoPago}),
-  setDescuento: (descuento) => dispatch({type: 'setDescuento', payload: descuento}),
-  setObservaciones: (observaciones) => dispatch({type: 'setObservaciones', payload: observaciones}),
-  nuevo: (obj) => dispatch({type: 'nuevaFactura', payload: obj})
+  addOne: (codigo) => dispatch({type: 'venta_addOneQuantityItem', payload: codigo}),
+  addItem: (articulo) => dispatch({type: 'venta_addItem', payload: articulo}),
+  addPago: (pago) => dispatch({type: 'venta_addPago', payload: pago}),
+  vaciar: () => dispatch({type: 'venta_vaciar'}),
+  setCliente: (cliente) => dispatch({type: 'venta_setCliente', payload: cliente}),
+  setTipoPago: (tipoPago) => dispatch({type: 'venta_setTipoPago', payload: tipoPago}),
+  setDescuento: (descuento) => dispatch({type: 'venta_setDescuento', payload: descuento}),
+  setObservaciones: (observaciones) => dispatch({type: 'venta_setObservaciones', payload: observaciones}),
+  nuevo: (obj) => dispatch({type: 'venta_nueva', payload: obj})
 });
 
 function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos, tipoPago,
-  addOneAction, addItemAction, addPagoAction, vaciarAction, setCliente,
+  addOne, addItem, addPago, vaciar, setCliente,
   setTipoPago, setDescuento, setObservaciones, nuevo}) {
   const {updateCantidadArticulo, consumidorFinal, vendedor, turno, tablaTipoPago} = useContext(MainContext);
   const [displayModal, setDisplayModal] = useState(false);
@@ -82,19 +82,19 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
     getNuevaFactura();
   }
 
-  const addItemHandler = (event) => {
+  const handleCodigoSearch = (event) => {
     if (!event) return false;
     if (event.which !== 13) return false;
     if (event.target.value === '') return false;
-    addItem(event.target.value);
+    handleAddItem(event.target.value);
     event.target.value = '';
   };
 
-  const addItem = (data) => {
+  const handleAddItem = (data) => {
     const cod = typeof data === 'string' ? data : data.CODIGO;
     const articulo = items.find(item => item.CODIGO === cod);
     if (articulo) {
-      addOneAction(cod);
+      addOne(cod);
       dialogs.success('AGREGADO!!!  +1');
       var aud = new window.Audio(audioOk);
       aud.play();
@@ -106,7 +106,7 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
             var aud2 = new window.Audio(audioError);
             aud2.play();
           } else {
-            addItemAction(res);
+            addItem(res);
             dialogs.success('AGREGADO!!!');
             var aud = new window.Audio(audioOk);
             aud.play();
@@ -138,7 +138,7 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
         DESCUENTO: descuento,
         OBSERVACIONES: observaciones,
         CLIENTE_ID: cliente.id,
-        TURNO_ID: turno.id // TODO: MAKE TURNO
+        TURNO_ID: turno.id
       }, 'factura').then(json => json.lastId);
 
       items.forEach(item => {
@@ -178,38 +178,38 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
     }
   };
 
-  function addPago (pago) {
+  function handleAddPago (pago) {
     // TODO: insert pago logic here...
-    addPagoAction(pago);
+    addPago(pago);
   }
 
-  function handleAgregarPago () {
-    setModalContent(
-      <AgregarPago
-        handleSelection={addPago}
-        setDisplayModal={setDisplayModal}
-      />
-    );
-    setDisplayModal(true);
-  }
-
-  const vaciar = (event) => {
+  const handleVaciar = (event) => {
     dialogs.confirm(
-      confirmed => confirmed && vaciarAction(), // Callback
+      confirmed => confirmed && vaciar(), // Callback
       'VACIAR VENTA?', // Message text
       'SI', // Confirm text
       'NO' // Cancel text
     );
   };
 
-  // // function processSeña () {
-  // //   // TODO: process seña stuff
-  // // }
+  function handleSeña () {
+    // TODO: process seña stuff
+  }
+
+  function pagoModal () {
+    setModalContent(
+      <AgregarPago
+        handleSelection={handleAddPago}
+        setDisplayModal={setDisplayModal}
+      />
+    );
+    setDisplayModal(true);
+  }
 
   const articuloModal = () => {
     setModalContent(
       <ConsultaArticulo
-        handleSelection={addItem}
+        handleSelection={handleAddItem}
         setDisplayModal={setDisplayModal} />
     );
     setDisplayModal(true);
@@ -239,7 +239,7 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
         <InputTextField name='Cliente' value={cliente.NOMBRE} readOnly onClick={clienteModal} />
         <InputSelect table={tablaTipoPago} name='Tipos de pago' accessor='NOMBRE' value={tipoPago} setValue={setTipoPago} />
         <InputFloatField name='Descuento' value={descuento} maxValue={DESCUENTO_MAXIMO} setValue={setDescuento} autoComplete='off' />
-        <UncontrolledInput style={codigoFormWidth} name='Codigo' autoFocus autoComplete='off' onKeyPress={addItemHandler} />
+        <UncontrolledInput style={codigoFormWidth} name='Codigo' autoFocus autoComplete='off' onKeyPress={handleCodigoSearch} />
         <Button variant='outlined' color='primary' onClick={articuloModal} >
           Buscar Articulo &nbsp;
           <SearchIcon />
@@ -283,11 +283,11 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
       <div className='panel'>
-        <Button variant='outlined' style={agregarPagoColor} onClick={handleAgregarPago} >
+        <Button variant='outlined' style={agregarPagoColor} onClick={pagoModal} >
           Agregar Pago &nbsp;
           <MoneyIcon />
         </Button>
-        <Button variant='outlined' color='secondary' onClick={vaciar}>
+        <Button variant='outlined' color='secondary' onClick={handleVaciar}>
           Vaciar &nbsp;
           <DeleteIcon />
         </Button>
