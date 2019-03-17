@@ -1,63 +1,89 @@
 import { format as dateFormat } from 'date-fns';
-import React, { useEffect, useState, useContext, useReducer } from 'react';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
-import { InputTextField } from '../components/inputs';
+import { InputTextField, UncontrolledInput } from '../components/inputs';
 import Modal from '../components/modal';
 import ConsultaArticulo from '../crud/consultaArticulo';
 import * as databaseRead from '../database/getData';
 import {postObjectToAPI} from '../database/writeData';
 import dialogs from '../utilities/dialogs';
-import { MainContext } from '../context/MainContext';
-import { retiroReducer } from './RetiroReducer';
 import ItemArticulo from '../components/ItemArticulo';
+import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
+import SendIcon from '@material-ui/icons/SendTwoTone';
+import SearchIcon from '@material-ui/icons/Search';
 
-export default function Retiro (props) {
-  const {updateCantidadArticulo, vendedor, turno} = useContext(MainContext);
-  const [state, dispatch] = useReducer(
-    retiroReducer,
-    { observaciones: '',
-      numeroRetiro: 0,
-      vendedor,
-      turno,
-      items: []});
-  const [codigo, setCodigo] = useState('');
+const numeroFormWidth = {width: '5rem'};
+const codigoFormWidth = {width: '15rem'};
+const observacionesFormWidth = {width: '40vw'};
+
+const requestLastNumeroRetiro = () => (dispatch) => {
+  dispatch({type: 'REQUEST_LAST_RETIRO_PENDING'});
+  databaseRead.getLastNumeroRetiro()
+    .then(lastId => dispatch({type: 'REQUEST_LAST_RETIRO_SUCCESS', payload: lastId}))
+    .catch(error => dispatch({type: 'REQUEST_LAST_RETIRO_FAILED', payload: error}));
+};
+
+const mapStateToProps = state => ({
+  observaciones: state.retiro.observaciones,
+  numeroRetiro: state.retiro.numeroRetiro,
+  items: state.retiro.items,
+  isPending: state.retiro.isPending,
+  error: state.retiro.error,
+  vendedor: state.session.vendedor,
+  turno: state.session.turno
+});
+
+const mapDispatchToProps = dispatch => ({
+  addOne: (codigo) => dispatch({type: 'retiro_addOneQuantityItem', payload: codigo}),
+  addItem: (articulo) => dispatch({type: 'retiro_addItem', payload: articulo}),
+  vaciar: () => dispatch({type: 'retiro_vaciar'}),
+  setObservaciones: (observaciones) => dispatch({type: 'retiro_setObservaciones', payload: observaciones}),
+  nuevo: (obj) => dispatch({type: 'retiro_nuevo', payload: obj}),
+  onRequestLastRetiro: () => dispatch(requestLastNumeroRetiro()),
+  setCantidadIndividual: (articulo) => event => dispatch({type: 'retiro_setCantidadIndividual', payload: {articulo, value: event.target.value}}),
+  removeItem: (articulo) => () => dispatch({type: 'retiro_removeItem', payload: articulo}),
+  updateCantidadArticulo: (id, cantidad, suma) => dispatch({type: 'UPDATE_ARTICULO_CANTIDAD', payload: {id, cantidad, suma}})
+});
+
+function Retiro ({
+  observaciones, numeroRetiro, items, isPending, error, vendedor, turno,
+  addOne, addItem, vaciar, setObservaciones, nuevo,
+  onRequestLastRetiro, setCantidadIndividual, removeItem, updateCantidadArticulo
+}) {
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
   const getNuevoRetiro = async () => {
-    const lastNumeroRetiro = await databaseRead.getLastNumeroRetiro();
-    dispatch({
-      type: 'nuevo',
-      payload: {
-        numeroRetiro: lastNumeroRetiro.lastId + 1,
-        items: [],
-        turno,
-        vendedor,
-        observaciones: ''
-      }
+    onRequestLastRetiro();
+    vaciar();
+    nuevo({
+      vendedor,
+      turno
     });
   };
 
   useEffect(() => {
-    if (state.numeroRetiro === 0) {
-      getNuevoRetiro();
-    }
+    getNuevoRetiro();
   }, []);
 
-  const addItemHandler = (event) => {
-    if (!codigo) return false;
+  const handleCodigoSearch = (event) => {
+    if (!event) return false;
     if (event.which !== 13) return false;
-    addItem();
+    if (event.target.value === '') return false;
+    handleAddItem(event.target.value);
+    event.target.value = '';
   };
 
   // full data needed:
   // data, codigo, state.items, dispatch, setCodigo
-  const addItem = (data) => {
-    const cod = data ? data.CODIGO : codigo;
-    const articulo = state.items.find(item => item.CODIGO === cod);
+  const handleAddItem = (data) => {
+    const cod = typeof data === 'string' ? data : data.CODIGO;
+    const articulo = items.find(item => item.CODIGO === cod);
     if (articulo) {
-      dispatch({type: 'addOneQuantityItem', payload: cod});
+      addOne(cod);
       dialogs.success('AGREGADO!!!  +1');
       var aud = new window.Audio(audioOk);
       aud.play();
@@ -69,45 +95,18 @@ export default function Retiro (props) {
             var aud2 = new window.Audio(audioError);
             aud2.play();
           } else {
-            dispatch({type: 'addItem', payload: res});
+            addItem(res);
             dialogs.success('AGREGADO!!!');
             var aud = new window.Audio(audioOk);
             aud.play();
           }
         });
     }
-    setCodigo('');
-  };
-
-  const postToAPI = async () => {
-    try {
-      const retiroId = await postObjectToAPI({
-        NUMERO_RETIRO: state.numeroRetiro,
-        FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
-        OBSERVACIONES: state.observaciones,
-        TURNO_ID: turno.id
-      }, 'retiro').then(json => json.lastId);
-
-      state.items.forEach(item => {
-        // updating local state, same thing happens in the backend
-        updateCantidadArticulo(item.id, item.CANTIDAD, false);
-        postObjectToAPI({
-          RETIRO_ID: retiroId,
-          CANTIDAD: item.CANTIDAD,
-          ARTICULO_ID: item.id
-        }, 'itemRetiro');
-      });
-
-      dialogs.success(`RETIRO ${state.numeroRetiro} REALIZADO!!!`);
-      getNuevoRetiro();
-    } catch (err) {
-      dialogs.error(`ERROR! ${err}`);
-    }
   };
 
   const handleSubmit = event => {
     event.preventDefault();
-    if (state.items.length === 0) {
+    if (items.length === 0) {
       dialogs.error('Retiro vacio; no agregada');
     } else {
       // TODO: VALIDATIONS
@@ -120,6 +119,32 @@ export default function Retiro (props) {
     }
   };
 
+  const postToAPI = async () => {
+    try {
+      const retiroId = await postObjectToAPI({
+        NUMERO_RETIRO: numeroRetiro,
+        FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
+        OBSERVACIONES: observaciones,
+        TURNO_ID: turno.id
+      }, 'retiro').then(json => json.lastId);
+
+      items.forEach(item => {
+        // updating local state, same thing happens in the backend
+        updateCantidadArticulo(item.id, item.CANTIDAD, false);
+        postObjectToAPI({
+          RETIRO_ID: retiroId,
+          CANTIDAD: item.CANTIDAD,
+          ARTICULO_ID: item.id
+        }, 'itemRetiro');
+      });
+
+      dialogs.success(`RETIRO ${numeroRetiro} REALIZADO!!!`);
+      getNuevoRetiro();
+    } catch (err) {
+      dialogs.error(`ERROR! ${err}`);
+    }
+  };
+
   const articuloModal = () => {
     setModalContent(
       <ConsultaArticulo
@@ -129,11 +154,10 @@ export default function Retiro (props) {
     setDisplayModal(true);
   };
 
-  const vaciar = (event) => {
-    const vaciarAction = {type: 'nuevo', payload: {observaciones: '', items: []}};
+  const handleVaciar = (event) => {
     dialogs.confirm(
-      confirmed => confirmed && dispatch(vaciarAction), // Callback
-      'VACIAR RETIRO?', // Message text
+      confirmed => confirmed && vaciar(), // Callback
+      'VACIAR VENTA?', // Message text
       'SI', // Confirm text
       'NO' // Cancel text
     );
@@ -146,13 +170,16 @@ export default function Retiro (props) {
           {modalContent}
         </Modal>
       }
-      <InputTextField name='Retiro' value={state.numeroRetiro} readOnly />
+      <InputTextField style={numeroFormWidth} name='Retiro' value={numeroRetiro} readOnly />
       <div className='panel'>
-        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addItemHandler} setValue={setCodigo} />
-        <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
+        <UncontrolledInput style={codigoFormWidth} name='Codigo' autoFocus autoComplete='off' onKeyPress={handleCodigoSearch} />
+        <Button variant='outlined' color='primary' onClick={articuloModal} >
+          Buscar Articulo &nbsp;
+          <SearchIcon />
+        </Button>
       </div>
       <div className='panel'>
-        <InputTextField style={{width: '40vw'}} name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
+        <InputTextField style={observacionesFormWidth} name='Observaciones' value={observaciones} setValue={setObservaciones} />
       </div>
       <table id='table'>
         <thead>
@@ -167,23 +194,30 @@ export default function Retiro (props) {
           </tr>
         </thead>
         <tbody id='tbody'>
-          {state.items.map(item => <ItemArticulo
+          {items.map(item => <ItemArticulo
             key={item.id}
-            dispatch={dispatch}
+            setCantidadIndividual={setCantidadIndividual(item)}
+            removeItem={removeItem(item)}
             articulo={item} />)}
         </tbody>
       </table>
       <div className='panel'>
-        <InputTextField readOnly name='Vendedor' value={state.vendedor.NOMBRE} />
-        <InputTextField readOnly name='Turno' value={state.turno.id} />
+        <InputTextField readOnly name='Vendedor' value={vendedor.NOMBRE} />
+        <InputTextField readOnly name='Turno' value={turno.id} />
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
       <div className='panel'>
-        <button className='codigo-search' onClick={handleSubmit}>AGREGAR RETIRO</button>
-      </div>
-      <div className='panel'>
-        <button className='codigo-search' onClick={vaciar}>VACIAR SEÑA</button>
+        <Button variant='outlined' color='secondary' onClick={handleVaciar}>
+          Vaciar &nbsp;
+          <DeleteIcon />
+        </Button>
+        <Button variant='contained' color='primary' onClick={handleSubmit}>
+          Realizar Compra &nbsp;
+          <SendIcon />
+        </Button>
       </div>
     </React.Fragment>
   );
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Retiro);

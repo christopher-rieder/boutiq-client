@@ -1,3 +1,10 @@
+const initialState = {
+  observaciones: '',
+  numeroRetiro: 0,
+  vendedor: {id: 0, NOMBRE: ''},
+  turno: {id: 0},
+  items: []
+};
 
 const addItem = (state, articulo) => {
   const newItem = {
@@ -42,23 +49,35 @@ const removeItem = (state, articulo) => {
   };
 };
 
-const retiroReducer = (state, action) => {
+const retiroReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'nuevo':
+    case 'retiro_nuevo':
       return {
         ...state,
         ...action.payload
       };
-    case 'setObservaciones':
+    case 'retiro_vaciar':
+      return {
+        ...state,
+        observaciones: '',
+        items: []
+      };
+    case 'retiro_setObservaciones':
       return { ...state, observaciones: action.payload };
-    case 'addItem':
+    case 'retiro_addItem':
       return addItem(state, action.payload);
-    case 'removeItem':
+    case 'retiro_removeItem':
       return removeItem(state, action.payload);
-    case 'addOneQuantityItem':
+    case 'retiro_addOneQuantityItem':
       return addOneQuantityItem(state, action.payload);
-    case 'setCantidadIndividual':
+    case 'retiro_setCantidadIndividual':
       return setCantidadIndividual(state, action.payload);
+    case 'REQUEST_LAST_RETIRO_PENDING':
+      return { ...state, isPending: true };
+    case 'REQUEST_LAST_RETIRO_SUCCESS':
+      return { ...state, numeroRetiro: action.payload.lastId + 1, isPending: false };
+    case 'REQUEST_LAST_RETIRO_FAILED':
+      return { ...state, error: action.payload, isPending: false };
     default:
       return state;
   }
