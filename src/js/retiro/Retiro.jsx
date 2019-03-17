@@ -66,7 +66,9 @@ function Retiro ({
   };
 
   useEffect(() => {
-    getNuevoRetiro();
+    if (numeroRetiro === 0) {
+      getNuevoRetiro();
+    }
   }, []);
 
   const handleCodigoSearch = (event) => {

@@ -92,7 +92,9 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
   };
 
   useEffect(() => {
-    getNuevaFactura();
+    if (numeroFactura === 0) {
+      getNuevaFactura();
+    }
   }, []);
 
   const handleCodigoSearch = (event) => {

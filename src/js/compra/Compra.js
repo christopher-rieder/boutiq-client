@@ -73,7 +73,9 @@ function Compra ({
   };
 
   useEffect(() => {
-    getNuevaCompra();
+    if (numeroCompra === 0) {
+      getNuevaCompra();
+    }
   }, []);
 
   const handleCodigoSearch = (event) => {

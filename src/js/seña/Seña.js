@@ -74,7 +74,9 @@ function Seña ({
   };
 
   useEffect(() => {
-    getNuevaSeña();
+    if (numeroSeña === 0) {
+      getNuevaSeña();
+    }
   }, []);
 
   const handleCodigoSearch = (event) => {
