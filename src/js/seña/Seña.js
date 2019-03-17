@@ -41,17 +41,17 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  addOne: (codigo) => dispatch({type: 'retiro_addOneQuantityItem', payload: codigo}),
-  addItem: (articulo) => dispatch({type: 'retiro_addItem', payload: articulo}),
-  addPago: (pago) => dispatch({type: 'retiro_addPago', payload: pago}),
-  vaciar: () => dispatch({type: 'retiro_vaciar'}),
-  setCliente: (cliente) => dispatch({type: 'retiro_setCliente', payload: cliente}),
-  setObservaciones: (observaciones) => dispatch({type: 'retiro_setObservaciones', payload: observaciones}),
+  addOne: (codigo) => dispatch({type: 'seña_addOneQuantityItem', payload: codigo}),
+  addItem: (articulo) => dispatch({type: 'seña_addItem', payload: articulo}),
+  addPago: (pago) => dispatch({type: 'seña_addPago', payload: pago}),
+  vaciar: () => dispatch({type: 'seña_vaciar'}),
+  setCliente: (cliente) => dispatch({type: 'seña_setCliente', payload: cliente}),
+  setObservaciones: (observaciones) => dispatch({type: 'seña_setObservaciones', payload: observaciones}),
   setMonto: (monto) => dispatch({type: 'seña_setMonto', payload: monto}),
-  nuevo: (obj) => dispatch({type: 'retiro_nueva', payload: obj}),
+  nuevo: (obj) => dispatch({type: 'seña_nueva', payload: obj}),
   onRequestLastSeña: () => dispatch(requestLastNumeroSeña()),
-  setCantidadIndividual: (articulo) => event => dispatch({type: 'retiro_setCantidadIndividual', payload: {articulo, value: event.target.value}}),
-  removeItem: (articulo) => () => dispatch({type: 'retiro_removeItem', payload: articulo}),
+  setCantidadIndividual: (articulo) => event => dispatch({type: 'seña_setCantidadIndividual', payload: {articulo, value: event.target.value}}),
+  removeItem: (articulo) => () => dispatch({type: 'seña_removeItem', payload: articulo}),
   updateCantidadArticulo: (id, cantidad, suma) => dispatch({type: 'UPDATE_ARTICULO_CANTIDAD', payload: {id, cantidad, suma}})
 });
 
