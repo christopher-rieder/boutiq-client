@@ -4,6 +4,7 @@ const compraInitialState = {
   turno: {id: 0},
   observaciones: '',
   numeroCompra: 0,
+  isPending: true,
   items: []
 };
 
@@ -49,25 +50,40 @@ const setCantidadIndividual = (state, {articulo, value}) => {
   };
 };
 
-const compraReducer = (state, action) => {
+const compraReducer = (state = compraInitialState, action) => {
   switch (action.type) {
-    case 'nuevaCompra':
+    case 'compra_nueva':
       return {
         ...state,
         ...action.payload
       };
-    case 'setProveedor':
+    case 'compra_vaciar':
+      return {
+        ...state,
+        observaciones: '',
+        items: [],
+        pagos: [],
+        descuento: 0
+      };
+
+    case 'compra_setProveedor':
       return { ...state, proveedor: action.payload };
-    case 'setObservaciones':
+    case 'compra_setObservaciones':
       return { ...state, observaciones: action.payload };
-    case 'addItem':
+    case 'compra_addItem':
       return addItem(state, action.payload);
-    case 'removeItem':
+    case 'compra_removeItem':
       return removeItem(state, action.payload);
-    case 'addOneQuantityItem':
+    case 'compra_addOneQuantityItem':
       return addOneQuantityItem(state, action.payload);
-    case 'setCantidadIndividual':
+    case 'compra_setCantidadIndividual':
       return setCantidadIndividual(state, action.payload);
+    case 'REQUEST_LAST_COMPRA_PENDING':
+      return { ...state, isPending: true };
+    case 'REQUEST_LAST_COMPRA_SUCCESS':
+      return { ...state, numeroCompra: action.payload.lastId + 1, isPending: false };
+    case 'REQUEST_LAST_COMPRA_FAILED':
+      return { ...state, error: action.payload, isPending: false };
     default:
       return state;
   }

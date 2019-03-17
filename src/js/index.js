@@ -12,10 +12,12 @@ import constantsReducer from './context/ConstantsReducer';
 import defaultsReducer from './context/DefaultsReducer';
 import commonTablesReducer from './context/CommonTablesReducer';
 import sessionReducer from './context/SessionReducer';
+import { compraReducer } from './compra/CompraReducer';
 
 const logger = createLogger();
 const rootReducer = combineReducers({
   venta: ventaReducer,
+  compra: compraReducer,
   constants: constantsReducer,
   defaults: defaultsReducer,
   tabla: commonTablesReducer,

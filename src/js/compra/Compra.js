@@ -1,5 +1,6 @@
 import { format as dateFormat } from 'date-fns';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import CrudArticulo from '../crud/crudArticulo';
 
 import Consulta from '../crud/consulta';
@@ -8,49 +9,86 @@ import dialogs from '../utilities/dialogs';
 import * as databaseRead from '../database/getData';
 import {postObjectToAPI} from '../database/writeData';
 import ConsultaArticulo from '../crud/consultaArticulo';
-import { InputTextField } from '../components/inputs';
+import { InputTextField, UncontrolledInput } from '../components/inputs';
 import audioOk from '../../resources/audio/ok.wav';
 import Modal from '../components/modal';
-import { MainContext } from '../context/MainContext';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SendIcon from '@material-ui/icons/SendTwoTone';
 import SearchIcon from '@material-ui/icons/Search';
 import CreateIcon from '@material-ui/icons/Create';
 
-export default function Compra (props) {
-  const {compraState: state, compraDispatch: dispatch} = useContext(MainContext);
-  const {updateCantidadArticulo, proveedorDefault, vendedor, turno} = useContext(MainContext);
-  const [codigo, setCodigo] = useState('');
+const codigoFormWidth = {width: '15rem'};
+
+const requestLastNumeroCompra = () => (dispatch) => {
+  dispatch({type: 'REQUEST_LAST_COMPRA_PENDING'});
+  databaseRead.getLastNumeroCompra()
+    .then(lastId => dispatch({type: 'REQUEST_LAST_COMPRA_SUCCESS', payload: lastId}))
+    .catch(error => dispatch({type: 'REQUEST_LAST_COMPRA_FAILED', payload: error}));
+};
+
+const mapStateToProps = state => ({
+  proveedor: state.compra.proveedor,
+  observaciones: state.compra.observaciones,
+  numeroCompra: state.compra.numeroCompra,
+  isPending: state.compra.isPending,
+  items: state.compra.items,
+  proveedorDefault: state.defaults.proveedorDefault,
+  vendedor: state.session.vendedor,
+  turno: state.session.turno
+});
+
+const mapDispatchToProps = dispatch => ({
+  addOne: (codigo) => dispatch({type: 'compra_addOneQuantityItem', payload: codigo}),
+  addItem: (articulo) => dispatch({type: 'compra_addItem', payload: articulo}),
+  vaciar: () => dispatch({type: 'compra_vaciar'}),
+  setProveedor: (proveedor) => dispatch({type: 'compra_setProveedor', payload: proveedor}),
+  setTipoPago: (tipoPago) => dispatch({type: 'compra_setTipoPago', payload: tipoPago}),
+  setObservaciones: (observaciones) => dispatch({type: 'compra_setObservaciones', payload: observaciones}),
+  nuevo: (obj) => dispatch({type: 'compra_nueva', payload: obj}),
+  onRequestLastCompra: () => dispatch(requestLastNumeroCompra()),
+  setCantidadIndividual: (articulo) => event => dispatch({type: 'compra_setCantidadIndividual', payload: {articulo, value: event.target.value}}),
+  removeItem: (articulo) => () => dispatch({type: 'compra_removeItem', payload: articulo}),
+  updateCantidadArticulo: (id, cantidad, suma) => dispatch({type: 'UPDATE_ARTICULO_CANTIDAD', payload: {id, cantidad, suma}})
+});
+
+// const {updateCantidadArticulo, proveedorDefault, vendedor, turno} = useContext(MainContext);
+function Compra ({
+  proveedor, vendedor, turno, observaciones, numeroCompra, isPending, items,
+  addOne, addItem, vaciar, removeItem, setCantidadIndividual,
+  setProveedor, setTipoPago, setObservaciones, nuevo, proveedorDefault,
+  onRequestLastCompra, updateCantidadArticulo
+}) {
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
   const getNuevaCompra = async () => {
-    const lastNumeroCompra = await databaseRead.getLastNumeroCompra();
-    dispatch({
-      type: 'nuevaCompra',
-      payload: {
-        numeroCompra: lastNumeroCompra.lastId + 1,
-        proveedor: proveedorDefault,
-        items: [],
-        vendedor,
-        turno,
-        observaciones: ''
-      }
+    onRequestLastCompra();
+    vaciar();
+    nuevo({
+      proveedor: proveedorDefault,
+      vendedor,
+      turno
     });
   };
 
   useEffect(() => {
-    if (state.numeroCompra === 0) {
-      getNuevaCompra();
-    }
+    getNuevaCompra();
   }, []);
 
-  const addItem = (data) => {
-    const cod = data ? data.CODIGO : codigo;
-    const articulo = state.items.find(item => item.CODIGO === cod);
+  const handleCodigoSearch = (event) => {
+    if (!event) return false;
+    if (event.which !== 13) return false;
+    if (event.target.value === '') return false;
+    handleAddItem(event.target.value);
+    event.target.value = '';
+  };
+
+  const handleAddItem = (data) => {
+    const cod = typeof data === 'string' ? data : data.CODIGO;
+    const articulo = items.find(item => item.CODIGO === cod);
     if (articulo) {
-      dispatch({type: 'addOneQuantityItem', payload: cod});
+      addOne(cod);
       dialogs.success('AGREGADO!!!  +1');
       var aud = new window.Audio(audioOk);
       aud.play();
@@ -65,35 +103,18 @@ export default function Compra (props) {
               'NO' // Cancel text
             );
           } else {
-            dispatch({type: 'addItem', payload: res});
+            addItem(res);
             dialogs.success('AGREGADO!!!');
             var aud = new window.Audio(audioOk);
             aud.play();
           }
         });
     }
-    setCodigo('');
-  };
-
-  const vaciar = (event) => {
-    const vaciarAction = {type: 'nuevaCompra', payload: {observaciones: '', items: []}};
-    dialogs.confirm(
-      confirmed => confirmed && dispatch(vaciarAction), // Callback
-      'VACIAR COMPRA?', // Message text
-      'SI', // Confirm text
-      'NO' // Cancel text
-    );
-  };
-
-  const addItemHandler = (event) => {
-    if (!codigo) return false;
-    if (event.which !== 13) return false;
-    addItem();
   };
 
   const handleSubmit = event => {
     event.preventDefault();
-    if (state.items.length === 0) {
+    if (items.length === 0) {
       dialogs.error('Factura vacia; no agregada');
     } else {
       // TODO: VALIDATIONS
@@ -109,14 +130,14 @@ export default function Compra (props) {
   const postToAPI = async () => {
     try {
       const facturaId = await postObjectToAPI({
-        NUMERO_COMPRA: state.numeroCompra,
+        NUMERO_COMPRA: numeroCompra,
         FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
-        OBSERVACIONES: state.observaciones,
-        PROVEEDOR_ID: state.proveedor.id,
+        OBSERVACIONES: observaciones,
+        PROVEEDOR_ID: proveedor.id,
         TURNO_ID: turno.id
       }, 'compra').then(json => json.lastId);
 
-      state.items.forEach(item => {
+      items.forEach(item => {
         // updating local state, same thing happens in the backend
         updateCantidadArticulo(item.id, item.CANTIDAD, true);
         postObjectToAPI({
@@ -126,12 +147,21 @@ export default function Compra (props) {
         }, 'itemCompra');
       });
 
-      dialogs.success(`COMPRA ${state.numeroCompra} REALIZADA!!!`);
+      dialogs.success(`COMPRA ${numeroCompra} REALIZADA!!!`);
       getNuevaCompra();
     } catch (err) {
       dialogs.error(`ERROR! ${err}`);
     }
-  }; // TODO: post factura
+  };
+
+  const handleVaciar = (event) => {
+    dialogs.confirm(
+      confirmed => confirmed && vaciar(), // Callback
+      'VACIAR VENTA?', // Message text
+      'SI', // Confirm text
+      'NO' // Cancel text
+    );
+  };
 
   const articuloModal = () => {
     setModalContent(
@@ -142,7 +172,7 @@ export default function Compra (props) {
     setDisplayModal(true);
   };
 
-  const crudArticuloModal = () => {
+  const crudArticuloModal = (codigo) => { // TODO: how to call from button?
     setModalContent(
       <CrudArticulo
         initialState={{codigo}}
@@ -158,7 +188,7 @@ export default function Compra (props) {
         table='proveedor'
         columnsWidths={[40, 400, 120, 120, 120]}
         setDisplayModal={setDisplayModal}
-        handleSelection={obj => dispatch({type: 'setProveedor', payload: obj})} />
+        handleSelection={setProveedor} />
     );
     setDisplayModal(true);
   };
@@ -171,11 +201,11 @@ export default function Compra (props) {
         </Modal>
       }
       <div className='panel'>
-        <InputTextField name='Compra' value={state.numeroCompra} readOnly />
-        <InputTextField name='Proveedor' value={state.proveedor.NOMBRE} readOnly onClick={proveedorModal} />
+        <InputTextField name='Compra' value={numeroCompra} readOnly />
+        <InputTextField name='Proveedor' value={proveedor.NOMBRE} readOnly onClick={proveedorModal} />
       </div>
       <div className='panel'>
-        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addItemHandler} setValue={setCodigo} />
+        <UncontrolledInput style={codigoFormWidth} name='Codigo' autoFocus autoComplete='off' onKeyPress={handleCodigoSearch} />
         <Button variant='outlined' color='primary' onClick={articuloModal} >
           Buscar Articulo &nbsp;
           <SearchIcon />
@@ -186,7 +216,7 @@ export default function Compra (props) {
         </Button>
       </div>
       <div className='panel'>
-        <InputTextField name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
+        <InputTextField name='Observaciones' value={observaciones} setValue={setObservaciones} />
       </div>
       <table id='table'>
         <thead>
@@ -199,19 +229,20 @@ export default function Compra (props) {
           </tr>
         </thead>
         <tbody id='tbody'>
-          {state.items.map(item => <ItemArticulo
+          {items.map(item => <ItemArticulo
             key={item.id}
-            dispatch={dispatch}
+            setCantidadIndividual={setCantidadIndividual(item)}
+            removeItem={removeItem(item)}
             articulo={item} />)}
         </tbody>
       </table>
       <div className='panel'>
-        <InputTextField readOnly name='Vendedor' value={state.vendedor.NOMBRE} />
-        <InputTextField readOnly name='Turno' value={state.turno.id} />
+        <InputTextField readOnly name='Vendedor' value={vendedor.NOMBRE} />
+        <InputTextField readOnly name='Turno' value={turno.id} />
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
       <div className='panel'>
-        <Button variant='outlined' color='secondary' onClick={vaciar}>
+        <Button variant='outlined' color='secondary' onClick={handleVaciar}>
           Vaciar &nbsp;
           <DeleteIcon />
         </Button>
@@ -223,3 +254,5 @@ export default function Compra (props) {
     </React.Fragment>
   );
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Compra);
