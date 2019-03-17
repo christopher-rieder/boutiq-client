@@ -1,67 +1,95 @@
 import { format as dateFormat } from 'date-fns';
-import React, { useEffect, useState, useContext, useReducer } from 'react';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
-import { InputTextField, InputFloatField } from '../components/inputs';
+import { UncontrolledInput, InputTextField, InputFloatField } from '../components/inputs';
 import Modal from '../components/modal';
 import Consulta from '../crud/consulta';
 import ConsultaArticulo from '../crud/consultaArticulo';
 import * as databaseRead from '../database/getData';
 import {postObjectToAPI} from '../database/writeData';
 import dialogs from '../utilities/dialogs';
-import { MainContext } from '../context/MainContext';
-import { señaReducer } from './SeñaReducer';
 import ItemArticulo from '../components/ItemArticulo';
+import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
+import SendIcon from '@material-ui/icons/SendTwoTone';
+import SearchIcon from '@material-ui/icons/Search';
 
-export default function Seña (props) {
-  const {tablaEstadoPago, consumidorFinal, updateCantidadArticulo, vendedor, turno} = useContext(MainContext);
-  const [state, dispatch] = useReducer(
-    señaReducer,
-    { cliente: consumidorFinal,
-      observaciones: '',
-      numeroSeña: 0,
-      vendedor,
-      turno,
-      monto: 0,
-      estado: tablaEstadoPago[1], // PENDIENTE
-      items: []});
-  const [codigo, setCodigo] = useState('');
+const numeroFormWidth = {width: '5rem'};
+const codigoFormWidth = {width: '15rem'};
+const observacionesFormWidth = {width: '40vw'};
+
+const requestLastNumeroSeña = () => (dispatch) => {
+  dispatch({type: 'REQUEST_LAST_SEÑA_PENDING'});
+  databaseRead.getLastNumeroSeña()
+    .then(lastId => dispatch({type: 'REQUEST_LAST_SEÑA_SUCCESS', payload: lastId}))
+    .catch(error => dispatch({type: 'REQUEST_LAST_SEÑA_FAILED', payload: error}));
+};
+
+const mapStateToProps = state => ({
+  cliente: state.seña.cliente,
+  observaciones: state.seña.observaciones,
+  numeroSeña: state.seña.numeroSeña,
+  items: state.seña.items,
+  monto: state.seña.monto,
+  isPending: state.seña.isPending,
+  error: state.seña.error,
+  clienteDefault: state.defaults.clienteDefault,
+  vendedor: state.session.vendedor,
+  turno: state.session.turno
+});
+
+const mapDispatchToProps = dispatch => ({
+  addOne: (codigo) => dispatch({type: 'retiro_addOneQuantityItem', payload: codigo}),
+  addItem: (articulo) => dispatch({type: 'retiro_addItem', payload: articulo}),
+  addPago: (pago) => dispatch({type: 'retiro_addPago', payload: pago}),
+  vaciar: () => dispatch({type: 'retiro_vaciar'}),
+  setCliente: (cliente) => dispatch({type: 'retiro_setCliente', payload: cliente}),
+  setObservaciones: (observaciones) => dispatch({type: 'retiro_setObservaciones', payload: observaciones}),
+  setMonto: (monto) => dispatch({type: 'seña_setMonto', payload: monto}),
+  nuevo: (obj) => dispatch({type: 'retiro_nueva', payload: obj}),
+  onRequestLastSeña: () => dispatch(requestLastNumeroSeña()),
+  setCantidadIndividual: (articulo) => event => dispatch({type: 'retiro_setCantidadIndividual', payload: {articulo, value: event.target.value}}),
+  removeItem: (articulo) => () => dispatch({type: 'retiro_removeItem', payload: articulo}),
+  updateCantidadArticulo: (id, cantidad, suma) => dispatch({type: 'UPDATE_ARTICULO_CANTIDAD', payload: {id, cantidad, suma}})
+});
+
+function Seña ({
+  cliente, observaciones, numeroSeña, items, isPending, error, clienteDefault, vendedor, turno,
+  monto, setMonto, addOne, addItem, addPago, vaciar, setCliente, setObservaciones, nuevo,
+  onRequestLastSeña, setCantidadIndividual, removeItem, updateCantidadArticulo
+}) {
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
   const getNuevaSeña = async () => {
-    const lastNumeroSeña = await databaseRead.getLastNumeroSeña();
-    dispatch({
-      type: 'nuevo',
-      payload: {
-        numeroSeña: lastNumeroSeña.lastId + 1,
-        cliente: consumidorFinal,
-        items: [],
-        monto: 0,
-        turno,
-        vendedor,
-        observaciones: ''
-      }
+    onRequestLastSeña();
+    vaciar();
+    nuevo({
+      cliente: clienteDefault,
+      turno,
+      vendedor
     });
   };
 
   useEffect(() => {
-    if (state.numeroSeña === 0) {
-      getNuevaSeña();
-    }
+    getNuevaSeña();
   }, []);
 
-  const addItemHandler = (event) => {
-    if (!codigo) return false;
+  const handleCodigoSearch = (event) => {
+    if (!event) return false;
     if (event.which !== 13) return false;
-    addItem();
+    if (event.target.value === '') return false;
+    handleAddItem(event.target.value);
+    event.target.value = '';
   };
 
-  const addItem = (data) => {
-    const cod = data ? data.CODIGO : codigo;
-    const articulo = state.items.find(item => item.CODIGO === cod);
+  const handleAddItem = (data) => {
+    const cod = typeof data === 'string' ? data : data.CODIGO;
+    const articulo = items.find(item => item.CODIGO === cod);
     if (articulo) {
-      dispatch({type: 'addOneQuantityItem', payload: cod});
+      addOne(cod);
       dialogs.success('AGREGADO!!!  +1');
       var aud = new window.Audio(audioOk);
       aud.play();
@@ -73,29 +101,43 @@ export default function Seña (props) {
             var aud2 = new window.Audio(audioError);
             aud2.play();
           } else {
-            dispatch({type: 'addItem', payload: res});
+            addItem(res);
             dialogs.success('AGREGADO!!!');
             var aud = new window.Audio(audioOk);
             aud.play();
           }
         });
     }
-    setCodigo('');
+  };
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    if (items.length === 0) {
+      dialogs.error('Seña vacia; no agregada');
+    } else {
+      // TODO: VALIDATIONS
+      dialogs.confirm(
+        confirmed => confirmed && postToAPI(), // Callback
+        'Confirmar seña?', // Message text
+        'CONFIRMAR', // Confirm text
+        'VOLVER' // Cancel text
+      );
+    }
   };
 
   const postToAPI = async () => {
     try {
       const señaId = await postObjectToAPI({
-        NUMERO_SEÑA: state.numeroSeña,
-        MONTO: state.monto,
+        NUMERO_SEÑA: numeroSeña,
+        MONTO: monto,
         FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
         ESTADO_ID: 2,
-        OBSERVACIONES: state.observaciones,
-        CLIENTE_ID: state.cliente.id,
+        OBSERVACIONES: observaciones,
+        CLIENTE_ID: cliente.id,
         TURNO_ID: turno.id
       }, 'seña').then(json => json.lastId);
 
-      state.items.forEach(item => {
+      items.forEach(item => {
         // updating local state, same thing happens in the backend
         updateCantidadArticulo(item.id, item.CANTIDAD, false);
         postObjectToAPI({
@@ -106,7 +148,7 @@ export default function Seña (props) {
         }, 'itemSeña');
       });
 
-      dialogs.success(`SEÑA ${state.numeroSeña} REALIZADA!!!`);
+      dialogs.success(`SEÑA ${numeroSeña} REALIZADA!!!`);
       getNuevaSeña();
     } catch (err) {
       dialogs.error(`ERROR! ${err}`);
@@ -114,19 +156,13 @@ export default function Seña (props) {
     // TODO: BUSSSINESS LOGIC: PONER EN PLATA INGRESADA EN CAJA DEL DIA O NO ???
   };
 
-  const handleSubmit = event => {
-    event.preventDefault();
-    if (state.items.length === 0) {
-      dialogs.error('Factura vacia; no agregada');
-    } else {
-      // TODO: VALIDATIONS
-      dialogs.confirm(
-        confirmed => confirmed && postToAPI(), // Callback
-        'Confirmar venta?', // Message text
-        'CONFIRMAR', // Confirm text
-        'VOLVER' // Cancel text
-      );
-    }
+  const handleVaciar = (event) => {
+    dialogs.confirm(
+      confirmed => confirmed && vaciar(), // Callback
+      'VACIAR VENTA?', // Message text
+      'SI', // Confirm text
+      'NO' // Cancel text
+    );
   };
 
   const articuloModal = () => {
@@ -144,19 +180,9 @@ export default function Seña (props) {
         table='cliente'
         columnsWidths={[40, 400, 120, 120, 120]}
         setDisplayModal={setDisplayModal}
-        handleSelection={obj => dispatch({type: 'setCliente', payload: obj})} />
+        handleSelection={setCliente} />
     );
     setDisplayModal(true);
-  };
-
-  const vaciar = (event) => {
-    const vaciarAction = {type: 'nuevo', payload: {observaciones: '', items: [], pagos: [], descuento: 0}};
-    dialogs.confirm(
-      confirmed => confirmed && dispatch(vaciarAction), // Callback
-      'VACIAR SEÑA?', // Message text
-      'SI', // Confirm text
-      'NO' // Cancel text
-    );
   };
 
   return (
@@ -167,15 +193,18 @@ export default function Seña (props) {
         </Modal>
       }
       <div className='panel'>
-        <InputTextField name='Seña' value={state.numeroSeña} readOnly />
-        <InputTextField name='Cliente' value={state.cliente.NOMBRE} readOnly onClick={clienteModal} />
+        <InputTextField style={numeroFormWidth} name='Seña' value={numeroSeña} readOnly />
+        <InputTextField name='Cliente' value={cliente.NOMBRE} readOnly onClick={clienteModal} />
       </div>
       <div className='panel'>
-        <InputTextField name='Codigo' value={codigo} autoFocus autoComplete='off' onKeyPress={addItemHandler} setValue={setCodigo} />
-        <button className='codigo-search' onClick={articuloModal}>BUSCAR ARTICULO</button>
+        <UncontrolledInput style={codigoFormWidth} name='Codigo' autoFocus autoComplete='off' onKeyPress={handleCodigoSearch} />
+        <Button variant='outlined' color='primary' onClick={articuloModal} >
+          Buscar Articulo &nbsp;
+          <SearchIcon />
+        </Button>
       </div>
       <div className='panel'>
-        <InputTextField name='Observaciones' value={state.observaciones} setValue={payload => dispatch({type: 'setObservaciones', payload})} />
+        <InputTextField style={observacionesFormWidth} name='Observaciones' value={observaciones} setValue={setObservaciones} />
       </div>
       <table id='table'>
         <thead>
@@ -189,24 +218,33 @@ export default function Seña (props) {
           </tr>
         </thead>
         <tbody id='tbody'>
-          {state.items.map(item => <ItemArticulo
+          {items.map(item => <ItemArticulo
             key={item.id}
-            dispatch={dispatch}
+            setCantidadIndividual={setCantidadIndividual(item)}
+            removeItem={removeItem(item)}
             articulo={item} />)}
         </tbody>
       </table>
       <div className='panel'>
-        <InputTextField readOnly name='Vendedor' value={state.vendedor.NOMBRE} />
-        <InputTextField readOnly name='Turno' value={state.turno.id} />
+        <InputTextField readOnly name='Vendedor' value={vendedor.NOMBRE} />
+        <InputTextField readOnly name='Turno' value={turno.id} />
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
       <div className='panel'>
-        <InputFloatField name='Monto' value={state.monto} setValue={monto => dispatch({type: 'setMonto', payload: monto})} autoComplete='off' />
-        <button className='codigo-search' onClick={handleSubmit}>AGREGAR SEÑA</button>
+        <InputFloatField name='Monto' value={monto} setValue={setMonto} autoComplete='off' />
       </div>
       <div className='panel'>
-        <button className='codigo-search' onClick={vaciar}>VACIAR SEÑA</button>
+        <Button variant='outlined' color='secondary' onClick={handleVaciar}>
+          Vaciar &nbsp;
+          <DeleteIcon />
+        </Button>
+        <Button variant='contained' color='primary' onClick={handleSubmit}>
+          Realizar Seña &nbsp;
+          <SendIcon />
+        </Button>
       </div>
     </React.Fragment>
   );
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Seña);

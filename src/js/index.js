@@ -14,12 +14,14 @@ import commonTablesReducer from './context/CommonTablesReducer';
 import sessionReducer from './context/SessionReducer';
 import { compraReducer } from './compra/CompraReducer';
 import { retiroReducer } from './retiro/RetiroReducer';
+import { señaReducer } from './seña/SeñaReducer';
 
 const logger = createLogger();
 const rootReducer = combineReducers({
   venta: ventaReducer,
   compra: compraReducer,
   retiro: retiroReducer,
+  seña: señaReducer,
   constants: constantsReducer,
   defaults: defaultsReducer,
   tabla: commonTablesReducer,

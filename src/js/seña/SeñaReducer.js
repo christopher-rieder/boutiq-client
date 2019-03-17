@@ -1,3 +1,10 @@
+const initialState = {
+  cliente: {id: 0, NOMBRE: ''},
+  observaciones: '',
+  numeroSeña: 0,
+  monto: 0,
+  items: []
+};
 
 const addItem = (state, articulo) => {
   const newItem = {
@@ -41,27 +48,40 @@ const removeItem = (state, articulo) => {
   };
 };
 
-const señaReducer = (state, action) => {
+const señaReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'nuevo':
+    case 'seña_nueva':
       return {
         ...state,
         ...action.payload
       };
-    case 'setCliente':
+    case 'seña_vaciar':
+      return {
+        ...state,
+        observaciones: '',
+        items: [],
+        monto: 0
+      };
+    case 'seña_setCliente':
       return { ...state, cliente: action.payload };
-    case 'setObservaciones':
+    case 'seña_setObservaciones':
       return { ...state, observaciones: action.payload };
-    case 'setMonto':
+    case 'seña_setMonto':
       return { ...state, monto: action.payload };
-    case 'addItem':
+    case 'seña_addItem':
       return addItem(state, action.payload);
-    case 'removeItem':
+    case 'seña_removeItem':
       return removeItem(state, action.payload);
-    case 'addOneQuantityItem':
+    case 'seña_addOneQuantityItem':
       return addOneQuantityItem(state, action.payload);
-    case 'setCantidadIndividual':
+    case 'seña_setCantidadIndividual':
       return setCantidadIndividual(state, action.payload);
+    case 'REQUEST_LAST_SEÑA_PENDING':
+      return { ...state, isPending: true };
+    case 'REQUEST_LAST_SEÑA_SUCCESS':
+      return { ...state, numeroSeña: action.payload.lastId + 1, isPending: false };
+    case 'REQUEST_LAST_SEÑA_FAILED':
+      return { ...state, error: action.payload, isPending: false };
     default:
       return state;
   }
