@@ -1,6 +1,4 @@
 const initialState = {
-  cliente: {id: 0, NOMBRE: ''},
-  proveedor: {id: 0, NOMBRE: ''},
   clientePending: true,
   proveedorPending: true,
   errorCliente: '',

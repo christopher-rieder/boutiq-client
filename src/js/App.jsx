@@ -22,14 +22,14 @@ import Spinner from './components/Spinner';
 const requestClienteDefault = () => (dispatch) => {
   dispatch({type: 'REQUEST_CLIENTE_DEFAULT_PENDING'});
   getItemById('cliente', 1)
-    .then(table => dispatch({type: 'REQUEST_CLIENTE_DEFAULT_SUCCESS', payload: table}))
+    .then(cliente => dispatch({type: 'REQUEST_CLIENTE_DEFAULT_SUCCESS', payload: cliente}))
     .catch(error => dispatch({type: 'REQUEST_CLIENTE_DEFAULT_FAILED', payload: error}));
 };
 
 const requestProveedorDefault = () => (dispatch) => {
   dispatch({type: 'REQUEST_PROVEEDOR_DEFAULT_PENDING'});
   getItemById('proveedor', 1)
-    .then(table => dispatch({type: 'REQUEST_PROVEEDOR_DEFAULT_SUCCESS', payload: table}))
+    .then(proveedor => dispatch({type: 'REQUEST_PROVEEDOR_DEFAULT_SUCCESS', payload: proveedor}))
     .catch(error => dispatch({type: 'REQUEST_PROVEEDOR_DEFAULT_FAILED', payload: error}));
 };
 
