@@ -13,7 +13,7 @@ import ConsultaSeña from './seña/ConsultaSeña';
 import Retiro from './retiro/retiro';
 import ConsultaRetiro from './retiro/ConsultaRetiro';
 import RealizarStock from './stock/RealizarStock';
-import {requestConstants, requestTables} from './utilities/requestTables.js';
+import {requestTables} from './utilities/requestTables.js';
 import { getItemById } from './database/getData';
 import Spinner from './components/Spinner';
 
@@ -41,16 +41,14 @@ const devSession = () => (dispatch) => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onRequestConstants: () => dispatch(requestConstants()),
   onRequestClienteDefault: () => dispatch(requestClienteDefault()),
   onRequestProveedorDefault: () => dispatch(requestProveedorDefault()),
   onRequestTables: () => dispatch(requestTables()),
   devSessionStart: () => dispatch(devSession())
 });
 
-function App ({onRequestConstants, onRequestClienteDefault, onRequestProveedorDefault, onRequestTables, devSessionStart}) {
+function App ({onRequestClienteDefault, onRequestProveedorDefault, onRequestTables, devSessionStart}) {
   useEffect(() => {
-    onRequestConstants();
     onRequestClienteDefault();
     onRequestProveedorDefault();
     onRequestTables();
@@ -67,28 +65,28 @@ function App ({onRequestConstants, onRequestClienteDefault, onRequestProveedorDe
             <li className='navigation__item'>
               <button className='navigation__btn navigation__btn-crud'>CRUD</button>
               <div className='navigation__crud-tables'>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='marca' />)}>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='MARCA' />)}>
                   marca
                 </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='rubro' />)}>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='RUBRO' />)}>
                   rubro
                 </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='proveedor' />)}>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='PROVEEDOR' />)}>
                   proveedor
                 </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='estado_pago' />)}>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='ESTADO_PAGO' />)}>
                   estado_pago
                 </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='tipo_pago' />)}>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='TIPO_PAGO' />)}>
                   tipo_pago
                 </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='constants' />)}>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='CONSTANTS' />)}>
                   constants
                 </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='vendedor' />)}>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='VENDEDOR' />)}>
                   vendedor
                 </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='cliente' />)}>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='CLIENTE' />)}>
                   cliente
                 </button>
               </div>

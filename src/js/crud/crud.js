@@ -1,22 +1,19 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import matchSorter from 'match-sorter';
 import '../../styles/main.scss';
 import { InputTextField } from '../components/inputs';
 import * as databaseRead from '../database/getData';
 import * as databaseWrite from '../database/writeData';
 import dialogs from '../utilities/dialogs';
-import { MainContext } from '../context/MainContext';
 import Button from '@material-ui/core/Button';
+import { connect } from 'react-redux';
+import {requestTable} from '../utilities/requestTables.js';
 
-export default function Crud (props) {
-  const {
-    setConstants,
-    setTablaEstadoPago,
-    setTablaMarca,
-    setTablaRubro,
-    setTablaTipoPago
-  } = useContext(MainContext);
+const mapDispatchToProps = dispatch => ({
+  updateTable: (table) => dispatch(requestTable(table))
+});
 
+function Crud (props) {
   const [search, setSearch] = useState('');
   const [objList, setObjList] = useState([]);
   const [obj, setObj] = useState({id: 1, NOMBRE: 'OBJ'});
@@ -49,13 +46,8 @@ export default function Crud (props) {
       setTimeout(() => document.querySelector('#crud-id-' + obj.id).classList.remove('crud-list-item-highlight'), 1000);
       dialogs.success('ACTUALIZADO');
     }
-    switch (crudTable) {
-      case 'constants': setTimeout(() => setConstants([]), 1000); break;
-      case 'estado_pago': setTimeout(() => setTablaEstadoPago([]), 1000); break;
-      case 'marca': setTimeout(() => setTablaMarca([]), 1000); break;
-      case 'rubro': setTimeout(() => setTablaRubro([]), 1000); break;
-      case 'tipo_pago': setTimeout(() => setTablaTipoPago([]), 1000); break;
-    }
+    props.updateTable(crudTable);
+    // case 'constants': setTimeout(() => setConstants([]), 1000); break;
   };
 
   const createHandler = event => {
@@ -111,3 +103,5 @@ export default function Crud (props) {
     </div>
   );
 }
+
+export default connect(null, mapDispatchToProps)(Crud);
