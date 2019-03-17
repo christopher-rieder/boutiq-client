@@ -13,17 +13,11 @@ import ConsultaSeña from './seña/ConsultaSeña';
 import Retiro from './retiro/retiro';
 import ConsultaRetiro from './retiro/ConsultaRetiro';
 import RealizarStock from './stock/RealizarStock';
-import { getTable, getItemById } from './database/getData';
+import {requestConstants, requestTables} from './utilities/requestTables.js';
+import { getItemById } from './database/getData';
 import Spinner from './components/Spinner';
 
 // { loading ? <Spinner /> : props.children}
-
-const requestConstants = () => (dispatch) => {
-  dispatch({type: 'REQUEST_CONSTANTS_PENDING'});
-  getTable('CONSTANTS')
-    .then(table => dispatch({type: 'REQUEST_CONSTANTS_SUCCESS', payload: table}))
-    .catch(error => dispatch({type: 'REQUEST_CONSTANTS_FAILED', payload: error}));
-};
 
 const requestClienteDefault = () => (dispatch) => {
   dispatch({type: 'REQUEST_CLIENTE_DEFAULT_PENDING'});
@@ -37,16 +31,6 @@ const requestProveedorDefault = () => (dispatch) => {
   getItemById('proveedor', 1)
     .then(table => dispatch({type: 'REQUEST_PROVEEDOR_DEFAULT_SUCCESS', payload: table}))
     .catch(error => dispatch({type: 'REQUEST_PROVEEDOR_DEFAULT_FAILED', payload: error}));
-};
-
-const requestTables = () => (dispatch) => {
-  const tablesToRequest = ['MARCA', 'RUBRO', 'ESTADO_PAGO', 'TIPO_PAGO', 'ARTICULO'];
-  tablesToRequest.forEach(table => {
-    dispatch({type: `REQUEST_${table}_TABLE_PENDING`});
-    getTable(table)
-      .then(res => dispatch({type: `REQUEST_${table}_TABLE_SUCCESS`, payload: res}))
-      .catch(error => dispatch({type: `REQUEST_${table}_TABLE_FAILED`, payload: error}));
-  });
 };
 
 const devSession = () => (dispatch) => {
