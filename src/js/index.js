@@ -8,10 +8,18 @@ import {MainContextProvider} from './context/MainContext';
 import App from './App';
 import '../styles/main.scss';
 import { ventaReducer } from './venta/VentaReducer';
+import constantsReducer from './context/ConstantsReducer';
+import defaultsReducer from './context/DefaultsReducer';
+import commonTablesReducer from './context/CommonTablesReducer';
+import sessionReducer from './context/SessionReducer';
 
 const logger = createLogger();
 const rootReducer = combineReducers({
-  venta: ventaReducer
+  venta: ventaReducer,
+  constants: constantsReducer,
+  defaults: defaultsReducer,
+  tabla: commonTablesReducer,
+  session: sessionReducer
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

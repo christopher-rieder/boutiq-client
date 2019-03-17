@@ -1,9 +1,9 @@
 import matchSorter from 'match-sorter';
-import React, { useContext } from 'react';
+import React from 'react';
+import {connect} from 'react-redux';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import {numberRangeFiltering} from '../utilities/filterFunctions';
-import { MainContext } from '../context/MainContext';
 
 const columns = [
   {
@@ -69,9 +69,11 @@ const columns = [
   }
 ];
 
-export default function ConsultaArticulo (props) {
-  const {articuloData} = useContext(MainContext);
+const mapStateToProps = state => ({
+  tablaArticulo: state.tabla.articulo
+});
 
+function ConsultaArticulo (props) {
   function getTdProps (state, rowInfo, column, instance) {
     return {
       onClick: (e, handleOriginal) => {
@@ -84,7 +86,7 @@ export default function ConsultaArticulo (props) {
 
   return (
     <ReactTable
-      data={articuloData}
+      data={props.tablaArticulo}
       filterable
       defaultFilterMethod={(filter, row) =>
         String(row[filter.id]) === filter.value}
@@ -95,3 +97,5 @@ export default function ConsultaArticulo (props) {
     />
   );
 }
+
+export default connect(mapStateToProps, null)(ConsultaArticulo);

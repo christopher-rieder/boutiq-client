@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import Crud from './crud/crud';
 import Venta from './venta/venta';
 import Compra from './compra/Compra';
@@ -12,8 +13,66 @@ import ConsultaSeña from './seña/ConsultaSeña';
 import Retiro from './retiro/retiro';
 import ConsultaRetiro from './retiro/ConsultaRetiro';
 import RealizarStock from './stock/RealizarStock';
+import { getTable, getItemById } from './database/getData';
+import Spinner from './components/Spinner';
 
-function App () {
+// { loading ? <Spinner /> : props.children}
+
+const requestConstants = () => (dispatch) => {
+  dispatch({type: 'REQUEST_CONSTANTS_PENDING'});
+  getTable('CONSTANTS')
+    .then(table => dispatch({type: 'REQUEST_CONSTANTS_SUCCESS', payload: table}))
+    .catch(error => dispatch({type: 'REQUEST_CONSTANTS_FAILED', payload: error}));
+};
+
+const requestClienteDefault = () => (dispatch) => {
+  dispatch({type: 'REQUEST_CLIENTE_DEFAULT_PENDING'});
+  getItemById('cliente', 1)
+    .then(table => dispatch({type: 'REQUEST_CLIENTE_DEFAULT_SUCCESS', payload: table}))
+    .catch(error => dispatch({type: 'REQUEST_CLIENTE_DEFAULT_FAILED', payload: error}));
+};
+
+const requestProveedorDefault = () => (dispatch) => {
+  dispatch({type: 'REQUEST_PROVEEDOR_DEFAULT_PENDING'});
+  getItemById('proveedor', 1)
+    .then(table => dispatch({type: 'REQUEST_PROVEEDOR_DEFAULT_SUCCESS', payload: table}))
+    .catch(error => dispatch({type: 'REQUEST_PROVEEDOR_DEFAULT_FAILED', payload: error}));
+};
+
+const requestTables = () => (dispatch) => {
+  const tablesToRequest = ['MARCA', 'RUBRO', 'ESTADO_PAGO', 'TIPO_PAGO', 'ARTICULO'];
+  tablesToRequest.forEach(table => {
+    dispatch({type: `REQUEST_${table}_TABLE_PENDING`});
+    getTable(table)
+      .then(res => dispatch({type: `REQUEST_${table}_TABLE_SUCCESS`, payload: res}))
+      .catch(error => dispatch({type: `REQUEST_${table}_TABLE_FAILED`, payload: error}));
+  });
+};
+
+const devSession = () => (dispatch) => {
+  dispatch({type: 'REQUEST_VENDEDOR_PENDING'});
+  getItemById('vendedor', 1)
+    .then(vendedor => dispatch({type: 'REQUEST_VENDEDOR_SUCCESS', payload: vendedor}))
+    .catch(error => dispatch({type: 'REQUEST_VENDEDOR_FAILED', payload: error}));
+};
+
+const mapDispatchToProps = dispatch => ({
+  onRequestConstants: () => dispatch(requestConstants()),
+  onRequestClienteDefault: () => dispatch(requestClienteDefault()),
+  onRequestProveedorDefault: () => dispatch(requestProveedorDefault()),
+  onRequestTables: () => dispatch(requestTables()),
+  devSessionStart: () => dispatch(devSession())
+});
+
+function App ({onRequestConstants, onRequestClienteDefault, onRequestProveedorDefault, onRequestTables, devSessionStart}) {
+  useEffect(() => {
+    onRequestConstants();
+    onRequestClienteDefault();
+    onRequestProveedorDefault();
+    onRequestTables();
+    devSessionStart();
+  }, []);
+
   const [mainElement, setMainElement] = useState(<div />);
 
   return (
@@ -121,4 +180,4 @@ function App () {
   );
 }
 
-export default App;
+export default connect(null, mapDispatchToProps)(App);

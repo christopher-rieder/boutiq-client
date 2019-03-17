@@ -1,5 +1,5 @@
 import { format as dateFormat } from 'date-fns';
-import React, { useState, useContext, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { connect } from 'react-redux';
 import audioError from '../../resources/audio/error.wav';
 import audioOk from '../../resources/audio/ok.wav';
@@ -15,7 +15,6 @@ import ItemArticulo from '../components/ItemArticulo';
 import AgregarPago from '../pagos/AgregarPago';
 import Pago from '../pagos/Pago';
 import './venta.css';
-import { MainContext } from '../context/MainContext';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoneyIcon from '@material-ui/icons/MonetizationOnTwoTone';
@@ -37,15 +36,18 @@ const requestLastNumeroVenta = () => (dispatch) => {
 const mapStateToProps = state => ({
   descuento: state.venta.descuento,
   cliente: state.venta.cliente,
-  vendedor: state.venta.vendedor,
-  turno: state.venta.turno,
   tipoPago: state.venta.tipoPago,
   observaciones: state.venta.observaciones,
   numeroFactura: state.venta.numeroFactura,
   pagos: state.venta.pagos,
   items: state.venta.items,
   isPending: state.venta.isPending,
-  error: state.venta.error
+  error: state.venta.error,
+  DESCUENTO_MAXIMO: state.constants.DESCUENTO_MAXIMO,
+  clienteDefault: state.defaults.clienteDefault,
+  vendedor: state.session.vendedor,
+  turno: state.session.turno,
+  tablaTipoPago: state.tabla.tipoPago
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -62,18 +64,18 @@ const mapDispatchToProps = dispatch => ({
   setDescuentoIndividual: (articulo) => event => dispatch({type: 'venta_setDescuentoIndividual', payload: {articulo, value: event.target.value}}),
   setPrecioIndividual: (articulo) => event => dispatch({type: 'venta_setPrecioIndividual', payload: {articulo, value: event.target.value}}),
   setCantidadIndividual: (articulo) => event => dispatch({type: 'venta_setCantidadIndividual', payload: {articulo, value: event.target.value}}),
-  removeItem: (articulo) => () => dispatch({type: 'venta_removeItem', payload: articulo})
+  removeItem: (articulo) => () => dispatch({type: 'venta_removeItem', payload: articulo}),
+  updateCantidadArticulo: (id, cantidad, suma) => dispatch({type: 'UPDATE_ARTICULO_CANTIDAD', payload: {id, cantidad, suma}})
 });
 
 function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos, tipoPago,
   nuevo, onRequestLastVenta, addOne, addItem, addPago, vaciar,
   setCliente, setTipoPago, setDescuento, setObservaciones,
-  setDescuentoIndividual, setPrecioIndividual, setCantidadIndividual, removeItem}) {
-  const {updateCantidadArticulo, consumidorFinal, vendedor, turno, tablaTipoPago} = useContext(MainContext);
+  setDescuentoIndividual, setPrecioIndividual, setCantidadIndividual, removeItem,
+  DESCUENTO_MAXIMO, clienteDefault, vendedor, turno, tablaTipoPago, updateCantidadArticulo}) {
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
-  const {constants: {DESCUENTO_MAXIMO}} = useContext(MainContext);
   const getTotal = useMemo(
     () => items.reduce((total, item) => total + item.CANTIDAD * item.PRECIO_UNITARIO, 0),
     [items]);
@@ -82,7 +84,7 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
     onRequestLastVenta();
     vaciar();
     nuevo({
-      cliente: consumidorFinal,
+      cliente: clienteDefault,
       vendedor,
       turno,
       tipoPago: tablaTipoPago[0]
