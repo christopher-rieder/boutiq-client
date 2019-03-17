@@ -1,14 +1,19 @@
 import matchSorter from 'match-sorter';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
+import { connect } from 'react-redux';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import {numberRangeFiltering} from '../utilities/filterFunctions';
-import { MainContext } from '../context/MainContext';
 import { format as dateFormat } from 'date-fns';
 
-export default function RealizarStock (props) {
-  const {articuloData} = useContext(MainContext);
+const mapStateToProps = state => ({
+  tablaArticulo: state.tabla.articulo
+});
+
+function RealizarStock (props) {
+  const {articuloData} = props;
   const [stockData, setStockData] = useState([...articuloData]);
+
   const stockUpdateHandler = (codigo) => event => {
     setStockData(stockData.map(articulo => articulo.CODIGO === codigo ? {...articulo, STOCK_REAL: event.target.value} : articulo));
   };
@@ -96,3 +101,5 @@ export default function RealizarStock (props) {
     />
   );
 }
+
+export default connect(mapStateToProps, null)(RealizarStock);
