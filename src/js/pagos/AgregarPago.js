@@ -1,10 +1,15 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import { InputSelect, InputFloatField } from '../components/inputs';
-import { MainContext } from '../context/MainContext';
 
-export default function AgregarPago (props) {
+const mapStateToProps = state => ({
+  tablaTipoPago: state.tabla.tipoPago,
+  tablaEstadoPago: state.tabla.estadoPago
+});
+
+function AgregarPago (props) {
   const [pago, setPago] = useState({tipoPago: {}, monto: 0});
-  const {tablaTipoPago, tablaEstadoPago} = useContext(MainContext);
+  const {tablaTipoPago, tablaEstadoPago} = props;
 
   function handleSubmit () {
     if (pago.tipoPago && pago.monto > 0) {
@@ -25,3 +30,5 @@ export default function AgregarPago (props) {
     </div>
   );
 }
+
+export default connect(mapStateToProps, null)(AgregarPago);

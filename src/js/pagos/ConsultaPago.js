@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { getPagosPendientes, getFacturasById } from '../database/getData';
 import { updatePago } from '../database/writeData';
 import ReactTable from 'react-table';
@@ -6,7 +7,6 @@ import 'react-table/react-table.css';
 import { format as dateFormat } from 'date-fns';
 import matchSorter from 'match-sorter';
 import { InputTextField, InputSelect } from '../components/inputs';
-import { MainContext } from '../context/MainContext';
 import {numberRangeFiltering} from '../utilities/filterFunctions';
 import FacturaView from '../venta/FacturaView';
 
@@ -57,9 +57,13 @@ const columns = [
   }
 ];
 
-export default function ConsultaPago (props) {
+const mapStateToProps = state => ({
+  tablaEstadoPago: state.tabla.estadoPago
+});
+
+function ConsultaPago (props) {
   const [data, setData] = useState([]);
-  const {tablaEstadoPago} = useContext(MainContext);
+  const {tablaEstadoPago} = props;
   const [obj, setObj] = useState('');
   const [factura, setFactura] = useState('');
 
@@ -92,7 +96,7 @@ export default function ConsultaPago (props) {
   }
 
   const handlePago = event => {
-    updatePago({
+    updatePago({ // call to database
       id: obj.id,
       ESTADO_ID: obj.ESTADO.id
     });
@@ -136,3 +140,5 @@ function PagoCrud ({obj, setObj, tablaEstadoPago, handlePago}) {
     </div>
   );
 }
+
+export default connect(mapStateToProps, null)(ConsultaPago);
