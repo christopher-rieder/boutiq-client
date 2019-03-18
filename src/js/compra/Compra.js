@@ -174,7 +174,7 @@ function Compra ({
     setDisplayModal(true);
   };
 
-  const crudArticuloModal = (codigo) => { // TODO: how to call from button?
+  const crudArticuloModal = (codigo) => {
     setModalContent(
       <CrudArticulo
         initialRequest={{codigo}}
@@ -207,12 +207,12 @@ function Compra ({
         <InputTextField name='Proveedor' value={proveedor.NOMBRE} readOnly onClick={proveedorModal} />
       </div>
       <div className='panel'>
-        <UncontrolledInput style={codigoFormWidth} name='Codigo' autoFocus autoComplete='off' onKeyPress={handleCodigoSearch} />
+        <UncontrolledInput id='codigo-search' style={codigoFormWidth} name='Codigo' autoFocus autoComplete='off' onKeyPress={handleCodigoSearch} />
         <Button variant='outlined' color='primary' onClick={articuloModal} >
           Buscar Articulo &nbsp;
           <SearchIcon />
         </Button>
-        <Button variant='outlined' color='primary' onClick={() => crudArticuloModal()} >
+        <Button variant='outlined' color='primary' onClick={() => crudArticuloModal(document.querySelector('#codigo-search').value)} >
           Agregar Articulo &nbsp;
           <CreateIcon />
         </Button>

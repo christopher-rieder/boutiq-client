@@ -116,7 +116,7 @@ function App ({onRequestClienteDefault, onRequestProveedorDefault, onRequestTabl
             <li className='navigation__item'>
               <button className='navigation__btn' >ARTICULO</button>
               <div className='navigation__crud-tables'>
-                <button className='navigation__btn' onClick={() => setMainElement(<ConsultaArticulo handleSelection={({id}) => setMainElement(<CrudArticulo initialRequest={{id}} />) /* TODO: ARTICULO CRUD */} />)}>
+                <button className='navigation__btn' onClick={() => setMainElement(<ConsultaArticulo handleSelection={({id}) => setMainElement(<CrudArticulo initialRequest={{id}} />)} />)}>
                   Consultar Articulos
                 </button>
                 <button className='navigation__btn' onClick={() => setMainElement(<CrudArticulo />)}>

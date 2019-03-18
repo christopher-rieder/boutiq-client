@@ -77,7 +77,7 @@ const reducer = (state, action) => {
 
 function CrudArticulo ({
   DESCUENTO_MAXIMO, RATIO_CONTADO, RATIO_COSTO, tablaMarca, tablaRubro, tablaArticulo,
-  updateCantidadArticulo, initialRequest
+  updateCantidadArticulo, initialRequest, addItem
 }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const {id, codigo, descripcion, precioLista, precioContado, precioCosto, descuento, stock, rubro, marca} = state;
@@ -126,6 +126,7 @@ function CrudArticulo ({
       MARCA_ID: marca.id
     };
 
+    // Un articulo sin id es un articulo nuevo
     if (id > 0) {
       articulo.id = id;
     }
@@ -134,6 +135,8 @@ function CrudArticulo ({
       .then((res) => {
         dialogs.success('ARTICULO AGREGADO');
         // setTimeout(() => setArticuloData([]), 1000); // FIXME: HACKY
+        // TODO: UPDATE ARTICULO TABLE
+        addItem({...articulo, id: res.lastId});
       })
       .catch((err) => dialogs.error(err));
   };

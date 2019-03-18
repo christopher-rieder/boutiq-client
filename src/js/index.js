@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
-import { createLogger } from 'redux-logger';
+// import { createLogger } from 'redux-logger';
 import thunkMiddleware from 'redux-thunk';
 import App from './App';
 import '../styles/main.scss';
@@ -15,7 +15,7 @@ import { compraReducer } from './compra/CompraReducer';
 import { retiroReducer } from './retiro/RetiroReducer';
 import { señaReducer } from './seña/SeñaReducer';
 
-const logger = createLogger();
+// const logger = createLogger();
 const rootReducer = combineReducers({
   venta: ventaReducer,
   compra: compraReducer,
@@ -28,7 +28,7 @@ const rootReducer = combineReducers({
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunkMiddleware, logger)));
+const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunkMiddleware)));
 
 ReactDOM.render(
   <Provider store={store} >
