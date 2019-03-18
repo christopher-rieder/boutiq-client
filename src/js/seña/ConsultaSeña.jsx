@@ -6,7 +6,6 @@ import 'react-table/react-table.css';
 import SeñaView from './SeñaView';
 import {numberRangeFiltering} from '../utilities/filterFunctions';
 import { getAllSeñas } from '../database/getData';
-import { MainContext } from '../context/MainContext';
 
 const columns = [
   {
@@ -51,7 +50,7 @@ const columns = [
 
 export default function ConsultaSeña (props) {
   const [data, setData] = useState([]);
-  const {tablaEstadoPago} = useContext(MainContext);
+  // const {tablaEstadoPago} = useContext(MainContext);
   const [obj, setObj] = useState('');
 
   useEffect(() => {

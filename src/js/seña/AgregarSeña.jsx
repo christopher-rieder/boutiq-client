@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import { InputTextField, InputFloatField } from '../components/inputs';
-import { MainContext } from '../context/MainContext';
 
 export default function AgregarSeña (props) {
   // TODO: AGREGAR OBSERVACIONES A SEÑA EN LA BASE DE DATOS

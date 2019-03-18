@@ -99,7 +99,7 @@ function Compra ({
         .then(res => {
           if (!res || res.length === 0) {
             dialogs.confirm(
-              confirmed => confirmed && crudArticuloModal(), // Callback
+              confirmed => confirmed && crudArticuloModal(cod), // Callback
               'ARTICULO NO EXISTENTE AGREGAR NUEVO?', // Message text
               'SI', // Confirm text
               'NO' // Cancel text
@@ -177,7 +177,7 @@ function Compra ({
   const crudArticuloModal = (codigo) => { // TODO: how to call from button?
     setModalContent(
       <CrudArticulo
-        initialState={{codigo}}
+        initialRequest={{codigo}}
         handleSelection={addItem}
         setDisplayModal={setDisplayModal} />
     );
@@ -212,7 +212,7 @@ function Compra ({
           Buscar Articulo &nbsp;
           <SearchIcon />
         </Button>
-        <Button variant='outlined' color='primary' onClick={crudArticuloModal} >
+        <Button variant='outlined' color='primary' onClick={() => crudArticuloModal()} >
           Agregar Articulo &nbsp;
           <CreateIcon />
         </Button>

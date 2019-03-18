@@ -1,10 +1,24 @@
-import React, { useContext, useReducer, useEffect } from 'react';
+import React, { useReducer, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { getArticuloById } from '../database/getData';
 import { postCrudObjectToAPI } from '../database/writeData';
 import { InputTextField, InputSelect, InputFloatField, InputIntField } from '../components/inputs';
 import {round} from '../utilities/math';
 import dialogs from '../utilities/dialogs';
-import { MainContext } from '../context/MainContext';
+
+const mapStateToProps = state => ({
+  isPending: state.venta.isPending,
+  error: state.venta.error,
+  DESCUENTO_MAXIMO: state.constants.DESCUENTO_MAXIMO,
+  RATIO_CONTADO: state.constants.RATIO_CONTADO,
+  RATIO_COSTO: state.constants.RATIO_COSTO,
+  tablaMarca: state.tabla.marca,
+  tablaRubro: state.tabla.rubro
+});
+
+const mapDispatchToProps = dispatch => ({
+  updateCantidadArticulo: (id, cantidad, suma) => dispatch({type: 'UPDATE_ARTICULO_CANTIDAD', payload: {id, cantidad, suma}})
+});
 
 const initialState = {
   id: 0,
@@ -61,13 +75,14 @@ const reducer = (state, action) => {
   }
 };
 
-export default function CrudArticulo (props) {
-  const {constants: {DESCUENTO_MAXIMO, RATIO_CONTADO, RATIO_COSTO}, tablaMarca, tablaRubro} = useContext(MainContext);
+function CrudArticulo ({
+  DESCUENTO_MAXIMO, RATIO_CONTADO, RATIO_COSTO, tablaMarca, tablaRubro, tablaArticulo,
+  updateCantidadArticulo, initialRequest
+}) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const {id, codigo, descripcion, precioLista, precioContado, precioCosto, descuento, stock, rubro, marca} = state;
   const dispatcherSetValue = type => payload => dispatch({type, payload});
   const dispatcherPrecios = type => payload => dispatch({type, payload, RATIO_CONTADO, RATIO_COSTO});
-  const {articuloData, setArticuloData} = useContext(MainContext);
 
   const loadFromDatabase = id => {
     getArticuloById(id)
@@ -90,11 +105,11 @@ export default function CrudArticulo (props) {
   };
 
   useEffect(() => {
-    if (props.initialState && props.initialState.id) {
-      loadFromDatabase(props.initialState.id);
+    if (initialRequest && initialRequest.id) {
+      loadFromDatabase(initialRequest.id);
     }
-    if (props.initialState && props.initialState.codigo) {
-      dispatcherSetValue('codigo')(props.initialState.codigo);
+    if (initialRequest && initialRequest.codigo) {
+      dispatcherSetValue('codigo')(initialRequest.codigo);
     }
   }, []);
 
@@ -118,7 +133,7 @@ export default function CrudArticulo (props) {
     postCrudObjectToAPI(articulo, 'articulo')
       .then((res) => {
         dialogs.success('ARTICULO AGREGADO');
-        setTimeout(() => setArticuloData([]), 1000); // FIXME: HACKY
+        // setTimeout(() => setArticuloData([]), 1000); // FIXME: HACKY
       })
       .catch((err) => dialogs.error(err));
   };
@@ -151,3 +166,5 @@ export default function CrudArticulo (props) {
     </React.Fragment>
   );
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(CrudArticulo);
