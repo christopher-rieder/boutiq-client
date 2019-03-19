@@ -63,7 +63,7 @@ function App ({onRequestClienteDefault, onRequestProveedorDefault, onRequestTabl
         <nav className='header__menu'>
           <ul className='navigation'>
             <li className='navigation__item'>
-              <button className='navigation__btn navigation__btn-crud'>CRUD</button>
+              <button className='navigation__btn navigation__btn-crud'>MOD Tabla</button>
               <div className='navigation__crud-tables'>
                 <button className='navigation__btn' onClick={() => setMainElement(<Crud table='MARCA' />)}>
                   marca
@@ -122,9 +122,9 @@ function App ({onRequestClienteDefault, onRequestProveedorDefault, onRequestTabl
                 <button className='navigation__btn' onClick={() => setMainElement(<CrudArticulo />)}>
                   Modificar Articulos
                 </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<RealizarStock />)}>
+                {/* <button className='navigation__btn' onClick={() => setMainElement(<RealizarStock />)}>
                   Realizar Stock (NO TERMINADO)
-                </button>
+                </button> */}
               </div>
             </li>
             <li className='navigation__item'>

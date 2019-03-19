@@ -18,7 +18,9 @@ import SendIcon from '@material-ui/icons/SendTwoTone';
 import SearchIcon from '@material-ui/icons/Search';
 import CreateIcon from '@material-ui/icons/Create';
 
+const numeroFormWidth = {width: '5rem'};
 const codigoFormWidth = {width: '15rem'};
+const observacionesFormWidth = {width: '40vw'};
 
 const requestLastNumeroCompra = () => (dispatch) => {
   dispatch({type: 'REQUEST_LAST_COMPRA_PENDING'});
@@ -203,7 +205,7 @@ function Compra ({
         </Modal>
       }
       <div className='panel'>
-        <InputTextField name='Compra' value={numeroCompra} readOnly />
+        <InputTextField style={numeroFormWidth} name='Compra' value={numeroCompra} readOnly />
         <InputTextField name='Proveedor' value={proveedor.NOMBRE} readOnly onClick={proveedorModal} />
       </div>
       <div className='panel'>
@@ -218,7 +220,7 @@ function Compra ({
         </Button>
       </div>
       <div className='panel'>
-        <InputTextField name='Observaciones' value={observaciones} setValue={setObservaciones} />
+        <InputTextField style={observacionesFormWidth} name='Observaciones' value={observaciones} setValue={setObservaciones} />
       </div>
       <table id='table'>
         <thead>

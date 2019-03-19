@@ -145,7 +145,7 @@ function CrudArticulo ({
     <React.Fragment>
       <header>
         <h1 className='crud-articulo__heading'>
-          CRUD ARTICULOS
+          Modificacion de Articulos
         </h1>
       </header>
       <main>
