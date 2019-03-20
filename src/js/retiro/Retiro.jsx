@@ -6,7 +6,7 @@ import audioOk from '../../resources/audio/ok.wav';
 import { InputTextField, UncontrolledInput } from '../components/inputs';
 import Modal from '../components/modal';
 import ConsultaArticulo from '../crud/consultaArticulo';
-import * as databaseRead from '../database/getData';
+import {getLastNumeroRetiro, getArticuloByCodigo} from '../database/getData';
 import {postObjectToAPI} from '../database/writeData';
 import dialogs from '../utilities/dialogs';
 import ItemArticulo from '../components/ItemArticulo';
@@ -21,7 +21,7 @@ const observacionesFormWidth = {width: '40vw'};
 
 const requestLastNumeroRetiro = () => (dispatch) => {
   dispatch({type: 'REQUEST_LAST_RETIRO_PENDING'});
-  databaseRead.getLastNumeroRetiro()
+  getLastNumeroRetiro()
     .then(lastId => dispatch({type: 'REQUEST_LAST_RETIRO_SUCCESS', payload: lastId}))
     .catch(error => dispatch({type: 'REQUEST_LAST_RETIRO_FAILED', payload: error}));
 };
@@ -79,8 +79,6 @@ function Retiro ({
     event.target.value = '';
   };
 
-  // full data needed:
-  // data, codigo, state.items, dispatch, setCodigo
   const handleAddItem = (data) => {
     const cod = typeof data === 'string' ? data : data.CODIGO;
     const articulo = items.find(item => item.CODIGO === cod);
@@ -90,7 +88,7 @@ function Retiro ({
       var aud = new window.Audio(audioOk);
       aud.play();
     } else { // add new articulo
-      databaseRead.getArticuloByCodigo(cod)
+      getArticuloByCodigo(cod)
         .then(res => {
           if (res.length === 0) {
             dialogs.error('CODIGO NO EXISTENTE');
@@ -109,9 +107,8 @@ function Retiro ({
   const handleSubmit = event => {
     event.preventDefault();
     if (items.length === 0) {
-      dialogs.error('Retiro vacio; no agregada');
+      dialogs.error('Retiro vacio; no agregado');
     } else {
-      // TODO: VALIDATIONS
       dialogs.confirm(
         confirmed => confirmed && postToAPI(), // Callback
         'Confirmar retiro?', // Message text
@@ -159,7 +156,7 @@ function Retiro ({
   const handleVaciar = (event) => {
     dialogs.confirm(
       confirmed => confirmed && vaciar(), // Callback
-      'VACIAR VENTA?', // Message text
+      'VACIAR RETIRO?', // Message text
       'SI', // Confirm text
       'NO' // Cancel text
     );

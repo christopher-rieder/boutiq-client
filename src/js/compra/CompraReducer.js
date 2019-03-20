@@ -61,9 +61,7 @@ const compraReducer = (state = compraInitialState, action) => {
       return {
         ...state,
         observaciones: '',
-        items: [],
-        pagos: [],
-        descuento: 0
+        items: []
       };
 
     case 'compra_setProveedor':

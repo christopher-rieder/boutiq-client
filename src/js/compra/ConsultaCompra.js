@@ -3,8 +3,7 @@ import matchSorter from 'match-sorter';
 import React, { useEffect, useState } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-import * as databaseRead from '../database/getData';
-import './consultas.css';
+import {getAllCompras} from '../database/getData';
 import CompraView from './CompraView';
 import {numberRangeFiltering} from '../utilities/filterFunctions';
 
@@ -41,7 +40,7 @@ export default function ConsultaFactura (props) {
   const [obj, setObj] = useState({});
 
   useEffect(() => { // LOAD TABLE
-    databaseRead.getAllCompras()
+    getAllCompras()
       .then(res => setData(res));
   }, []);
 

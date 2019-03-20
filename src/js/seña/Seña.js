@@ -7,7 +7,7 @@ import { UncontrolledInput, InputTextField, InputFloatField } from '../component
 import Modal from '../components/modal';
 import Consulta from '../crud/consulta';
 import ConsultaArticulo from '../crud/consultaArticulo';
-import * as databaseRead from '../database/getData';
+import {getLastNumeroSeña, getArticuloByCodigo} from '../database/getData';
 import {postObjectToAPI} from '../database/writeData';
 import dialogs from '../utilities/dialogs';
 import ItemArticulo from '../components/ItemArticulo';
@@ -22,7 +22,7 @@ const observacionesFormWidth = {width: '40vw'};
 
 const requestLastNumeroSeña = () => (dispatch) => {
   dispatch({type: 'REQUEST_LAST_SEÑA_PENDING'});
-  databaseRead.getLastNumeroSeña()
+  getLastNumeroSeña()
     .then(lastId => dispatch({type: 'REQUEST_LAST_SEÑA_SUCCESS', payload: lastId}))
     .catch(error => dispatch({type: 'REQUEST_LAST_SEÑA_FAILED', payload: error}));
 };
@@ -96,7 +96,7 @@ function Seña ({
       var aud = new window.Audio(audioOk);
       aud.play();
     } else { // add new articulo
-      databaseRead.getArticuloByCodigo(cod)
+      getArticuloByCodigo(cod)
         .then(res => {
           if (res.length === 0) {
             dialogs.error('CODIGO NO EXISTENTE');
@@ -161,7 +161,7 @@ function Seña ({
   const handleVaciar = (event) => {
     dialogs.confirm(
       confirmed => confirmed && vaciar(), // Callback
-      'VACIAR VENTA?', // Message text
+      'VACIAR SEÑA?', // Message text
       'SI', // Confirm text
       'NO' // Cancel text
     );

@@ -7,14 +7,14 @@ import { UncontrolledInput, InputTextField, InputSelect, InputFloatField } from 
 import Modal from '../components/modal';
 import Consulta from '../crud/consulta';
 import ConsultaArticulo from '../crud/consultaArticulo';
-import * as databaseRead from '../database/getData';
+import {getLastNumeroFactura, getArticuloByCodigo} from '../database/getData';
 import {postObjectToAPI} from '../database/writeData';
 import dialogs from '../utilities/dialogs';
 import { money } from '../utilities/format';
 import ItemArticulo from '../components/ItemArticulo';
 import AgregarPago from '../pagos/AgregarPago';
 import Pago from '../pagos/Pago';
-import './venta.css';
+import './venta.css'; // TODO: MIGRATE TO SASS
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoneyIcon from '@material-ui/icons/MonetizationOnTwoTone';
@@ -28,7 +28,7 @@ const agregarPagoColor = {color: 'green'};
 
 const requestLastNumeroVenta = () => (dispatch) => {
   dispatch({type: 'REQUEST_LAST_VENTA_PENDING'});
-  databaseRead.getLastNumeroFactura()
+  getLastNumeroFactura()
     .then(lastId => dispatch({type: 'REQUEST_LAST_VENTA_SUCCESS', payload: lastId}))
     .catch(error => dispatch({type: 'REQUEST_LAST_VENTA_FAILED', payload: error}));
 };
@@ -114,7 +114,7 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
       var aud = new window.Audio(audioOk);
       aud.play();
     } else { // add new articulo
-      databaseRead.getArticuloByCodigo(cod)
+      getArticuloByCodigo(cod)
         .then(res => {
           if (!res || res.length === 0) {
             dialogs.error('CODIGO NO EXISTENTE');
@@ -135,7 +135,6 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
     if (items.length === 0) {
       dialogs.error('Factura vacia; no agregada');
     } else {
-      // TODO: VALIDATIONS
       dialogs.confirm(
         confirmed => confirmed && postToAPI(), // Callback
         'Confirmar venta?', // Message text

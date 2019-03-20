@@ -6,7 +6,7 @@ import CrudArticulo from '../crud/crudArticulo';
 import Consulta from '../crud/consulta';
 import ItemArticulo from '../components/ItemArticulo';
 import dialogs from '../utilities/dialogs';
-import * as databaseRead from '../database/getData';
+import {getLastNumeroCompra, getArticuloByCodigo} from '../database/getData';
 import {postObjectToAPI} from '../database/writeData';
 import ConsultaArticulo from '../crud/consultaArticulo';
 import { InputTextField, UncontrolledInput } from '../components/inputs';
@@ -24,7 +24,7 @@ const observacionesFormWidth = {width: '40vw'};
 
 const requestLastNumeroCompra = () => (dispatch) => {
   dispatch({type: 'REQUEST_LAST_COMPRA_PENDING'});
-  databaseRead.getLastNumeroCompra()
+  getLastNumeroCompra()
     .then(lastId => dispatch({type: 'REQUEST_LAST_COMPRA_SUCCESS', payload: lastId}))
     .catch(error => dispatch({type: 'REQUEST_LAST_COMPRA_FAILED', payload: error}));
 };
@@ -54,7 +54,6 @@ const mapDispatchToProps = dispatch => ({
   updateCantidadArticulo: (id, cantidad, suma) => dispatch({type: 'UPDATE_ARTICULO_CANTIDAD', payload: {id, cantidad, suma}})
 });
 
-// const {updateCantidadArticulo, proveedorDefault, vendedor, turno} = useContext(MainContext);
 function Compra ({
   proveedor, vendedor, turno, observaciones, numeroCompra, isPending, items,
   addOne, addItem, vaciar, removeItem, setCantidadIndividual,
@@ -66,7 +65,9 @@ function Compra ({
 
   const getNuevaCompra = async () => {
     onRequestLastCompra();
-    vaciar();
+    if (items.length > 0 || observaciones !== '') {
+      vaciar();
+    }
     nuevo({
       proveedor: proveedorDefault,
       vendedor,
@@ -97,7 +98,7 @@ function Compra ({
       var aud = new window.Audio(audioOk);
       aud.play();
     } else { // add new articulo
-      databaseRead.getArticuloByCodigo(cod)
+      getArticuloByCodigo(cod)
         .then(res => {
           if (!res || res.length === 0) {
             dialogs.confirm(
@@ -119,9 +120,9 @@ function Compra ({
   const handleSubmit = event => {
     event.preventDefault();
     if (items.length === 0) {
-      dialogs.error('Factura vacia; no agregada');
+      dialogs.error('Compra vacia; no agregada');
+      // the inputs don't allow incorrect data
     } else {
-      // TODO: VALIDATIONS
       dialogs.confirm(
         confirmed => confirmed && postToAPI(), // Callback
         'Confirmar compra?', // Message text
@@ -133,7 +134,7 @@ function Compra ({
 
   const postToAPI = async () => {
     try {
-      const facturaId = await postObjectToAPI({
+      const lastId = await postObjectToAPI({
         NUMERO_COMPRA: numeroCompra,
         FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
         OBSERVACIONES: observaciones,
@@ -145,7 +146,7 @@ function Compra ({
         // updating local state, same thing happens in the backend
         updateCantidadArticulo(item.id, item.CANTIDAD, true);
         postObjectToAPI({
-          COMPRA_ID: facturaId,
+          COMPRA_ID: lastId,
           CANTIDAD: item.CANTIDAD,
           ARTICULO_ID: item.id
         }, 'itemCompra');
@@ -165,6 +166,10 @@ function Compra ({
       'SI', // Confirm text
       'NO' // Cancel text
     );
+  };
+
+  const handleAgregarClick = () => {
+    crudArticuloModal(document.querySelector('#codigo-search').value);
   };
 
   const articuloModal = () => {
@@ -214,7 +219,7 @@ function Compra ({
           Buscar Articulo &nbsp;
           <SearchIcon />
         </Button>
-        <Button variant='outlined' color='primary' onClick={() => crudArticuloModal(document.querySelector('#codigo-search').value)} >
+        <Button variant='outlined' color='primary' onClick={handleAgregarClick} >
           Agregar Articulo &nbsp;
           <CreateIcon />
         </Button>

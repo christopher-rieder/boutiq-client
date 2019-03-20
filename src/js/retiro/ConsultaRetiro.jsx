@@ -3,7 +3,7 @@ import matchSorter from 'match-sorter';
 import React, { useEffect, useState } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-import * as databaseRead from '../database/getData';
+import {getAllRetiros} from '../database/getData';
 import RetiroView from './RetiroView';
 import {numberRangeFiltering} from '../utilities/filterFunctions';
 
@@ -39,7 +39,7 @@ export default function ConsultaRetiro (props) {
   const [obj, setObj] = useState({});
 
   useEffect(() => { // LOAD TABLE
-    databaseRead.getAllRetiros()
+    getAllRetiros()
       .then(res => setData(res));
   }, []);
 

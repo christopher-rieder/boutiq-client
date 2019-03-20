@@ -1,6 +1,6 @@
 import { format as dateFormat } from 'date-fns';
 import matchSorter from 'match-sorter';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import SeñaView from './SeñaView';
@@ -50,7 +50,6 @@ const columns = [
 
 export default function ConsultaSeña (props) {
   const [data, setData] = useState([]);
-  // const {tablaEstadoPago} = useContext(MainContext);
   const [obj, setObj] = useState('');
 
   useEffect(() => {

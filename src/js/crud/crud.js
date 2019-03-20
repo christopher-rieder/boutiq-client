@@ -17,9 +17,9 @@ function Crud (props) {
   const [search, setSearch] = useState('');
   const [objList, setObjList] = useState([]);
   const [obj, setObj] = useState({id: 1, NOMBRE: 'OBJ'});
-  const crudTable = props.table;
+  const crudTable = props.table.toUpperCase(); // actions in dispatcher are in uppercase...
 
-  const filterCol = 'NOMBRE';
+  const filterCol = props.filterCol || 'NOMBRE';
 
   useEffect(() => { // LOAD TABLE
     databaseRead.getTable(crudTable)
@@ -46,8 +46,7 @@ function Crud (props) {
       setTimeout(() => document.querySelector('#crud-id-' + obj.id).classList.remove('crud-list-item-highlight'), 1000);
       dialogs.success('ACTUALIZADO');
     }
-    props.updateTable(crudTable);
-    // case 'constants': setTimeout(() => setConstants([]), 1000); break;
+    props.updateTable(crudTable); // update in-memory tables (if it's a table in-memory)
   };
 
   const createHandler = event => {

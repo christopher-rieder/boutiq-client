@@ -16,7 +16,7 @@ function AgregarPago (props) {
       props.handleSelection({
         TIPO_PAGO: pago.tipoPago,
         MONTO: parseFloat(pago.monto),
-        ESTADO: tablaEstadoPago[pago.tipoPago.id === 1 ? 0 : 1]
+        ESTADO: tablaEstadoPago[pago.tipoPago.id === 1 ? 0 : 1] // TODO: HANDLE LOGIC WITH THE ESTADO_PAGO STATE MACHINE
       });
     }
     if (props.setDisplayModal) props.setDisplayModal(false);

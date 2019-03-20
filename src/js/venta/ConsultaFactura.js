@@ -3,8 +3,7 @@ import matchSorter from 'match-sorter';
 import React, { useEffect, useState } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-import * as databaseRead from '../database/getData';
-import './consultas.css';
+import {getAllFacturas} from '../database/getData';
 import FacturaView from './FacturaView';
 import {numberRangeFiltering} from '../utilities/filterFunctions';
 
@@ -48,7 +47,7 @@ export default function ConsultaFactura (props) {
   const collapse = {width: '12rem'};
 
   useEffect(() => { // LOAD TABLE
-    databaseRead.getAllFacturas()
+    getAllFacturas()
       .then(res => setData(res));
   }, []);
 

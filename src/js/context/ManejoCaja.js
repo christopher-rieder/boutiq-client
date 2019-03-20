@@ -21,18 +21,8 @@ const cierreTurno = (turno) => (dispatch) => {
   dispatch({type: 'CERRAR_TURNO', payload: turno});
 };
 
-const agregarMovimientoCaja = (movimiento) => (dispatch) => {
-  dispatch({type: 'AGREGAR_MOVIMIENTO_CAJA', payload: movimiento});
-};
-
-const anularMovimientoCaja = (movimiento) => (dispatch) => {
-  dispatch({type: 'ANULAR_MOVIMIENTO_CAJA', payload: movimiento});
-};
-
-const agregarPagoEfectuado = (pago) => (dispatch) => {
-  dispatch({type: 'AGREGAR_PAGO_CAJA', payload: pago});
-}; // TODO: LOS PAGOS CON CREDITO SE RINDEN EN ALGUN MOMENTO.
-// TODO: ESTADOS DE PAGO. COBRADO | APROBADO | RECHAZADO
+// TODO: LOS PAGOS CON CREDITO SE RINDEN EN ALGUN MOMENTO.
+// TODO: ESTADOS DE PAGO. COBRADO | APROBADO | RECHAZADO ? VER STATE MACHINE
 
 // ACTIONS:
 // login.

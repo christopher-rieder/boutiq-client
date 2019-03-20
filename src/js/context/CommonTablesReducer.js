@@ -3,7 +3,7 @@ const initialState = {
   rubro: [],
   estadoPago: [],
   tipoPago: [],
-  articulo: [],
+  articulo: [], // TODO: it's a big table... maybe move the table to redis
   marcaPending: true,
   rubroPending: true,
   estadoPagoPending: true,

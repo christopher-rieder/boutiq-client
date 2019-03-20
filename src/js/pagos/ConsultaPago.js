@@ -85,15 +85,6 @@ function ConsultaPago (props) {
       }
     };
   }
-  function getTheadFilterProps (state, rowInfo, column, instance) {
-    return { // TODO: GET CURRENT FILTERED ITEMS, AGGREGATE THAT AND NOT THE WHOLE ARRAY
-      onClick: (e, handleOriginal) => {
-        console.log('headfilter', state);
-
-        if (handleOriginal) handleOriginal();
-      }
-    };
-  }
 
   const handlePago = event => {
     updatePago({ // call to database
@@ -115,7 +106,6 @@ function ConsultaPago (props) {
           defaultPageSize={12}
           className='-striped -highlight'
           getTdProps={getTdProps}
-          getTheadFilterProps={getTheadFilterProps}
         />
       </div>
       <main className='main'>
@@ -126,6 +116,8 @@ function ConsultaPago (props) {
   );
 }
 
+// TODO: update buttons
+// TODO: remove InputSelect. BUILD ESTADO STATE MACHINE. Make buttons according to that.
 function PagoCrud ({obj, setObj, tablaEstadoPago, handlePago}) {
   return (
     <div>
