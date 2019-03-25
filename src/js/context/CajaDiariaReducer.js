@@ -1,11 +1,10 @@
+import {format} from 'date-fns';
+import { postObjectToAPI } from '../database/writeData';
+const DATE_FORMAT_STRING = 'yyyy/MM/dd';
 const initialState = {
-  montoInicial: 0,
-  fechaHoraInicio: null,
-  montoCierre: 0,
-  fechaHoraCierre: null,
-  discrepancia: {monto: 0, razon: ''},
   cajaIniciada: false,
   cajaCerrada: false,
+  cajaPending: true,
   turnos: []
 };
 
@@ -14,10 +13,30 @@ const initialState = {
 // en base a esta estructura se pueden hacer reportes diarios o por turno.
 const cajaDiariaReducer = (state = initialState, action) => {
   switch (action.type) {
+    case 'REQUEST_CAJA_PENDING':
+      return { ...state, cajaPending: true };
+    case 'REQUEST_CAJA_FAILED':
+      return { ...state, error: action.payload, cajaPending: false };
+    case 'REQUEST_CAJA_SUCCESS':
+      console.log(action.payload);
+      if (action.payload) {
+        return { // bring caja stored in database
+          ...state,
+          cajaPending: false,
+          cajaIniciada: true,
+          ...action.payload
+        };
+      } else { // don't initialize caja from database
+        return { // initialization is done on ManejoCaja, taking user input.
+          ...state,
+          cajaPending: false,
+          cajaIniciada: false
+        };
+      }
     case 'ABRIR_CAJA_DIARIA':
       return {
         ...state,
-        montoInicial: action.payload,
+        ...action.payload,
         cajaIniciada: true
       };
     case 'CERRAR_CAJA_DIARIA':
@@ -30,6 +49,11 @@ const cajaDiariaReducer = (state = initialState, action) => {
       return {
         ...state,
         discrepancia: action.payload
+      };
+    case 'ABRIR_TURNO':
+      return {
+        ...state,
+        turnos: state.turnos.concat(action.payload)
       };
     // case 'ABRIR_TURNO'
     // case 'CERRAR_TURNO'

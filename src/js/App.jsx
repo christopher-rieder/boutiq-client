@@ -13,9 +13,11 @@ import ConsultaSeña from './seña/ConsultaSeña';
 import Retiro from './retiro/retiro';
 import ConsultaRetiro from './retiro/ConsultaRetiro';
 import RealizarStock from './stock/RealizarStock';
+import ManejoCaja from './context/ManejoCaja';
 import {requestTables} from './utilities/requestTables.js';
 import { getItemById } from './database/getData';
 import Spinner from './components/Spinner';
+import Login from './context/Login';
 
 // { loading ? <Spinner /> : props.children}
 
@@ -33,29 +35,33 @@ const requestProveedorDefault = () => (dispatch) => {
     .catch(error => dispatch({type: 'REQUEST_PROVEEDOR_DEFAULT_FAILED', payload: error}));
 };
 
-const devSession = () => (dispatch) => {
-  dispatch({type: 'REQUEST_VENDEDOR_PENDING'});
-  getItemById('vendedor', 1)
-    .then(vendedor => dispatch({type: 'REQUEST_VENDEDOR_SUCCESS', payload: vendedor}))
-    .catch(error => dispatch({type: 'REQUEST_VENDEDOR_FAILED', payload: error}));
-};
+const mapStateToProps = state => ({
+  cajaIniciada: state.caja.cajaIniciada,
+  turnoIniciado: state.session.turnoIniciado
+});
 
 const mapDispatchToProps = dispatch => ({
   onRequestClienteDefault: () => dispatch(requestClienteDefault()),
   onRequestProveedorDefault: () => dispatch(requestProveedorDefault()),
-  onRequestTables: () => dispatch(requestTables()),
-  devSessionStart: () => dispatch(devSession())
+  onRequestTables: () => dispatch(requestTables())
 });
 
-function App ({onRequestClienteDefault, onRequestProveedorDefault, onRequestTables, devSessionStart}) {
+function App ({cajaIniciada, turnoIniciado, onRequestClienteDefault, onRequestProveedorDefault, onRequestTables}) {
   useEffect(() => {
     onRequestClienteDefault();
     onRequestProveedorDefault();
     onRequestTables();
-    devSessionStart();
   }, []);
 
   const [mainElement, setMainElement] = useState(<div />);
+
+  if (!cajaIniciada) {
+    return <ManejoCaja />;
+  }
+
+  if (!turnoIniciado) {
+    return <Login />;
+  }
 
   return (
     <React.Fragment>
@@ -162,4 +168,4 @@ function App ({onRequestClienteDefault, onRequestProveedorDefault, onRequestTabl
   );
 }
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

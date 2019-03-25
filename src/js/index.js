@@ -10,6 +10,7 @@ import { ventaReducer } from './venta/VentaReducer';
 import constantsReducer from './context/ConstantsReducer';
 import defaultsReducer from './context/DefaultsReducer';
 import commonTablesReducer from './context/CommonTablesReducer';
+import cajaDiariaReducer from './context/CajaDiariaReducer';
 import sessionReducer from './context/SessionReducer';
 import { compraReducer } from './compra/CompraReducer';
 import { retiroReducer } from './retiro/RetiroReducer';
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   constants: constantsReducer,
   defaults: defaultsReducer,
   tabla: commonTablesReducer,
+  caja: cajaDiariaReducer,
   session: sessionReducer
 });
 

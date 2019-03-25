@@ -65,6 +65,10 @@ function getTurnoActual () {
   return window.fetch(`${URL}/api/turno/actual`).then(res => res.json()).then(res => res[0]);
 }
 
+function getCajaActual () {
+  return window.fetch(`${URL}/api/caja/actual`).then(res => res.json()).then(res => res[0]);
+}
+
 export {
   getTable,
   getAllArticulos,
@@ -74,6 +78,7 @@ export {
   getAllRetiros,
   getPagosPendientes,
   getTurnoActual,
+  getCajaActual,
   getArticuloByCodigo,
   getArticuloById,
   getFacturasById,

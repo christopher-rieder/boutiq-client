@@ -2,21 +2,28 @@
 // const turno = await getTurnoActual();
 
 const initialState = {
-  vendedor: {id: 0, NOMBRE: ''},
-  vendedorPending: true,
-  errorVendedor: '',
-  turno: {id: 0},
-  permissions: {}
+  error: '',
+  sessionPending: true,
+  vendedor: {},
+  permissions: {},
+  turnoIniciado: false
 };
 
 const sessionReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'REQUEST_VENDEDOR_PENDING':
-      return { ...state, vendedorPending: true };
-    case 'REQUEST_VENDEDOR_SUCCESS':
-      return { ...state, vendedor: action.payload, vendedorPending: false };
-    case 'REQUEST_VENDEDOR_FAILED':
-      return { ...state, errorVendedor: action.payload, vendedorPending: false };
+    case 'REQUEST_SESSION_PENDING':
+      return { ...state, sessionPending: true };
+    case 'REQUEST_SESSION_SUCCESS':
+      return { ...state, turno: action.payload.turno, sessionPending: false };
+    case 'REQUEST_SESSION_FAILED':
+      return { ...state, error: action.payload, sessionPending: false };
+    case 'ABRIR_TURNO':
+      return {
+        ...state,
+        vendedor: action.payload.vendedor,
+        permissions: action.payload.permissions,
+        turnoIniciado: true
+      };
     default:
       return state;
   }
