@@ -11,11 +11,16 @@ const initialState = {
 
 const sessionReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'REQUEST_SESSION_PENDING':
+    case 'REQUEST_TURNO_PENDING':
       return { ...state, sessionPending: true };
-    case 'REQUEST_SESSION_SUCCESS':
-      return { ...state, turno: action.payload.turno, sessionPending: false };
-    case 'REQUEST_SESSION_FAILED':
+    case 'REQUEST_TURNO_SUCCESS':
+      return {
+        ...state,
+        turnoIniciado: true,
+        sessionPending: false,
+        vendedor: action.payload.vendedor
+      };
+    case 'REQUEST_TURNO_FAILED':
       return { ...state, error: action.payload, sessionPending: false };
     case 'ABRIR_TURNO':
       return {

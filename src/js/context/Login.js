@@ -14,13 +14,14 @@ import { postObjectToAPI } from '../database/writeData';
 const requestTurnoActual = () => (dispatch) => {
   dispatch({type: 'REQUEST_TURNO_PENDING'});
   getTurnoActual()
-    .then(turnoActual => dispatch({type: 'REQUEST_TURNO_SUCCESS', payload: turnoActual}))
+    .then(turnoActual => {
+      dispatch({type: 'REQUEST_TURNO_SUCCESS', payload: turnoActual});
+    })
     .catch(error => dispatch({type: 'REQUEST_TURNO_FAILED', payload: error}));
 };
 
 const abrirTurno = (vendedor, permissions, montoInicial, cajaId) => (dispatch) => {
   const fechaHoraInicio = new Date().getTime();
-  console.log('sssPONCHOaaa');
   postObjectToAPI({
     cajaId,
     vendedorId: vendedor.id,
@@ -37,16 +38,21 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  onTurnoRequest: () => dispatch(requestTurnoActual()),
   vendedorLogin: (vendedor, permissions, montoInicial, cajaId) => {
     dispatch(abrirTurno(vendedor, permissions, montoInicial, cajaId));
   }
 });
 
-function Login ({vendedorLogin, cajaId}) {
+function Login ({vendedorLogin, cajaId, onTurnoRequest}) {
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<Consulta />);
   const [vendedor, setVendedor] = useState({});
   const [montoInitialState, setMontoInitialState] = useState(0);
+
+  useEffect(() => {
+    onTurnoRequest();
+  }, []);
 
   const handleLogin = () => {
     // TODO: GET PERMISSIONS

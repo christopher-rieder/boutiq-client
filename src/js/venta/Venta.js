@@ -46,7 +46,7 @@ const mapStateToProps = state => ({
   DESCUENTO_MAXIMO: state.constants.DESCUENTO_MAXIMO,
   clienteDefault: state.defaults.clienteDefault,
   vendedor: state.session.vendedor,
-  turno: state.session.turno,
+  turno: state.caja.turnos[state.caja.turnos.length - 1],
   tablaTipoPago: state.tabla.tipoPago
 });
 

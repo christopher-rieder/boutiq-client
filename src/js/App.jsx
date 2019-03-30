@@ -37,6 +37,7 @@ const requestProveedorDefault = () => (dispatch) => {
 
 const mapStateToProps = state => ({
   cajaIniciada: state.caja.cajaIniciada,
+  cajaCerrada: state.caja.cajaCerrada,
   turnoIniciado: state.session.turnoIniciado
 });
 
@@ -46,7 +47,7 @@ const mapDispatchToProps = dispatch => ({
   onRequestTables: () => dispatch(requestTables())
 });
 
-function App ({cajaIniciada, turnoIniciado, onRequestClienteDefault, onRequestProveedorDefault, onRequestTables}) {
+function App ({cajaIniciada, cajaCerrada, turnoIniciado, onRequestClienteDefault, onRequestProveedorDefault, onRequestTables}) {
   useEffect(() => {
     onRequestClienteDefault();
     onRequestProveedorDefault();
@@ -54,8 +55,9 @@ function App ({cajaIniciada, turnoIniciado, onRequestClienteDefault, onRequestPr
   }, []);
 
   const [mainElement, setMainElement] = useState(<div />);
+  const [modo, setModo] = useState('CONSULTA');
 
-  if (!cajaIniciada) {
+  if (!cajaIniciada || cajaCerrada) {
     return <ManejoCaja />;
   }
 

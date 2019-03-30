@@ -33,7 +33,7 @@ const mapStateToProps = state => ({
   isPending: state.retiro.isPending,
   error: state.retiro.error,
   vendedor: state.session.vendedor,
-  turno: state.session.turno
+  turno: state.caja.turnos[state.caja.turnos.length - 1]
 });
 
 const mapDispatchToProps = dispatch => ({

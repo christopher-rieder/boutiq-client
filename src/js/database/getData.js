@@ -1,5 +1,5 @@
-// const URL = 'http://181.167.238.144:3000';
-const URL = 'http://192.168.0.2:3000';
+const URL = 'http://181.167.238.144:3000';
+// const URL = 'http://192.168.0.2:3000';
 
 function getTable (table) {
   return window.fetch(`${URL}/api/rawTables/${table}`).then(res => res.json());

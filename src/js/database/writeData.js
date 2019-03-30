@@ -1,5 +1,5 @@
-// const URL = 'http://181.167.238.144:3000';
-const URL = 'http://192.168.0.2:3000';
+const URL = 'http://181.167.238.144:3000';
+// const URL = 'http://192.168.0.2:3000';
 
 const processError = res => Promise.all([res, res.json()]);
 const returnJsonOrError = ([res, json]) => {

@@ -37,7 +37,7 @@ const mapStateToProps = state => ({
   error: state.seña.error,
   clienteDefault: state.defaults.clienteDefault,
   vendedor: state.session.vendedor,
-  turno: state.session.turno
+  turno: state.caja.turnos[state.caja.turnos.length - 1]
 });
 
 const mapDispatchToProps = dispatch => ({

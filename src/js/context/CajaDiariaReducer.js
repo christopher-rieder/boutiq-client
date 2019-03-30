@@ -16,14 +16,15 @@ const cajaDiariaReducer = (state = initialState, action) => {
     case 'REQUEST_CAJA_PENDING':
       return { ...state, cajaPending: true };
     case 'REQUEST_CAJA_FAILED':
-      return { ...state, error: action.payload, cajaPending: false };
+      return { ...state, error: 'Error al cargar caja:\n' + action.payload, cajaPending: false };
     case 'REQUEST_CAJA_SUCCESS':
-      console.log(action.payload);
       if (action.payload) {
         return { // bring caja stored in database
           ...state,
           cajaPending: false,
           cajaIniciada: true,
+          cajaCerrada: !!(action.payload.fechaHoraCierre),
+          // if fechaHoraCierre is not null, then caja is closed
           ...action.payload
         };
       } else { // don't initialize caja from database
@@ -45,12 +46,22 @@ const cajaDiariaReducer = (state = initialState, action) => {
         montoCierre: action.payload,
         cajaCerrada: true
       };
+    case 'RE_ABRIR_CAJA':
+      return {
+        ...state,
+        ...action.payload
+      };
     case 'REGISTRAR_DISCREPANCIA_CAJA_DIARIA':
       return {
         ...state,
         discrepancia: action.payload
       };
     case 'ABRIR_TURNO':
+      return {
+        ...state,
+        turnos: state.turnos.concat(action.payload)
+      };
+    case 'REQUEST_TURNO_SUCCESS':
       return {
         ...state,
         turnos: state.turnos.concat(action.payload)
