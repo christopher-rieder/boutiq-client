@@ -28,7 +28,7 @@ const _reAbrirCaja = (caja) => (dispatch) => {
   postObjectToAPI(newCaja, 'CAJA')
     .then(() => dispatch({
       type: 'RE_ABRIR_CAJA',
-      payload: {...newCaja, cajaCerrada: false} // caja cerrada is not stored in database
+      payload: newCaja
     }))
     .catch(error => console.log(error));
 };
@@ -53,8 +53,8 @@ const mapStateToProps = state => ({
   fechaHoraCierre: state.caja.fechaHoraCierre,
   montoDiscrepancia: state.caja.montoDiscrepancia,
   razonDiscrepancia: state.caja.razonDiscrepancia,
-  cajaIniciada: state.caja.cajaIniciada,
-  cajaCerrada: state.caja.cajaCerrada,
+  cajaIniciada: !!(state.caja.fechaHoraInicio),
+  cajaCerrada: !!(state.caja.fechaHoraCierre),
   cajaPending: state.caja.cajaPending,
   error: state.caja.error,
   turnos: state.caja.turnos
@@ -96,6 +96,8 @@ function ManejoCaja ({cajaPending, onRequestCajaActual, error, abrirCaja, reAbri
     }
   }, []);
 
+  // returns an object that represent the current caja that
+  // needs to go to the database
   function getCaja () {
     return {
       id,

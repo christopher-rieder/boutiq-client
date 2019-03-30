@@ -2,8 +2,6 @@ import {format} from 'date-fns';
 import { postObjectToAPI } from '../database/writeData';
 const DATE_FORMAT_STRING = 'yyyy/MM/dd';
 const initialState = {
-  cajaIniciada: false,
-  cajaCerrada: false,
   cajaPending: true,
   turnos: []
 };
@@ -22,29 +20,23 @@ const cajaDiariaReducer = (state = initialState, action) => {
         return { // bring caja stored in database
           ...state,
           cajaPending: false,
-          cajaIniciada: true,
-          cajaCerrada: !!(action.payload.fechaHoraCierre),
-          // if fechaHoraCierre is not null, then caja is closed
           ...action.payload
         };
       } else { // don't initialize caja from database
         return { // initialization is done on ManejoCaja, taking user input.
           ...state,
-          cajaPending: false,
-          cajaIniciada: false
+          cajaPending: false
         };
       }
     case 'ABRIR_CAJA_DIARIA':
       return {
         ...state,
-        ...action.payload,
-        cajaIniciada: true
+        ...action.payload
       };
     case 'CERRAR_CAJA_DIARIA':
       return {
         ...state,
-        montoCierre: action.payload,
-        cajaCerrada: true
+        montoCierre: action.payload
       };
     case 'RE_ABRIR_CAJA':
       return {

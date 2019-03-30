@@ -36,8 +36,8 @@ const requestProveedorDefault = () => (dispatch) => {
 };
 
 const mapStateToProps = state => ({
-  cajaIniciada: state.caja.cajaIniciada,
-  cajaCerrada: state.caja.cajaCerrada,
+  cajaIniciada: !!(state.caja.fechaHoraInicio),
+  cajaCerrada: !!(state.caja.fechaHoraCierre),
   turnoIniciado: state.session.turnoIniciado
 });
 
