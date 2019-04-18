@@ -10,6 +10,10 @@ import { postObjectToAPI } from '../database/writeData';
 import {format} from 'date-fns';
 const DATE_FORMAT_STRING = 'yyyy/MM/dd';
 
+/** Obtener caja actual. Se obtiene en base al día actual en el servidor.
+ *  Si existe una caja cuya fecha sea hoy, devolver los datos.
+ *  Si no existe, es porque no hay caja actual y hay que crearla.
+ */
 const requestCajaActual = () => (dispatch) => {
   dispatch({type: 'REQUEST_CAJA_PENDING'});
   getCajaActual()
@@ -17,6 +21,12 @@ const requestCajaActual = () => (dispatch) => {
     .catch(error => dispatch({type: 'REQUEST_CAJA_FAILED', payload: error}));
 };
 
+/** Volver a null los valores de cierre, para reabrir la caja.
+ *  Escribir esos datos en el servidor.
+ *  El metodo pisa todo los datos, asi que reescribe los datos
+ *  ya existentes con los mismos valores, excepto los valores puestos a null.
+ * @param {*} caja caja actual
+ */
 const _reAbrirCaja = (caja) => (dispatch) => {
   const newCaja = {
     ...caja,
@@ -33,6 +43,11 @@ const _reAbrirCaja = (caja) => (dispatch) => {
     .catch(error => console.log(error));
 };
 
+/** Abrir caja del dia. Tiene un campo que es la fecha actual, formateado como un string
+ *  con el formato especificado por DATE_FORMAT_STRING.
+ *  Tambien guarda el instante preciso en que se abre la caja, en formato UNIX EPOCH
+ * @param {*} montoInicial monto inicial con que abrir la caja.
+ */
 const _abrirCaja = (montoInicial) => (dispatch) => {
   const newCaja = {
     montoInicial,
@@ -112,13 +127,10 @@ function ManejoCaja ({cajaPending, onRequestCajaActual, error, abrirCaja, reAbri
   }
 
   // ============== return statements ==============
-
   // mostrar error si existe
   if (error) return <div className='error'>{error}</div>;
-
   // spinner mientras se espera la respuesta de la base de datos
   if (cajaPending) return <Spinner />;
-
   // si la caja no esta iniciada, pedir monto inicial.
   if (!cajaIniciada) return <AbrirCaja abrirCaja={abrirCaja} />;
 

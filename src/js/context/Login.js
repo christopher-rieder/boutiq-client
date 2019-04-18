@@ -28,13 +28,19 @@ const abrirTurno = (vendedor, permissions, montoInicial, cajaId) => (dispatch) =
     montoInicial,
     fechaHoraInicio
   }, 'TURNO')
-    .then(turnoId => dispatch({type: 'ABRIR_TURNO', payload: {permissions, montoInicial, fechaHoraInicio, vendedor, id: turnoId}}))
+    .then(lastId => dispatch({type: 'ABRIR_TURNO', payload: {permissions, montoInicial, fechaHoraInicio, vendedor, id: lastId.lastId}}))
     .catch(error => console.log(error)); // TODO: REFLECT IN STATE THE ERROR
 };
 
 const mapStateToProps = state => ({
   cajaId: state.caja.id,
-  fechaHoraInicio: state.caja.fechaHoraInicio
+  montoInicialCaja: state.caja.montoInicial,
+  fechaHoraInicio: state.caja.fechaHoraInicio,
+  cajaIniciada: !!(state.caja.fechaHoraInicio),
+  cajaCerrada: !!(state.caja.fechaHoraCierre),
+  turnos: state.caja.turnos,
+  turnoIniciado: !!(state.session.fechaHoraInicio),
+  turnoCerrado: !!(state.session.fechaHoraCierre)
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -44,14 +50,22 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
-function Login ({vendedorLogin, cajaId, onTurnoRequest}) {
+function Login ({vendedorLogin, cajaId, onTurnoRequest,
+  cajaIniciada, cajaCerrada, montoInicialCaja, turnos}) {
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<Consulta />);
-  const [vendedor, setVendedor] = useState({});
+  const [vendedor, setVendedor] = useState({NOMBRE: ''});
   const [montoInitialState, setMontoInitialState] = useState(0);
 
   useEffect(() => {
     onTurnoRequest();
+    if (turnos.length === 0) {
+      // preload monto inicial de caja, en caso de que sea el primer turno diario
+      setMontoInitialState(montoInicialCaja);
+    } else {
+      // preload monto de cierre del turno anterior, si hay un turno anterior
+      setMontoInitialState(turnos[turnos.length - 1].montoCierre);
+    }
   }, []);
 
   const handleLogin = () => {
@@ -69,6 +83,8 @@ function Login ({vendedorLogin, cajaId, onTurnoRequest}) {
     );
     setDisplayModal(true);
   };
+
+  if (!cajaIniciada || cajaCerrada) return <div className='error'>ERROR EN INICIO O CIERRE DE CAJA</div>;
 
   return (
     <React.Fragment>

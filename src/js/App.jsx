@@ -71,31 +71,13 @@ function App ({cajaIniciada, cajaCerrada, turnoIniciado, onRequestClienteDefault
         <nav className='header__menu'>
           <ul className='navigation'>
             <li className='navigation__item'>
-              <button className='navigation__btn navigation__btn-crud'>MOD Tabla</button>
+              <button className='navigation__btn' >CAJA</button>
               <div className='navigation__crud-tables'>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='MARCA' />)}>
-                  marca
+                <button className='navigation__btn' onClick={() => setMainElement(<Venta />)}>
+                  Resumen de caja del dia
                 </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='RUBRO' />)}>
-                  rubro
-                </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='PROVEEDOR' />)}>
-                  proveedor
-                </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='ESTADO_PAGO' />)}>
-                  estado_pago
-                </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='TIPO_PAGO' />)}>
-                  tipo_pago
-                </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='CONSTANTS' />)}>
-                  constants
-                </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='VENDEDOR' />)}>
-                  vendedor
-                </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='CLIENTE' />)}>
-                  cliente
+                <button className='navigation__btn' onClick={() => setMainElement(<ConsultaFactura />)}>
+                  Resumen de turno actual
                 </button>
               </div>
             </li>
@@ -157,6 +139,32 @@ function App ({cajaIniciada, cajaCerrada, turnoIniciado, onRequestClienteDefault
                 </button>
                 <button className='navigation__btn' onClick={() => setMainElement(<ConsultaRetiro />)}>
                   Consultar Retiros
+                </button>
+              </div>
+            </li>
+            <li className='navigation__item'>
+              <button className='navigation__btn navigation__btn-crud'>MOD Tabla</button>
+              <div className='navigation__crud-tables'>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='MARCA' />)}>
+                  marca
+                </button>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='RUBRO' />)}>
+                  rubro
+                </button>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='PROVEEDOR' />)}>
+                  proveedor
+                </button>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='TIPO_PAGO' />)}>
+                  tipo_pago
+                </button>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='CONSTANTS' />)}>
+                  constants
+                </button>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='VENDEDOR' />)}>
+                  vendedor
+                </button>
+                <button className='navigation__btn' onClick={() => setMainElement(<Crud table='CLIENTE' />)}>
+                  cliente
                 </button>
               </div>
             </li>
