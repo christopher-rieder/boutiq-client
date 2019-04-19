@@ -36,9 +36,11 @@ const requestProveedorDefault = () => (dispatch) => {
 };
 
 const mapStateToProps = state => ({
-  cajaIniciada: !!(state.caja.fechaHoraInicio),
+  cajaIniciada: !!(state.caja.fechaHoraInicio), // this is a cast to boolean of a truthy or falsy value
   cajaCerrada: !!(state.caja.fechaHoraCierre),
-  turnoIniciado: state.session.turnoIniciado
+  turnoIniciado: state.session.turnoIniciado,
+  modoConsulta: state.session.modoConsulta,
+  modoAdmin: state.session.modoAdmin
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -47,7 +49,9 @@ const mapDispatchToProps = dispatch => ({
   onRequestTables: () => dispatch(requestTables())
 });
 
-function App ({cajaIniciada, cajaCerrada, turnoIniciado, onRequestClienteDefault, onRequestProveedorDefault, onRequestTables}) {
+function App ({
+  cajaIniciada, cajaCerrada, turnoIniciado, modoConsulta, modoAdmin,
+  onRequestClienteDefault, onRequestProveedorDefault, onRequestTables}) {
   useEffect(() => {
     onRequestClienteDefault();
     onRequestProveedorDefault();
@@ -55,7 +59,6 @@ function App ({cajaIniciada, cajaCerrada, turnoIniciado, onRequestClienteDefault
   }, []);
 
   const [mainElement, setMainElement] = useState(<div />);
-  const [modo, setModo] = useState('CONSULTA');
 
   if (!cajaIniciada || cajaCerrada) {
     return <ManejoCaja />;
@@ -84,9 +87,12 @@ function App ({cajaIniciada, cajaCerrada, turnoIniciado, onRequestClienteDefault
             <li className='navigation__item'>
               <button className='navigation__btn' >VENTA</button>
               <div className='navigation__crud-tables'>
-                <button className='navigation__btn' onClick={() => setMainElement(<Venta />)}>
-                  Realizar Venta
-                </button>
+                {
+                  !modoConsulta &&
+                  <button className='navigation__btn' onClick={() => setMainElement(<Venta />)}>
+                    Realizar Venta
+                  </button>
+                }
                 <button className='navigation__btn' onClick={() => setMainElement(<ConsultaFactura />)}>
                   Consultar Ventas
                 </button>
@@ -123,9 +129,12 @@ function App ({cajaIniciada, cajaCerrada, turnoIniciado, onRequestClienteDefault
             <li className='navigation__item'>
               <button className='navigation__btn' >SEÑAS</button>
               <div className='navigation__crud-tables'>
-                <button className='navigation__btn' onClick={() => setMainElement(<Seña />)}>
-                  Realizar Seña
-                </button>
+                {
+                  !modoConsulta &&
+                  <button className='navigation__btn' onClick={() => setMainElement(<Seña />)}>
+                    Realizar Seña
+                  </button>
+                }
                 <button className='navigation__btn' onClick={() => setMainElement(<ConsultaSeña />)}>
                   Consultar Señas
                 </button>

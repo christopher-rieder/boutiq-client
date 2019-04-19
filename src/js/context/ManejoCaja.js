@@ -17,7 +17,19 @@ const DATE_FORMAT_STRING = 'yyyy/MM/dd';
 const requestCajaActual = () => (dispatch) => {
   dispatch({type: 'REQUEST_CAJA_PENDING'});
   getCajaActual()
-    .then(cajaActual => dispatch({type: 'REQUEST_CAJA_SUCCESS', payload: cajaActual}))
+    .then(cajaActual => {
+      dispatch({type: 'REQUEST_CAJA_SUCCESS', payload: cajaActual});
+
+      // si la caja no existe, cajaActual es undefined
+      // de todas maneras se hace el primer dispatch, para indicar
+      // que el request a la base de dato fue exitoso y en la base
+      // no hay caja cargada del día actual.
+      if (cajaActual) {
+        // la caja esta abierta si fechaHoraCierre es falsy
+        const cajaAbierta = !(cajaActual.fechaHoraCierre);
+        if (cajaAbierta) dispatch({type: 'SET_MODO_CONSULTA_OFF'});
+      }
+    })
     .catch(error => dispatch({type: 'REQUEST_CAJA_FAILED', payload: error}));
 };
 
@@ -36,10 +48,10 @@ const _reAbrirCaja = (caja) => (dispatch) => {
     razonDiscrepancia: null
   };
   postObjectToAPI(newCaja, 'CAJA')
-    .then(() => dispatch({
-      type: 'RE_ABRIR_CAJA',
-      payload: newCaja
-    }))
+    .then(() => {
+      dispatch({type: 'RE_ABRIR_CAJA', payload: newCaja});
+      dispatch({type: 'SET_MODO_CONSULTA_OFF'});
+    })
     .catch(error => console.log(error));
 };
 
@@ -55,7 +67,10 @@ const _abrirCaja = (montoInicial) => (dispatch) => {
     fechaHoraInicio: new Date().getTime()
   };
   postObjectToAPI(newCaja, 'CAJA')
-    .then(lastId => dispatch({type: 'ABRIR_CAJA_DIARIA', payload: {...newCaja, id: lastId.lastId}}))
+    .then(lastId => {
+      dispatch({type: 'ABRIR_CAJA_DIARIA', payload: {...newCaja, id: lastId.lastId}});
+      dispatch({type: 'SET_MODO_CONSULTA_OFF'});
+    })
     .catch(error => console.log(error)); // TODO: REFLECT IN STATE THE ERROR
 };
 

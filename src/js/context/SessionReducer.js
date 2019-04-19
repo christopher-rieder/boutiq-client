@@ -6,7 +6,9 @@ const initialState = {
   sessionPending: true,
   vendedor: {},
   permissions: {},
-  turnoIniciado: false
+  turnoIniciado: false,
+  modoConsulta: true,
+  modoAdmin: false
 };
 
 const sessionReducer = (state = initialState, action) => {
@@ -34,6 +36,16 @@ const sessionReducer = (state = initialState, action) => {
         vendedor: action.payload.vendedor,
         permissions: action.payload.permissions,
         turnoIniciado: true
+      };
+    case 'SET_MODO_CONSULTA_ON':
+      return {
+        ...state,
+        modoConsulta: true
+      };
+    case 'SET_MODO_CONSULTA_OFF':
+      return {
+        ...state,
+        modoConsulta: false
       };
     default:
       return state;
