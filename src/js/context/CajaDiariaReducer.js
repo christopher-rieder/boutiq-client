@@ -53,11 +53,24 @@ const cajaDiariaReducer = (state = initialState, action) => {
         ...state,
         turnos: state.turnos.concat(action.payload)
       };
-    case 'REQUEST_TURNO_SUCCESS':
+    case 'CERRAR_TURNO':
+      const newTurnos = [...state.turnos];
+      const lastTurno = newTurnos[newTurnos.length - 1];
+      lastTurno.fechaHoraCierre = action.payload.fechaHoraCierre;
+      lastTurno.montoCierre = action.payload.montoCierre;
       return {
         ...state,
-        turnos: state.turnos.concat(action.payload)
+        turnos: newTurnos
       };
+    case 'REQUEST_TURNO_SUCCESS':
+      if (action.payload) {
+        return {
+          ...state,
+          turnos: state.turnos.concat(action.payload)
+        };
+      } else {
+        return state;
+      }
     // case 'ABRIR_TURNO'
     // case 'CERRAR_TURNO'
     // case 'REGISTRAR_DISCREPANCIA_TURNO'

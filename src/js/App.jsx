@@ -42,6 +42,7 @@ const mapStateToProps = state => ({
   cajaCerrada: !!(state.caja.fechaHoraCierre),
   turnoIniciado: state.session.turnoIniciado,
   modoConsulta: state.session.modoConsulta,
+  turno: state.caja.turnos[state.caja.turnos.length - 1],
   modoAdmin: state.session.modoAdmin
 });
 
@@ -53,6 +54,7 @@ const mapDispatchToProps = dispatch => ({
 
 function App ({
   cajaIniciada, cajaCerrada, turnoIniciado, modoConsulta, modoAdmin,
+  turno,
   onRequestClienteDefault, onRequestProveedorDefault, onRequestTables}) {
   useEffect(() => {
     onRequestClienteDefault();
@@ -81,7 +83,7 @@ function App ({
                 <button className='navigation__btn' onClick={() => setMainElement(<Venta />)}>
                   Resumen de caja del dia
                 </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<InformeTurno idTurnoActual={20} />)}>
+                <button className='navigation__btn' onClick={() => setMainElement(<InformeTurno idTurnoActual={turno.id} />)}>
                   Resumen de turno actual
                 </button>
                 <button className='navigation__btn' onClick={() => setMainElement(<Logout />)}>

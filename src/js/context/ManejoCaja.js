@@ -86,8 +86,7 @@ const mapStateToProps = state => ({
   cajaIniciada: !!(state.caja.fechaHoraInicio),
   cajaCerrada: !!(state.caja.fechaHoraCierre),
   cajaPending: state.caja.cajaPending,
-  error: state.caja.error,
-  turnos: state.caja.turnos
+  error: state.caja.error
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -99,24 +98,13 @@ const mapDispatchToProps = dispatch => ({
   },
   registarDiscrepanciaCaja: (discrepancia) => (dispatch) => {
     dispatch({type: 'REGISTRAR_DISCREPANCIA_CAJA_DIARIA', payload: discrepancia});
-  },
-  // TURNO
-  abrirTurno: (turno) => (dispatch) => {
-    dispatch({type: 'ABRIR_TURNO', payload: turno});
-  },
-  cerrarTurno: (turno) => (dispatch) => {
-    dispatch({type: 'CERRAR_TURNO', payload: turno});
-  },
-  registarDiscrepanciaTurno: (discrepancia) => (dispatch) => {
-    dispatch({type: 'REGISTRAR_DISCREPANCIA_TURNO', payload: discrepancia});
   }
 });
 
 function ManejoCaja ({cajaPending, onRequestCajaActual, error, abrirCaja, reAbrirCaja,
   id, fecha, montoInicial, fechaHoraInicio, cajaIniciada,
   cerrarCaja, montoCierre, fechaHoraCierre, cajaCerrada,
-  montoDiscrepancia, razonDiscrepancia, registarDiscrepanciaCaja,
-  turnos, abrirTurno, cerrarTurno, registarDiscrepanciaTurno
+  montoDiscrepancia, razonDiscrepancia, registarDiscrepanciaCaja
 }) {
   // 1) chequear caja del dia. si esta abierta, cargar de base de datos.
   //    si esta cerrada, pedir monto inicial de caja.

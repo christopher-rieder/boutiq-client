@@ -37,6 +37,14 @@ const sessionReducer = (state = initialState, action) => {
         permissions: action.payload.permissions,
         turnoIniciado: true
       };
+    case 'CERRAR_TURNO':
+      return {
+        ...state,
+        vendedor: null,
+        turnoIniciado: false,
+        modoConsulta: true,
+        modoAdmin: false
+      };
     case 'SET_MODO_CONSULTA_ON':
       return {
         ...state,

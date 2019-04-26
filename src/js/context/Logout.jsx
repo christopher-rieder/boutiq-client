@@ -11,14 +11,43 @@ import Modal from '../components/modal';
 import Consulta from '../crud/consulta';
 import { postObjectToAPI } from '../database/writeData';
 
-function Logout () {
+// turno fields:
+const cerrarTurno = (lastTurno, montoCierre) => (dispatch) => {
+  const fechaHoraCierre = new Date().getTime();
+  const turno = {
+    id: lastTurno.id,
+    montoCierre,
+    fechaHoraCierre
+  };
+  postObjectToAPI(turno, 'TURNO')
+    .then(lastId => dispatch({type: 'CERRAR_TURNO', payload: {montoCierre, fechaHoraCierre}}));
+};
+
+const mapStateToProps = state => ({
+  lastTurno: state.caja.turnos[state.caja.turnos.length - 1]
+});
+
+const mapDispatchToProps = dispatch => ({
+  logout: (lastTurno, montoCierre) => {
+    dispatch(cerrarTurno(lastTurno, montoCierre));
+  }
+});
+
+function Logout ({
+  logout,
+  lastTurno
+}) {
   const [montoCierre, setMontoCierre] = useState(0);
+
+  function cierreTurno () {
+    logout(lastTurno, montoCierre);
+  }
 
   return (
     <React.Fragment>
       <p>Plata al cerrar el turno: </p>
       <InputFloatField name='Monto' value={montoCierre} setValue={setMontoCierre} autoComplete='off' />
-      <Button variant='outlined' color='primary' onClick={null} >
+      <Button variant='outlined' color='primary' onClick={cierreTurno} >
           CERRAR TURNO &nbsp;
         <SendIcon />
       </Button>
@@ -26,4 +55,4 @@ function Logout () {
   );
 }
 
-export default Logout;
+export default connect(mapStateToProps, mapDispatchToProps)(Logout);
