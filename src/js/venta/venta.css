@@ -28,6 +28,10 @@
   z-index: 1000;
 }
 
+.table-header-valor {
+  width: 10rem;
+}
+
 .table-header-cantidad {
   width: 3rem;
 }

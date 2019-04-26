@@ -8,6 +8,7 @@ import ConsultaFactura from './venta/ConsultaFactura';
 import ConsultaCompra from './compra/ConsultaCompra';
 import ConsultaPagos from './pagos/ConsultaPago';
 import CrudArticulo from './crud/crudArticulo';
+import InformeTurno from './informes/InformeTurno';
 import Seña from './seña/Seña';
 import ConsultaSeña from './seña/ConsultaSeña';
 import Retiro from './retiro/retiro';
@@ -79,7 +80,7 @@ function App ({
                 <button className='navigation__btn' onClick={() => setMainElement(<Venta />)}>
                   Resumen de caja del dia
                 </button>
-                <button className='navigation__btn' onClick={() => setMainElement(<ConsultaFactura />)}>
+                <button className='navigation__btn' onClick={() => setMainElement(<InformeTurno idTurnoActual={20} />)}>
                   Resumen de turno actual
                 </button>
               </div>

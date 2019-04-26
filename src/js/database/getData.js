@@ -69,7 +69,17 @@ function getCajaActual () {
   return window.fetch(`${URL}/api/caja/actual`).then(res => res.json()).then(res => res[0]);
 }
 
+function getResumenCaja (id) {
+  return window.fetch(`${URL}/api/caja/resumen/${id}`).then(res => res.json());
+}
+
+function getResumenTurno (id) {
+  return window.fetch(`${URL}/api/turno/resumen/${id}`).then(res => res.json());
+}
+
 export {
+  getResumenCaja,
+  getResumenTurno,
   getTable,
   getAllArticulos,
   getAllFacturas,
