@@ -5,7 +5,6 @@ const initialState = {
   error: '',
   sessionPending: true,
   vendedor: {},
-  permissions: {},
   turnoIniciado: false,
   modoConsulta: true,
   modoAdmin: false
@@ -19,6 +18,7 @@ const sessionReducer = (state = initialState, action) => {
       if (action.payload) {
         return { // bring turno stored in database
           ...state,
+          vendedor: action.payload.vendedor,
           sessionPending: false,
           turnoIniciado: true
         };

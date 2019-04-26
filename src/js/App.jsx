@@ -19,6 +19,7 @@ import {requestTables} from './utilities/requestTables.js';
 import { getItemById } from './database/getData';
 import Spinner from './components/Spinner';
 import Login from './context/Login';
+import Logout from './context/Logout';
 
 // { loading ? <Spinner /> : props.children}
 
@@ -82,6 +83,9 @@ function App ({
                 </button>
                 <button className='navigation__btn' onClick={() => setMainElement(<InformeTurno idTurnoActual={20} />)}>
                   Resumen de turno actual
+                </button>
+                <button className='navigation__btn' onClick={() => setMainElement(<Logout />)}>
+                  Cerrar turno actual
                 </button>
               </div>
             </li>
