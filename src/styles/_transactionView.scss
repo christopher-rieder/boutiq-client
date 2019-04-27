@@ -1,0 +1,16 @@
+.consulta-transaccion-sidebar {
+  width: max-content;
+}
+
+.consulta-transaccion-main {
+  width: max-content;
+}
+
+@media only print {
+  .consulta-transaccion-sidebar {
+    display:none;
+  }
+  .consulta-transaccion-main {
+    width: auto;
+  }
+}
