@@ -43,7 +43,7 @@ const mapStateToProps = state => ({
   items: state.venta.items,
   isPending: state.venta.isPending,
   error: state.venta.error,
-  DESCUENTO_MAXIMO: state.constants.DESCUENTO_MAXIMO,
+  descuentoMaximo: state.constants.descuentoMaximo,
   clienteDefault: state.defaults.clienteDefault,
   vendedor: state.session.vendedor,
   turno: state.caja.turnos[state.caja.turnos.length - 1],
@@ -72,12 +72,12 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
   nuevo, onRequestLastVenta, addOne, addItem, addPago, vaciar,
   setCliente, setTipoPago, setDescuento, setObservaciones,
   setDescuentoIndividual, setPrecioIndividual, setCantidadIndividual, removeItem,
-  DESCUENTO_MAXIMO, clienteDefault, vendedor, turno, tablaTipoPago, updateCantidadArticulo}) {
+  descuentoMaximo, clienteDefault, vendedor, turno, tablaTipoPago, updateCantidadArticulo}) {
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<ConsultaArticulo />);
 
   const getTotal = useMemo(
-    () => items.reduce((total, item) => total + item.CANTIDAD * item.PRECIO_UNITARIO, 0),
+    () => items.reduce((total, item) => total + item.cantidad * item.precioUnitario, 0),
     [items]);
 
   const getNuevaFactura = () => {
@@ -106,8 +106,8 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
   };
 
   const handleAddItem = (data) => {
-    const cod = typeof data === 'string' ? data : data.CODIGO;
-    const articulo = items.find(item => item.CODIGO === cod);
+    const cod = typeof data === 'string' ? data : data.codigo;
+    const articulo = items.find(item => item.codigo === cod);
     if (articulo) {
       addOne(cod);
       dialogs.success('AGREGADO!!!  +1');
@@ -147,40 +147,40 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
   const postToAPI = async () => {
     try {
       const facturaId = await postObjectToAPI({
-        NUMERO_FACTURA: numeroFactura,
-        FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
-        DESCUENTO: descuento,
-        OBSERVACIONES: observaciones,
-        CLIENTE_ID: cliente.id,
-        TURNO_ID: turno.id
+        numeroFactura,
+        fechaHora: new Date().getTime(), // UNIX EPOCH TIME
+        descuento,
+        observaciones,
+        clienteId: cliente.id,
+        turnoId: turno.id
       }, 'factura').then(json => json.lastId);
 
       items.forEach(item => {
         // updating local state, same thing happens in the backend
-        updateCantidadArticulo(item.id, item.CANTIDAD, false);
+        updateCantidadArticulo(item.id, item.cantidad, false);
         postObjectToAPI({
-          FACTURA_ID: facturaId,
-          CANTIDAD: item.CANTIDAD,
-          PRECIO_UNITARIO: item.PRECIO_UNITARIO,
-          DESCUENTO: item.DESCUENTO,
-          ARTICULO_ID: item.id
+          facturaId,
+          cantidad: item.cantidad,
+          precioUnitario: item.precioUnitario,
+          descuento: item.descuento,
+          articuloId: item.id
         }, 'itemFactura');
       });
 
       if (pagos.length === 0) {
         postObjectToAPI({
-          FACTURA_ID: facturaId,
-          MONTO: getTotal,
-          TIPO_PAGO_ID: tipoPago.id,
-          ESTADO_ID: tipoPago.id === 1 ? 1 : 2 // TODO: BUSSINESS LOGIC; HANDLE IN A BETTER WAY
+          facturaId,
+          monto: getTotal,
+          tipoPagoId: tipoPago.id,
+          estadoId: tipoPago.id === 1 ? 1 : 2 // TODO: BUSSINESS LOGIC; HANDLE IN A BETTER WAY
         }, 'pago');
       } else {
         pagos.forEach(pago => {
           postObjectToAPI({
-            FACTURA_ID: facturaId,
-            MONTO: pago.MONTO,
-            TIPO_PAGO_ID: pago.TIPO_PAGO.id,
-            ESTADO_ID: pago.ESTADO.id
+            facturaId,
+            monto: pago.monto,
+            tipoPagoId: pago.tipoPago.id,
+            estadoId: pago.estado.id
           }, 'pago');
         });
       }
@@ -250,9 +250,9 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
 
       <div className='input-grid'>
         <InputTextField style={numeroFormWidth} name='Factura' value={numeroFactura} readOnly />
-        <InputTextField name='Cliente' value={cliente.NOMBRE} readOnly onClick={clienteModal} />
-        <InputSelect table={tablaTipoPago} name='Tipos de pago' accessor='NOMBRE' value={tipoPago} setValue={setTipoPago} />
-        <InputFloatField name='Descuento' value={descuento} maxValue={DESCUENTO_MAXIMO} setValue={setDescuento} autoComplete='off' />
+        <InputTextField name='Cliente' value={cliente.nombre} readOnly onClick={clienteModal} />
+        <InputSelect table={tablaTipoPago} name='Tipos de pago' accessor='nombre' value={tipoPago} setValue={setTipoPago} />
+        <InputFloatField name='Descuento' value={descuento} maxValue={descuentoMaximo} setValue={setDescuento} autoComplete='off' />
         <UncontrolledInput style={codigoFormWidth} name='Codigo' autoFocus autoComplete='off' onKeyPress={handleCodigoSearch} />
         <Button variant='outlined' color='primary' onClick={articuloModal} >
           Buscar Articulo &nbsp;
@@ -296,7 +296,7 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
         </tfoot>
       </table>
       <div className='panel'>
-        <InputTextField readOnly name='Vendedor' value={vendedor.NOMBRE} />
+        <InputTextField readOnly name='Vendedor' value={vendedor.nombre} />
         <InputTextField readOnly name='Turno' value={turno.id} />
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
@@ -321,11 +321,11 @@ function Venta ({items, numeroFactura, descuento, observaciones, cliente, pagos,
           {pagos.map(pago => <Pago pago={pago} />)}
           <div>
             <p>TOTAL</p>
-            <p>{pagos.reduce((total, pago) => total + pago.MONTO, 0)}</p>
+            <p>{pagos.reduce((total, pago) => total + pago.monto, 0)}</p>
           </div>
           <div>
             <p>PENDIENTE</p>
-            <p>{getTotal - pagos.reduce((total, pago) => total + pago.MONTO, 0)}</p>
+            <p>{getTotal - pagos.reduce((total, pago) => total + pago.monto, 0)}</p>
           </div>
         </div>
       }

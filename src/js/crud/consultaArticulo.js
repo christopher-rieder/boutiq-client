@@ -8,62 +8,62 @@ import {numberRangeFiltering} from '../utilities/filterFunctions';
 const columns = [
   {
     Header: 'CODIGO',
-    id: 'CODIGO',
+    id: 'codigo',
     className: 'cell-codigo',
-    accessor: e => e.CODIGO,
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['CODIGO'] }),
+    accessor: e => e.codigo,
+    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['codigo'] }),
     width: 150,
     filterAll: true
   },
   {
     Header: 'DESCRIPCION',
-    id: 'DESCRIPCION',
-    accessor: e => e.DESCRIPCION,
+    id: 'descripcion',
+    accessor: e => e.descripcion,
     minWidth: 400,
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['DESCRIPCION'] }),
+    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['descripcion'] }),
     filterAll: true
   },
   {
     Header: 'MARCA',
-    id: 'MARCA',
-    accessor: e => e.MARCA,
+    id: 'marca',
+    accessor: e => e.marca,
     minWidth: 120,
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['MARCA'] }),
+    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['marca'] }),
     filterAll: true
   },
   {
     Header: 'RUBRO',
-    id: 'RUBRO',
-    accessor: e => e.RUBRO,
+    id: 'rubro',
+    accessor: e => e.rubro,
     minWidth: 150,
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['RUBRO'] }),
+    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['rubro'] }),
     filterAll: true
   },
   {
     Header: 'LISTA',
-    id: 'PRECIO_LISTA',
-    accessor: 'PRECIO_LISTA',
+    id: 'precioLista',
+    accessor: 'precioLista',
     filterMethod: numberRangeFiltering,
     width: 60
   },
   {
     Header: 'CONTADO',
-    id: 'PRECIO_CONTADO',
-    accessor: 'PRECIO_CONTADO',
+    id: 'precioContado',
+    accessor: 'precioContado',
     filterMethod: numberRangeFiltering,
     width: 100
   },
   {
     Header: 'STOCK',
-    id: 'STOCK',
-    accessor: 'STOCK',
+    id: 'stock',
+    accessor: 'stock',
     filterMethod: numberRangeFiltering,
     width: 75
   },
   {
     Header: 'DESCUENTO',
-    id: 'DESCUENTO',
-    accessor: e => e.DESCUENTO + '%',
+    id: 'descuento',
+    accessor: e => e.descuento + '%',
     filterMethod: numberRangeFiltering,
     width: 120
   }

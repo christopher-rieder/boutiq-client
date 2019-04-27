@@ -46,11 +46,11 @@ const commonTablesReducer = (state = initialState, action) => {
     case 'REQUEST_TIPO_PAGO_TABLE_FAILED':
       return { ...state, errorTipoPago: action.payload, tipoPagoPending: false };
 
-    case 'REQUEST_ARTICULO_TABLE_PENDING':
+    case 'REQUEST_ARTICULO_FULL_TABLE_PENDING':
       return { ...state, articuloPending: true };
-    case 'REQUEST_ARTICULO_TABLE_SUCCESS':
+    case 'REQUEST_ARTICULO_FULL_TABLE_SUCCESS':
       return { ...state, articulo: action.payload, articuloPending: false };
-    case 'REQUEST_ARTICULO_TABLE_FAILED':
+    case 'REQUEST_ARTICULO_FULL_TABLE_FAILED':
       return { ...state, errorArticulo: action.payload, articuloPending: false };
     case 'UPDATE_ARTICULO_CANTIDAD':
       return {
@@ -58,9 +58,9 @@ const commonTablesReducer = (state = initialState, action) => {
         articulo: state.articulo.map(
           articulo => articulo.id === action.payload.id
             ? {...articulo,
-              STOCK: action.payload.suma
-                ? articulo.STOCK + action.payload.cantidad
-                : articulo.STOCK - action.payload.cantidad}
+              stock: action.payload.suma
+                ? articulo.stock + action.payload.cantidad
+                : articulo.stock - action.payload.cantidad}
             : articulo)
       };
 

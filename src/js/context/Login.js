@@ -54,7 +54,7 @@ function Login ({vendedorLogin, cajaId, onTurnoRequest,
   cajaIniciada, cajaCerrada, montoInicialCaja, turnos}) {
   const [displayModal, setDisplayModal] = useState(false);
   const [modalContent, setModalContent] = useState(<Consulta />);
-  const [vendedor, setVendedor] = useState({NOMBRE: ''});
+  const [vendedor, setVendedor] = useState({nombre: ''});
   const [montoInitialState, setMontoInitialState] = useState(0);
 
   useEffect(() => {
@@ -93,7 +93,7 @@ function Login ({vendedorLogin, cajaId, onTurnoRequest,
           {modalContent}
         </Modal>
       }
-      <InputTextField name='Vendedor' value={vendedor.NOMBRE} readOnly onClick={vendedorModal} />
+      <InputTextField name='Vendedor' value={vendedor.nombre} readOnly onClick={vendedorModal} />
       <Button variant='outlined' color='primary' onClick={handleLogin} >
           LOGIN &nbsp;
         <SendIcon />

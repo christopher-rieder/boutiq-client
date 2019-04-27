@@ -9,9 +9,9 @@ import dialogs from '../utilities/dialogs';
 const mapStateToProps = state => ({
   isPending: state.venta.isPending,
   error: state.venta.error,
-  DESCUENTO_MAXIMO: state.constants.DESCUENTO_MAXIMO,
-  RATIO_CONTADO: state.constants.RATIO_CONTADO,
-  RATIO_COSTO: state.constants.RATIO_COSTO,
+  descuentoMaximo: state.constants.descuentoMaximo,
+  ratioContado: state.constants.ratioContado,
+  ratioCosto: state.constants.ratioCosto,
   tablaMarca: state.tabla.marca,
   tablaRubro: state.tabla.rubro
 });
@@ -46,7 +46,7 @@ const setters = [
 ];
 
 const reducer = (state, action) => {
-  const {type, payload, RATIO_CONTADO, RATIO_COSTO} = action;
+  const {type, payload, ratioContado, ratioCosto} = action;
   const index = setters.findIndex(setter => setter === type);
   if (index >= 0) return {...state, [setters[index]]: payload}; // simple setters
 
@@ -57,14 +57,14 @@ const reducer = (state, action) => {
       return {
         ...state,
         precioLista: payload,
-        precioContado: round(payload * RATIO_CONTADO),
-        precioCosto: round(payload * RATIO_COSTO)
+        precioContado: round(payload * ratioContado),
+        precioCosto: round(payload * ratioCosto)
       };
     case 'precioContado':
       return {
         ...state,
         precioContado: payload,
-        precioCosto: round(payload * RATIO_COSTO)
+        precioCosto: round(payload * ratioCosto)
       };
     case 'precioCosto':
       return {
@@ -76,14 +76,14 @@ const reducer = (state, action) => {
 };
 
 function CrudArticulo ({
-  DESCUENTO_MAXIMO, RATIO_CONTADO, RATIO_COSTO, tablaMarca, tablaRubro, tablaArticulo,
+  descuentoMaximo, ratioContado, ratioCosto, tablaMarca, tablaRubro, tablaArticulo,
   updateArticulo, initialRequest, addArticulo
 }) {
   // TODO: MOVE STATE TO REDUX. add pertinent mapDispatchToProps entries.
   const [state, dispatch] = useReducer(reducer, initialState);
   const {id, codigo, descripcion, precioLista, precioContado, precioCosto, descuento, stock, rubro, marca} = state;
   const dispatcherSetValue = type => payload => dispatch({type, payload});
-  const dispatcherPrecios = type => payload => dispatch({type, payload, RATIO_CONTADO, RATIO_COSTO});
+  const dispatcherPrecios = type => payload => dispatch({type, payload, ratioContado, ratioCosto});
 
   const loadFromDatabase = id => {
     getArticuloById(id)
@@ -92,15 +92,15 @@ function CrudArticulo ({
           type: 'fromDatabase',
           payload: {
             id: res.id,
-            codigo: res.CODIGO,
-            descripcion: res.DESCRIPCION,
-            precioLista: res.PRECIO_LISTA,
-            precioContado: res.PRECIO_CONTADO,
-            precioCosto: res.PRECIO_COSTO,
-            descuento: res.DESCUENTO,
-            stock: res.STOCK,
-            rubro: {id: res.RUBRO_ID, NOMBRE: res.RUBRO_NOMBRE},
-            marca: {id: res.MARCA_ID, NOMBRE: res.MARCA_NOMBRE}
+            codigo: res.codigo,
+            descripcion: res.descripcion,
+            precioLista: res.precioLista,
+            precioContado: res.precioContado,
+            precioCosto: res.precioCosto,
+            descuento: res.descuento,
+            stock: res.stock,
+            rubro: {id: res.rubroId, nombre: res.rubroNombre},
+            marca: {id: res.marcaId, nombre: res.marcaNombre}
           }});
       });
   };
@@ -162,7 +162,7 @@ function CrudArticulo ({
           <InputFloatField fragment name='Precio de Contado' value={precioContado} maxValue={precioLista} setValue={dispatcherPrecios('precioContado')} autoComplete='off' />
           <InputFloatField fragment name='Precio de Costo' value={precioCosto} maxValue={precioContado} setValue={dispatcherPrecios('precioCosto')} autoComplete='off' />
           <InputIntField fragment name='Stock' value={stock} setValue={dispatcherSetValue('stock')} autoComplete='off' />
-          <InputFloatField fragment name='Descuento en promo' value={descuento} maxValue={DESCUENTO_MAXIMO} setValue={dispatcherSetValue('descuento')} autoComplete='off' />
+          <InputFloatField fragment name='Descuento en promo' value={descuento} maxValue={descuentoMaximo} setValue={dispatcherSetValue('descuento')} autoComplete='off' />
         </div>
         <InputSelect table={tablaMarca} name='Marca' accessor='NOMBRE' value={marca} setValue={dispatcherSetValue('marca')} />
         <InputSelect table={tablaRubro} name='Rubro' accessor='NOMBRE' value={rubro} setValue={dispatcherSetValue('rubro')} />

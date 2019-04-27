@@ -1,7 +1,7 @@
 const updateConstants = (state, payload) => {
   let newState = { ...state, isPending: false };
   payload.forEach(row => {
-    newState[row.NOMBRE] = row.VALOR;
+    newState[row.nombre] = row.valor;
   });
   return newState;
 };

@@ -1,5 +1,5 @@
 import { getTable } from '../database/getData';
-const tablesToRequest = ['CONSTANTS', 'MARCA', 'RUBRO', 'ESTADO_PAGO', 'TIPO_PAGO', 'ARTICULO'];
+const tablesToRequest = ['CONSTANTS', 'MARCA', 'RUBRO', 'ESTADO_PAGO', 'TIPO_PAGO', 'ARTICULO_FULL'];
 
 // this tables are always loaded
 const requestTables = () => (dispatch) => {

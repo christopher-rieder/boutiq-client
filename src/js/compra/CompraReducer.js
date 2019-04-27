@@ -1,6 +1,6 @@
 const compraInitialState = {
-  proveedor: {id: 0, NOMBRE: ''},
-  vendedor: {id: 0, NOMBRE: ''},
+  proveedor: {id: 0, nombre: ''},
+  vendedor: {id: 0, nombre: ''},
   turno: {id: 0},
   observaciones: '',
   numeroCompra: 0,
@@ -11,11 +11,11 @@ const compraInitialState = {
 const addItem = (state, articulo) => {
   const newItem = {
     id: articulo.id,
-    CANTIDAD: 1,
-    AÑADE_STOCK: true,
-    CODIGO: articulo.CODIGO,
-    DESCRIPCION: articulo.DESCRIPCION,
-    STOCK: articulo.STOCK
+    cantidad: 1,
+    añadeStock: true,
+    codigo: articulo.codigo,
+    descripcion: articulo.descripcion,
+    stock: articulo.stock
   };
 
   return {
@@ -27,15 +27,15 @@ const addItem = (state, articulo) => {
 const removeItem = (state, articulo) => {
   return {
     ...state,
-    items: state.items.filter(e => e.CODIGO !== articulo.CODIGO)
+    items: state.items.filter(e => e.codigo !== articulo.codigo)
   };
 };
 
 const addOneQuantityItem = (state, codigo) => {
   return {
     ...state,
-    items: state.items.map(item => item.CODIGO === codigo
-      ? {...item, CANTIDAD: item.CANTIDAD + 1}
+    items: state.items.map(item => item.codigo === codigo
+      ? {...item, CANTIDAD: item.cantidad + 1}
       : item)
   };
 };
@@ -44,8 +44,8 @@ const setCantidadIndividual = (state, {articulo, value}) => {
   let newCantidad = isNaN(parseInt(value)) ? 1 : value > 0 ? parseInt(value) : 1;
   return {
     ...state,
-    items: state.items.map(item => item.CODIGO === articulo.CODIGO
-      ? {...articulo, CANTIDAD: newCantidad}
+    items: state.items.map(item => item.codigo === articulo.codigo
+      ? {...articulo, cantidad: newCantidad}
       : item)
   };
 };

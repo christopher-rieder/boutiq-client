@@ -16,10 +16,10 @@ const mapDispatchToProps = dispatch => ({
 function Crud (props) {
   const [search, setSearch] = useState('');
   const [objList, setObjList] = useState([]);
-  const [obj, setObj] = useState({id: 1, NOMBRE: 'OBJ'});
+  const [obj, setObj] = useState({id: 1, nombre: 'OBJ'});
   const crudTable = props.table.toUpperCase(); // actions in dispatcher are in uppercase...
 
-  const filterCol = props.filterCol || 'NOMBRE';
+  const filterCol = props.filterCol || 'nombre';
 
   useEffect(() => { // LOAD TABLE
     databaseRead.getTable(crudTable)
@@ -64,7 +64,7 @@ function Crud (props) {
     }
   };
 
-  const list = () => matchSorter(objList, search, {keys: ['NOMBRE']})
+  const list = () => matchSorter(objList, search, {keys: ['nombre']})
     .map(element => (
       <li className='crud-list-item'
         id={'crud-id-' + element.id}

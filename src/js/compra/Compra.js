@@ -90,8 +90,8 @@ function Compra ({
   };
 
   const handleAddItem = (data) => {
-    const cod = typeof data === 'string' ? data : data.CODIGO;
-    const articulo = items.find(item => item.CODIGO === cod);
+    const cod = typeof data === 'string' ? data : data.codigo;
+    const articulo = items.find(item => item.codigo === cod);
     if (articulo) {
       addOne(cod);
       dialogs.success('AGREGADO!!!  +1');
@@ -134,21 +134,21 @@ function Compra ({
 
   const postToAPI = async () => {
     try {
-      const lastId = await postObjectToAPI({
-        NUMERO_COMPRA: numeroCompra,
-        FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
-        OBSERVACIONES: observaciones,
-        PROVEEDOR_ID: proveedor.id,
-        TURNO_ID: turno.id
+      const compraId = await postObjectToAPI({
+        numeroCompra,
+        fechaHora: new Date().getTime(), // UNIX EPOCH TIME
+        observaciones,
+        proveedorId: proveedor.id,
+        turnoId: turno.id
       }, 'compra').then(json => json.lastId);
 
       items.forEach(item => {
         // updating local state, same thing happens in the backend
-        updateCantidadArticulo(item.id, item.CANTIDAD, true);
+        updateCantidadArticulo(item.id, item.cantidad, true);
         postObjectToAPI({
-          COMPRA_ID: lastId,
-          CANTIDAD: item.CANTIDAD,
-          ARTICULO_ID: item.id
+          compraId,
+          cantidad: item.cantidad,
+          articuloId: item.id
         }, 'itemCompra');
       });
 
@@ -211,7 +211,7 @@ function Compra ({
       }
       <div className='panel'>
         <InputTextField style={numeroFormWidth} name='Compra' value={numeroCompra} readOnly />
-        <InputTextField name='Proveedor' value={proveedor.NOMBRE} readOnly onClick={proveedorModal} />
+        <InputTextField name='Proveedor' value={proveedor.nombre} readOnly onClick={proveedorModal} />
       </div>
       <div className='panel'>
         <UncontrolledInput id='codigo-search' style={codigoFormWidth} name='Codigo' autoFocus autoComplete='off' onKeyPress={handleCodigoSearch} />
@@ -246,7 +246,7 @@ function Compra ({
         </tbody>
       </table>
       <div className='panel'>
-        <InputTextField readOnly name='Vendedor' value={vendedor.NOMBRE} />
+        <InputTextField readOnly name='Vendedor' value={vendedor.nombre} />
         <InputTextField readOnly name='Turno' value={turno.id} />
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
