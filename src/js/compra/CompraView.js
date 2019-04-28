@@ -2,23 +2,24 @@ import { format as dateFormat } from 'date-fns';
 import React from 'react';
 
 export default function CompraView ({obj, setObj}) {
-  if (!obj.NUMERO_COMPRA) {
+  console.log(Object.keys(obj));
+  if (!obj.numeroCompra) {
     return <div />;
   } else {
     return (
       <div className='compra-view__container'>
         <section className='compra-view__detalles'>
           <p className='tabla-view__detalle tabla-view__numero'>
-            N° de Compra: {obj.NUMERO_COMPRA}
+            N° de Compra: {obj.numeroCompra}
           </p>
           <p className='tabla-view__detalle tabla-view__fecha'>
-            Fecha: {dateFormat(new Date(obj.FECHA_HORA), 'dd/MM/yyyy | HH:mm:ss')}
+            Fecha: {dateFormat(new Date(obj.fechaHora), 'dd/MM/yyyy | HH:mm:ss')}
           </p>
           <p className='tabla-view__detalle tabla-view__cliente'>
-            Proveedor: {obj.PROVEEDOR.NOMBRE}
+            Proveedor: {obj.proveedor}
           </p>
           <p className='tabla-view__detalle tabla-view__observaciones'>
-            Observaciones: {obj.OBSERVACIONES}
+            Observaciones: {obj.observaciones}
           </p>
         </section>
         <section className='compra-view__items'>
@@ -31,11 +32,11 @@ export default function CompraView ({obj, setObj}) {
               </tr>
             </thead>
             <tbody className='tabla-view__body'>
-              {obj.ITEMS.map(item => (
-                <tr key={item.CODIGO} className='tabla-view__body-row'>
-                  <td className='tabla-view__body-cell'>{item.CODIGO}</td>
-                  <td className='tabla-view__body-cell'>{item.DESCRIPCION}</td>
-                  <td className='tabla-view__body-cell'>{item.CANTIDAD}</td>
+              {obj.items.map(item => (
+                <tr key={item.codigo} className='tabla-view__body-row'>
+                  <td className='tabla-view__body-cell'>{item.codigo}</td>
+                  <td className='tabla-view__body-cell'>{item.descripcion}</td>
+                  <td className='tabla-view__body-cell'>{item.cantidad}</td>
                 </tr>)
               )}
             </tbody>

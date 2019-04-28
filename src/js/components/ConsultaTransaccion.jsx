@@ -4,11 +4,10 @@ import 'react-table/react-table.css';
 
 export default function Consulta ({getData, setObj, children, columns}) {
   const [data, setData] = useState([]);
-  console.log(JSON.stringify(data));
 
   useEffect(() => { // LOAD TABLE
     getData()
-      .then(res => setData(res));
+      .then(setData);
   }, []);
 
   function getTdProps (state, rowInfo, column, instance) {

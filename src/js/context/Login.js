@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import MoneyIcon from '@material-ui/icons/MonetizationOnTwoTone';
 import SendIcon from '@material-ui/icons/SendTwoTone';
 import dialogs from '../utilities/dialogs';
-import {getTurnoActual} from '../database/getData';
+import {getLastTurno} from '../database/getData';
 import Spinner from '../components/Spinner';
 import Modal from '../components/modal';
 import Consulta from '../crud/consulta';
@@ -13,8 +13,9 @@ import { postObjectToAPI } from '../database/writeData';
 
 const requestTurnoActual = () => (dispatch) => {
   dispatch({type: 'REQUEST_TURNO_PENDING'});
-  getTurnoActual()
+  getLastTurno()
     .then(turnoActual => {
+      console.log(turnoActual);
       dispatch({type: 'REQUEST_TURNO_SUCCESS', payload: turnoActual});
     })
     .catch(error => dispatch({type: 'REQUEST_TURNO_FAILED', payload: error}));

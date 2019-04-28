@@ -1,6 +1,3 @@
-import {format} from 'date-fns';
-import { postObjectToAPI } from '../database/writeData';
-const DATE_FORMAT_STRING = 'yyyy/MM/dd';
 const initialState = {
   cajaPending: true,
   turnos: []
@@ -71,8 +68,6 @@ const cajaDiariaReducer = (state = initialState, action) => {
       } else {
         return state;
       }
-    // case 'ABRIR_TURNO'
-    // case 'CERRAR_TURNO'
     // case 'REGISTRAR_DISCREPANCIA_TURNO'
     default:
       return state;

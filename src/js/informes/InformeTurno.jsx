@@ -31,10 +31,10 @@ function InformeTurno ({idTurnoActual}) {
 function ItemTurno ({item}) {
   return (
     <tr className='tabla-transaccion-row'>
-      <td className='tabla-transaccion-cell tabla-transaccion-documento'>{item.DOCUMENTO}</td>
-      <td className='tabla-transaccion-cell tabla-transaccion-descripcion'>{item.DESCRIPCION}</td>
-      <td className='tabla-transaccion-cell tabla-transaccion-cantidad'>{item.CANTIDAD}</td>
-      <td className='tabla-transaccion-cell tabla-transaccion-valor'>{item.VALOR}</td>
+      <td className='tabla-transaccion-cell tabla-transaccion-documento'>{item.documento}</td>
+      <td className='tabla-transaccion-cell tabla-transaccion-descripcion'>{item.descripcion}</td>
+      <td className='tabla-transaccion-cell tabla-transaccion-cantidad'>{item.cantidad}</td>
+      <td className='tabla-transaccion-cell tabla-transaccion-valor'>{item.valor}</td>
     </tr>
   );
 }

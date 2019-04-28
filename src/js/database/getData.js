@@ -61,8 +61,8 @@ function getLastNumeroRetiro () {
   return window.fetch(`${URL}/api/retiro/last`).then(res => res.json()).then(res => res[0]);
 }
 
-function getTurnoActual () {
-  return window.fetch(`${URL}/api/turno/actual`).then(res => res.json()).then(res => res[0]);
+function getLastTurno () {
+  return window.fetch(`${URL}/api/turno/last`).then(res => res.json()).then(res => res[0]);
 }
 
 function getCajaActual () {
@@ -87,7 +87,7 @@ export {
   getAllSeñas,
   getAllRetiros,
   getPagosPendientes,
-  getTurnoActual,
+  getLastTurno,
   getCajaActual,
   getArticuloByCodigo,
   getArticuloById,

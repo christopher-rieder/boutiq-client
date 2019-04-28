@@ -2,26 +2,26 @@ import { format as dateFormat } from 'date-fns';
 import React from 'react';
 
 export default function SeñaView ({obj, setObj}) {
-  if (!obj.NUMERO_SEÑA) {
+  if (!obj.numeroSeña) {
     return <div />;
   } else {
     return (
       <div className='seña-view__container'>
         <section className='seña-view__detalles'>
           <p className='tabla-view__detalle tabla-view__numero'>
-            N° de Seña: {obj.NUMERO_SEÑA}
+            N° de Seña: {obj.numeroSeña}
           </p>
           <p className='tabla-view__detalle tabla-view__fecha'>
-            Fecha: {dateFormat(new Date(obj.FECHA_HORA), 'dd/MM/yyyy | HH:mm:ss')}
+            Fecha: {dateFormat(new Date(obj.fechaHora), 'dd/MM/yyyy | HH:mm:ss')}
           </p>
           <p className='tabla-view__detalle tabla-view__vendedor'>
-            Vendedor: {obj.VENDEDOR.NOMBRE}
+            Vendedor: {obj.vendedor}
           </p>
           <p className='tabla-view__detalle tabla-view__monto'>
-            Monto: {obj.MONTO}
+            Monto: {obj.monto}
           </p>
           <p className='tabla-view__detalle tabla-view__observaciones'>
-            Observaciones: {obj.OBSERVACIONES}
+            Observaciones: {obj.observaciones}
           </p>
         </section>
         <section className='seña-view__items'>
@@ -37,14 +37,14 @@ export default function SeñaView ({obj, setObj}) {
               </tr>
             </thead>
             <tbody className='tabla-view__tabla-body'>
-              {obj.ITEMS.map(item => (
-                <tr key={item.CODIGO}>
-                  <td className='tabla-view__tabla-body-cell'>{item.CODIGO}</td>
-                  <td className='tabla-view__tabla-body-cell'>{item.DESCRIPCION}</td>
-                  <td className='tabla-view__tabla-body-cell'>{item.CANTIDAD}</td>
-                  <td className='tabla-view__tabla-body-cell'>{item.PRECIO_LISTA}</td>
-                  <td className='tabla-view__tabla-body-cell'>{item.PRECIO_UNITARIO_SEÑA}</td>
-                  <td className='tabla-view__tabla-body-cell'>{item.PRECIO_UNITARIO_SEÑA * item.CANTIDAD}</td>
+              {obj.items.map(item => (
+                <tr key={item.codigo}>
+                  <td className='tabla-view__tabla-body-cell'>{item.codigo}</td>
+                  <td className='tabla-view__tabla-body-cell'>{item.descripcion}</td>
+                  <td className='tabla-view__tabla-body-cell'>{item.cantidad}</td>
+                  <td className='tabla-view__tabla-body-cell'>{item.precioLista}</td>
+                  <td className='tabla-view__tabla-body-cell'>{item.precioUnitarioSeña}</td>
+                  <td className='tabla-view__tabla-body-cell'>{item.precioUnitarioSeña * item.cantidad}</td>
                 </tr>)
               )}
             </tbody>
@@ -52,7 +52,7 @@ export default function SeñaView ({obj, setObj}) {
               <tr className='tabla-view__tabla-foot-row'>
                 <th className='tabla-view__tabla-foot-cell' colSpan='3' />
                 <th className='tabla-view__tabla-foot-cell'>TOTAL: </th>
-                <th className='tabla-view__tabla-foot-cell'>{obj.ITEMS.reduce((suma, item) => suma + item.PRECIO_UNITARIO_SEÑA * item.CANTIDAD, 0)}</th>
+                <th className='tabla-view__tabla-foot-cell'>{obj.items.reduce((suma, item) => suma + item.precioUnitarioSeña * item.cantidad, 0)}</th>
               </tr>
             </tfoot>
           </table>

@@ -88,8 +88,8 @@ function Seña ({
   };
 
   const handleAddItem = (data) => {
-    const cod = typeof data === 'string' ? data : data.CODIGO;
-    const articulo = items.find(item => item.CODIGO === cod);
+    const cod = typeof data === 'string' ? data : data.codigo;
+    const articulo = items.find(item => item.codigo === cod);
     if (articulo) {
       addOne(cod);
       dialogs.success('AGREGADO!!!  +1');
@@ -130,23 +130,23 @@ function Seña ({
   const postToAPI = async () => {
     try {
       const señaId = await postObjectToAPI({
-        NUMERO_SEÑA: numeroSeña,
-        MONTO: monto,
-        FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
-        ESTADO_ID: 2,
-        OBSERVACIONES: observaciones,
-        CLIENTE_ID: cliente.id,
-        TURNO_ID: turno.id
+        numeroSeña,
+        monto,
+        fechaHora: new Date().getTime(), // UNIX EPOCH TIME
+        estadoId: 2,
+        observaciones,
+        clienteId: cliente.id,
+        turnoId: turno.id
       }, 'seña').then(json => json.lastId);
 
       items.forEach(item => {
         // updating local state, same thing happens in the backend
-        updateCantidadArticulo(item.id, item.CANTIDAD, false);
+        updateCantidadArticulo(item.id, item.cantidad, false);
         postObjectToAPI({
-          SEÑA_ID: señaId,
-          CANTIDAD: item.CANTIDAD,
-          ARTICULO_ID: item.id,
-          PRECIO_UNITARIO: item.PRECIO_UNITARIO
+          señaId,
+          cantidad: item.cantidad,
+          articuloId: item.id,
+          precioUnitario: item.precioUnitario
         }, 'itemSeña');
       });
 
@@ -196,7 +196,7 @@ function Seña ({
       }
       <div className='panel'>
         <InputTextField style={numeroFormWidth} name='Seña' value={numeroSeña} readOnly />
-        <InputTextField name='Cliente' value={cliente.NOMBRE} readOnly onClick={clienteModal} />
+        <InputTextField name='Cliente' value={cliente.nombre} readOnly onClick={clienteModal} />
       </div>
       <div className='panel'>
         <UncontrolledInput style={codigoFormWidth} name='Codigo' autoFocus autoComplete='off' onKeyPress={handleCodigoSearch} />
@@ -228,7 +228,7 @@ function Seña ({
         </tbody>
       </table>
       <div className='panel'>
-        <InputTextField readOnly name='Vendedor' value={vendedor.NOMBRE} />
+        <InputTextField readOnly name='Vendedor' value={vendedor.nombre} />
         <InputTextField readOnly name='Turno' value={turno.id} />
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>

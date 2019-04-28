@@ -10,40 +10,40 @@ import { getAllSeñas } from '../database/getData';
 const columns = [
   {
     Header: 'NRO',
-    id: 'NUMERO_SEÑA',
+    id: 'numeroSeña',
     width: 60,
-    accessor: 'NUMERO_SEÑA',
+    accessor: 'numeroSeña',
     filterMethod: numberRangeFiltering
   },
   {
     Header: 'FECHA',
-    id: 'FECHA_HORA',
+    id: 'fechaHora',
     width: 200,
-    accessor: e => dateFormat(new Date(e.FECHA_HORA), 'dd/MM/yyyy | HH:mm:ss'),
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['FECHA_HORA'] }),
+    accessor: e => dateFormat(new Date(e.fechaHora), 'dd/MM/yyyy | HH:mm:ss'),
+    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['fechaHora'] }),
     filterAll: true
   },
   {
     Header: 'CLIENTE',
-    id: 'CLIENTE',
+    id: 'cliente',
     width: 200,
-    accessor: e => e.CLIENTE.NOMBRE,
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['CLIENTE'] }),
+    accessor: e => e.cliente,
+    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['cliente'] }),
     filterAll: true
   },
   {
     Header: 'MONTO',
-    id: 'MONTO',
+    id: 'monto',
     width: 200,
-    accessor: 'MONTO',
+    accessor: 'monto',
     filterMethod: numberRangeFiltering
   },
   {
     Header: 'ESTADO',
-    id: 'ESTADO',
+    id: 'estado',
     width: 200,
-    accessor: e => e.ESTADO.NOMBRE,
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['ESTADO'] }),
+    accessor: e => e.estado,
+    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['estado'] }),
     filterAll: true
   }
 ];

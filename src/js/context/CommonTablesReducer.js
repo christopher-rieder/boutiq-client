@@ -63,6 +63,19 @@ const commonTablesReducer = (state = initialState, action) => {
                 : articulo.stock - action.payload.cantidad}
             : articulo)
       };
+    case 'UPDATE_ARTICULO':
+      return {
+        ...state,
+        articulo: state.articulo.map(
+          articulo => articulo.id === action.payload.id
+            ? {...action.payload}
+            : articulo)
+      };
+    case 'ADD_ARTICULO':
+      return {
+        ...state,
+        articulo: state.articulo.concat(action.payload)
+      };
 
     default:
       return state;

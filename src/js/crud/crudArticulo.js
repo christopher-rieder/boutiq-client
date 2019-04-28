@@ -17,7 +17,9 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  updateCantidadArticulo: (id, cantidad, suma) => dispatch({type: 'UPDATE_ARTICULO_CANTIDAD', payload: {id, cantidad, suma}})
+  updateCantidadArticulo: (id, cantidad, suma) => dispatch({type: 'UPDATE_ARTICULO_CANTIDAD', payload: {id, cantidad, suma}}),
+  updateArticulo: (articulo) => dispatch({type: 'UPDATE_ARTICULO', payload: articulo}),
+  addArticulo: (articulo) => dispatch({type: 'ADD_ARTICULO', payload: articulo})
 });
 
 const initialState = {
@@ -119,15 +121,15 @@ function CrudArticulo ({
     const update = id > 0;
 
     const articulo = {
-      CODIGO: codigo,
-      DESCRIPCION: descripcion,
-      PRECIO_LISTA: precioLista,
-      PRECIO_CONTADO: precioContado,
-      PRECIO_COSTO: precioCosto,
-      DESCUENTO: descuento,
-      STOCK: stock,
-      RUBRO_ID: rubro.id,
-      MARCA_ID: marca.id
+      codigo,
+      descripcion,
+      precioLista,
+      precioContado,
+      precioCosto,
+      descuento,
+      stock,
+      rubroId: rubro.id,
+      marcaId: marca.id
     };
 
     if (update) {
@@ -138,9 +140,9 @@ function CrudArticulo ({
       .then((res) => {
         dialogs.success('ARTICULO AGREGADO');
         if (update) {
-          updateArticulo({...articulo, id: res.lastId});
+          updateArticulo({...articulo, rubro: rubro.nombre, marca: marca.nombre, id: res.lastId});
         } else {
-          addArticulo({...articulo, id: res.lastId});
+          addArticulo({...articulo, rubro: rubro.nombre, marca: marca.nombre, id: res.lastId});
         }
       })
       .catch((err) => dialogs.error(err));
@@ -164,8 +166,8 @@ function CrudArticulo ({
           <InputIntField fragment name='Stock' value={stock} setValue={dispatcherSetValue('stock')} autoComplete='off' />
           <InputFloatField fragment name='Descuento en promo' value={descuento} maxValue={descuentoMaximo} setValue={dispatcherSetValue('descuento')} autoComplete='off' />
         </div>
-        <InputSelect table={tablaMarca} name='Marca' accessor='NOMBRE' value={marca} setValue={dispatcherSetValue('marca')} />
-        <InputSelect table={tablaRubro} name='Rubro' accessor='NOMBRE' value={rubro} setValue={dispatcherSetValue('rubro')} />
+        <InputSelect table={tablaMarca} name='Marca' accessor='nombre' value={marca} setValue={dispatcherSetValue('marca')} />
+        <InputSelect table={tablaRubro} name='Rubro' accessor='nombre' value={rubro} setValue={dispatcherSetValue('rubro')} />
         <div>
           {id > 0 && <button className='btn-guardar' onClick={() => loadFromDatabase(state.id)}>RECARGAR</button>}
           <button className='btn-guardar' onClick={handleSubmit}>GUARDAR</button>

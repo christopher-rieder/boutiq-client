@@ -3,29 +3,29 @@ import React from 'react';
 import Pago from '../pagos/Pago';
 
 export default function FacturaView ({obj, setObj}) {
-  if (!obj.NUMERO_FACTURA) {
+  if (!obj.numeroFactura) {
     return <div />;
   } else {
     return (
       <div className='factura-view__container'>
         <section className='factura-view__detalles'>
           <p className='tabla-view__detalle tabla-view__numero'>
-            N° de Factura: {obj.NUMERO_FACTURA}
+            N° de Factura: {obj.numeroFactura}
           </p>
           <p className='tabla-view__detalle tabla-view__fecha'>
-            Fecha: {dateFormat(new Date(obj.FECHA_HORA), 'dd/MM/yyyy | HH:mm:ss')}
+            Fecha: {dateFormat(new Date(obj.fechaHora), 'dd/MM/yyyy | HH:mm:ss')}
           </p>
           <p className='tabla-view__detalle tabla-view__cliente'>
-            Cliente: {obj.CLIENTE.NOMBRE}
+            Cliente: {obj.cliente}
           </p>
           <p className='tabla-view__detalle tabla-view__vendedor'>
-            Vendedor: {obj.VENDEDOR.NOMBRE}
+            Vendedor: {obj.vendedor}
           </p>
           <p className='tabla-view__detalle tabla-view__descuento'>
-            Descuento: {obj.DESCUENTO}
+            Descuento: {obj.descuento}
           </p>
           <p className='tabla-view__detalle tabla-view__observaciones'>
-            Observaciones: {obj.OBSERVACIONES}
+            Observaciones: {obj.observaciones}
           </p>
         </section>
         <section className='factura-view__items'>
@@ -41,14 +41,14 @@ export default function FacturaView ({obj, setObj}) {
               </tr>
             </thead>
             <tbody className='tabla-view__body'>
-              {obj.ITEMS.map(item => (
-                <tr key={item.CODIGO} className='tabla-view__body-row' >
-                  <td className='tabla-view__body-cell'>{item.CODIGO}</td>
-                  <td className='tabla-view__body-cell'>{item.DESCRIPCION}</td>
-                  <td className='tabla-view__body-cell'>{item.CANTIDAD}</td>
-                  <td className='tabla-view__body-cell'>{item.PRECIO_UNITARIO}</td>
-                  <td className='tabla-view__body-cell'>{item.PRECIO_TOTAL}</td>
-                  <td className='tabla-view__body-cell'>{item.DESCUENTO_ITEM}</td>
+              {obj.items.map(item => (
+                <tr key={item.codigo} className='tabla-view__body-row' >
+                  <td className='tabla-view__body-cell'>{item.codigo}</td>
+                  <td className='tabla-view__body-cell'>{item.descripcion}</td>
+                  <td className='tabla-view__body-cell'>{item.cantidad}</td>
+                  <td className='tabla-view__body-cell'>{item.precioUnitario}</td>
+                  <td className='tabla-view__body-cell'>{item.precioTotal}</td>
+                  <td className='tabla-view__body-cell'>{item.descuentoItem}</td>
                 </tr>)
               )}
             </tbody>
@@ -56,14 +56,14 @@ export default function FacturaView ({obj, setObj}) {
               <tr className='tabla-view__foot-row'>
                 <th className='tabla-view__foot-cell' colSpan='3' />
                 <th className='tabla-view__foot-cell'>TOTAL: </th>
-                <th className='tabla-view__foot-cell'>{obj.ITEMS.reduce((suma, item) => suma + item.PRECIO_TOTAL, 0)}</th>
+                <th className='tabla-view__foot-cell'>{obj.items.reduce((suma, item) => suma + item.precioTotal, 0)}</th>
               </tr>
             </tfoot>
           </table>
         </section>
-        {obj.PAGOS.length > 0 &&
+        {obj.pagos.length > 0 &&
         <section className='factura-view__pagos'>
-          {obj.PAGOS.map(pago => <Pago key={pago.id + '_' + pago.TIPO_PAGO.id + '_' + pago.ESTADO.id} pago={pago} />)}
+          {obj.pagos.map(pago => <Pago key={pago.id + '_' + pago.tipoPago.id + '_' + pago.estado.id} pago={pago} />)}
         </section>
         }
       </div>

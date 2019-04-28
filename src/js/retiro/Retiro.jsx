@@ -80,8 +80,8 @@ function Retiro ({
   };
 
   const handleAddItem = (data) => {
-    const cod = typeof data === 'string' ? data : data.CODIGO;
-    const articulo = items.find(item => item.CODIGO === cod);
+    const cod = typeof data === 'string' ? data : data.codigo;
+    const articulo = items.find(item => item.codigo === cod);
     if (articulo) {
       addOne(cod);
       dialogs.success('AGREGADO!!!  +1');
@@ -121,19 +121,19 @@ function Retiro ({
   const postToAPI = async () => {
     try {
       const retiroId = await postObjectToAPI({
-        NUMERO_RETIRO: numeroRetiro,
-        FECHA_HORA: new Date().getTime(), // UNIX EPOCH TIME
-        OBSERVACIONES: observaciones,
-        TURNO_ID: turno.id
+        numeroRetiro,
+        fechaHora: new Date().getTime(), // UNIX EPOCH TIME
+        observaciones,
+        turnoId: turno.id
       }, 'retiro').then(json => json.lastId);
 
       items.forEach(item => {
         // updating local state, same thing happens in the backend
-        updateCantidadArticulo(item.id, item.CANTIDAD, false);
+        updateCantidadArticulo(item.id, item.cantidad, false);
         postObjectToAPI({
-          RETIRO_ID: retiroId,
-          CANTIDAD: item.CANTIDAD,
-          ARTICULO_ID: item.id
+          retiroId,
+          cantidad: item.cantidad,
+          articuloId: item.id
         }, 'itemRetiro');
       });
 
@@ -201,7 +201,7 @@ function Retiro ({
         </tbody>
       </table>
       <div className='panel'>
-        <InputTextField readOnly name='Vendedor' value={vendedor.NOMBRE} />
+        <InputTextField readOnly name='Vendedor' value={vendedor.nombre} />
         <InputTextField readOnly name='Turno' value={turno.id} />
         <InputTextField readOnly name='Fecha' value={dateFormat(new Date(), 'MM/dd/yyyy')} />
       </div>
