@@ -9,8 +9,8 @@ export default function ConsultaFactura () {
   function handleRowSelection (selection) {
     getItemById('FACTURA', selection.numeroFactura)
       .then(setObj);
-    console.log(selection);
   }
+
   return (
     <Consulta
       tabla={'CONSULTA_FACTURAS'}

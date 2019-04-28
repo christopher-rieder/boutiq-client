@@ -1,43 +1,22 @@
-import { format as dateFormat } from 'date-fns';
-import matchSorter from 'match-sorter';
 import React, { useState } from 'react';
-import {getAllCompras} from '../database/getData';
 import CompraView from './CompraView';
-import {numberRangeFiltering} from '../utilities/filterFunctions';
 import Consulta from '../components/ConsultaTransaccion';
-
-const columns = [
-  {
-    Header: 'NRO',
-    id: 'numeroCompra',
-    width: 60,
-    accessor: 'numeroCompra',
-    filterMethod: numberRangeFiltering
-  },
-  {
-    Header: 'FECHA',
-    id: 'fechaHora',
-    width: 200,
-    accessor: e => dateFormat(new Date(e.fechaHora), 'dd/MM/yyyy | HH:mm:ss'),
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['fechaHora'] }),
-    filterAll: true
-  },
-  {
-    Header: 'PROVEEDOR',
-    id: 'proveedor',
-    width: 200,
-    accessor: 'proveedor',
-    filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['proveedor'] }),
-    filterAll: true
-  }
-];
+import {getItemById} from '../database/getData';
 
 export default function ConsultaCompra () {
   const [obj, setObj] = useState({});
 
+  function handleRowSelection (selection) {
+    getItemById('COMPRA', selection.numeroCompra)
+      .then(setObj);
+  }
+
   return (
-    <Consulta getData={getAllCompras} setObj={setObj} columns={columns}>
-      <CompraView obj={obj} />
+    <Consulta
+      tabla={'CONSULTA_COMPRAS'}
+      handleRowSelection={handleRowSelection}
+      headers={['numeroCompra', 'fechaHora', 'proveedor', 'vendedor']}>
+      <CompraView obj={obj} setObj={setObj} />
     </Consulta>
   );
 }
