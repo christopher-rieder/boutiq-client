@@ -1,4 +1,6 @@
 /*
+TODO: en el futuro va a ser muy pesado cargar todas las facturas.
+      cargar por defecto los ultimos 3 meses.
 
 COSAS QUE FALTAN. LUEGO REPLICAR A OTRAS TRANSACCIONES
 ANULACION DE FACTURA. SOLO POR ADMIN O TURNO ACTUAL.
