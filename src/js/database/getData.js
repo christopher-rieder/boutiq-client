@@ -9,10 +9,6 @@ function getAllArticulos () {
   return window.fetch(`${URL}/api/rawTables/full_articulos`).then(res => res.json());
 }
 
-function getAllFacturas () {
-  return window.fetch(`${URL}/api/factura/all`).then(res => res.json());
-}
-
 function getAllCompras () {
   return window.fetch(`${URL}/api/compra/all`).then(res => res.json());
 }
@@ -82,7 +78,6 @@ export {
   getResumenTurno,
   getTable,
   getAllArticulos,
-  getAllFacturas,
   getAllCompras,
   getAllSeñas,
   getAllRetiros,

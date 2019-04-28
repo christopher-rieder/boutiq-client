@@ -1,6 +1,18 @@
+/*
+
+COSAS QUE FALTAN. LUEGO REPLICAR A OTRAS TRANSACCIONES
+ANULACION DE FACTURA. SOLO POR ADMIN O TURNO ACTUAL.
+
+*/
+
 import { format as dateFormat } from 'date-fns';
-import React from 'react';
+import React, { useState } from 'react';
 import Pago from '../pagos/Pago';
+import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { anularFactura } from '../database/writeData';
+import dialogs from '../utilities/dialogs';
+import Checkbox from '@material-ui/core/Checkbox';
 
 export default function FacturaView ({obj, setObj}) {
   if (!obj.numeroFactura) {
@@ -27,6 +39,11 @@ export default function FacturaView ({obj, setObj}) {
           <p className='tabla-view__detalle tabla-view__observaciones'>
             Observaciones: {obj.observaciones}
           </p>
+          {obj.anulada &&
+          <p className='tabla-view__detalle tabla-view__anulada'>
+            FACTURA ANULADA
+          </p>
+          }
         </section>
         <section className='factura-view__items'>
           <table className='tabla-view__tabla'>
@@ -66,7 +83,43 @@ export default function FacturaView ({obj, setObj}) {
           {obj.pagos.map(pago => <Pago key={pago.id + '_' + pago.tipoPago.id + '_' + pago.estado.id} pago={pago} />)}
         </section>
         }
+        {
+          !obj.anulada &&
+          <AnulacionFactura obj={obj} setObj={setObj} />
+        }
       </div>
     );
   }
+}
+
+function AnulacionFactura ({obj, setObj}) {
+  const [updateStock, setUpdateStock] = useState(true);
+
+  function anular () {
+    anularFactura(obj.numeroFactura, updateStock)
+      .then(res => {
+        dialogs.success(`FACTURA ${obj.numeroFactura} ANULADA!!!`);
+        setObj({...obj, anulada: true});
+      }).catch(err => {
+        dialogs.error(`ERROR! ${err}`);
+      });
+  }
+
+  return (
+    <section className='factura-view__anular'>
+      <Button variant='outlined' color='secondary' onClick={event => {
+        dialogs.confirm(
+          confirmed => confirmed && anular(), // Callback
+          'Anular factura?', // Message text
+          'CONFIRMAR', // Confirm text
+          'VOLVER' // Cancel text
+        );
+      }}>
+            ANULAR FACTURA &nbsp;
+        <DeleteIcon />
+      </Button>
+      <Checkbox checked={updateStock} onChange={event => setUpdateStock(event.target.checked)} value={updateStock} />
+      <span>ACTUALIZAR STOCK</span>
+    </section>
+  );
 }

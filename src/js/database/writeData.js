@@ -43,7 +43,20 @@ function postObjectToAPI (item, endpoint) {
     .then(returnJsonOrError);
 }
 
+function anularFactura (numeroFactura, updateStock) {
+  return window.fetch(`${URL}/api/anular/factura/${numeroFactura}`, {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({updateStock})
+  }).then(processError)
+    .then(returnJsonOrError);
+}
+
 export {
+  anularFactura,
   updatePago,
   postCrudObjectToAPI,
   postObjectToAPI

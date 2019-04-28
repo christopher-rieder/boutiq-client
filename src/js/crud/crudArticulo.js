@@ -81,7 +81,6 @@ function CrudArticulo ({
   descuentoMaximo, ratioContado, ratioCosto, tablaMarca, tablaRubro, tablaArticulo,
   updateArticulo, initialRequest, addArticulo
 }) {
-  // TODO: MOVE STATE TO REDUX. add pertinent mapDispatchToProps entries.
   const [state, dispatch] = useReducer(reducer, initialState);
   const {id, codigo, descripcion, precioLista, precioContado, precioCosto, descuento, stock, rubro, marca} = state;
   const dispatcherSetValue = type => payload => dispatch({type, payload});

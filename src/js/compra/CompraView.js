@@ -2,7 +2,6 @@ import { format as dateFormat } from 'date-fns';
 import React from 'react';
 
 export default function CompraView ({obj, setObj}) {
-  console.log(Object.keys(obj));
   if (!obj.numeroCompra) {
     return <div />;
   } else {

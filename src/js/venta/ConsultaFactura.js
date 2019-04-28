@@ -1,10 +1,10 @@
 import { format as dateFormat } from 'date-fns';
 import matchSorter from 'match-sorter';
-import React, { useState } from 'react';
-import {getAllFacturas} from '../database/getData';
+import React, { useState, useEffect } from 'react';
 import FacturaView from './FacturaView';
 import {numberRangeFiltering} from '../utilities/filterFunctions';
 import Consulta from '../components/ConsultaTransaccion';
+import {getItemById} from '../database/getData';
 
 const columns = [
   {
@@ -42,9 +42,15 @@ const columns = [
 
 export default function ConsultaFactura () {
   const [obj, setObj] = useState({});
+
+  function handleRowSelection (selection) {
+    getItemById('FACTURA', selection.numeroFactura)
+      .then(setObj);
+    console.log(selection);
+  }
   return (
-    <Consulta getData={getAllFacturas} setObj={setObj} columns={columns}>
-      <FacturaView obj={obj} />
+    <Consulta tabla={'CONSULTA_FACTURAS'} handleRowSelection={handleRowSelection} columns={columns}>
+      <FacturaView obj={obj} setObj={setObj} />
     </Consulta>
   );
 }

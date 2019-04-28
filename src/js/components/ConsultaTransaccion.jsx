@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
+import {getTable} from '../database/getData';
 
-export default function Consulta ({getData, setObj, children, columns}) {
+export default function Consulta ({tabla, handleRowSelection, children, columns}) {
   const [data, setData] = useState([]);
-
   useEffect(() => { // LOAD TABLE
-    getData()
+    getTable(tabla)
       .then(setData);
   }, []);
 
   function getTdProps (state, rowInfo, column, instance) {
     return {
       onClick: (e, handleOriginal) => {
-        if (rowInfo) setObj(rowInfo.original);
+        if (rowInfo) handleRowSelection(rowInfo.original);
         if (handleOriginal) handleOriginal();
       }
     };

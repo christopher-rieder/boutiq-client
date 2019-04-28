@@ -4,13 +4,13 @@ export default function Pago ({pago}) {
   return (
     <div className='pago-item'>
       <p className='pago-item__tipo'>
-        {pago.TIPO_PAGO.NOMBRE}
+        {pago.tipoPago}
       </p>
       <p className='pago-item__estado'>
-        {pago.ESTADO.NOMBRE}
+        {pago.estado}
       </p>
       <p className='pago-item__monto'>
-        {pago.MONTO}
+        {pago.monto}
       </p>
     </div>
   );

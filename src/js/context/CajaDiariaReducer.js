@@ -73,10 +73,5 @@ const cajaDiariaReducer = (state = initialState, action) => {
       return state;
   }
 };
-// TODO: Que pasa si inician mal la caja? Sí o sí hay que ingresar arqueo de caja.
-// permitir correcciones mientras corre el turno actual?
-// TODO: Que pasa si no cierran la caja? cerrar caja automáticamente si no quedo cerrada,
-// a la hora 23:59 del dia que se abrió, con el monto calculado y una advertencia de que
-// no se hizo arqueo de caja.
-// TODO: NOTIFICATIONS QUEUE. que tiene que chequear el usuario o dueño.
+
 export default cajaDiariaReducer;

@@ -15,7 +15,6 @@ const requestTurnoActual = () => (dispatch) => {
   dispatch({type: 'REQUEST_TURNO_PENDING'});
   getLastTurno()
     .then(turnoActual => {
-      console.log(turnoActual);
       dispatch({type: 'REQUEST_TURNO_SUCCESS', payload: turnoActual});
     })
     .catch(error => dispatch({type: 'REQUEST_TURNO_FAILED', payload: error}));
